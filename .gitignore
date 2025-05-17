@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Custom ignored files
+src/questions_es.json
+src/questions_en.json
+src/locales.json

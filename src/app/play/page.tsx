@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation"; // Import useRouter
+import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image"; // Import the Next.js Image component
 
 function GameContent() {
   const searchParams = useSearchParams();
@@ -89,8 +90,17 @@ function GameContent() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-rose-500 text-orange-50 font-[family-name:var(--font-geist-sans)]">
-        <h1 className="text-4xl font-bold">Sip &apos;n Spill</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
+        <div className="w-full max-w-[200px] sm:max-w-[250px] mb-8">
+          <Image
+            src="/assets/sip.png"
+            alt="Sip 'n Spill Logo"
+            width={500}
+            height={300}
+            layout="responsive"
+            priority
+          />
+        </div>
         <p className="mt-4 text-xl">Loading questions...</p>
       </div>
     );
@@ -98,8 +108,17 @@ function GameContent() {
 
   if (questions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-rose-500 text-orange-50 font-[family-name:var(--font-geist-sans)]">
-        <h1 className="text-4xl font-bold">Sip &apos;n Spill</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
+        <div className="w-full max-w-[200px] sm:max-w-[250px] mb-8">
+          <Image
+            src="/assets/sip.png"
+            alt="Sip 'n Spill Logo"
+            width={500}
+            height={300}
+            layout="responsive"
+            priority
+          />
+        </div>
         <p className="mt-4 text-xl">
           No questions loaded. Please check the questions file for the selected
           language ({lang}).
@@ -110,31 +129,55 @@ function GameContent() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-rose-500 text-orange-50 font-[family-name:var(--font-geist-sans)] cursor-pointer"
+      className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)] cursor-pointer"
       onClick={handleInteraction}
     >
       <main className="flex flex-col gap-8 items-center w-full px-4">
-        <h1 className="text-4xl font-bold text-orange-50">Sip &apos;n Spill</h1>
-        <div className="p-6 bg-orange-50 text-rose-700 rounded-lg shadow-md min-h-[200px] flex flex-col justify-center items-center w-full max-w-md">
-          <p className="text-2xl">{questions[currentQuestionIndex]}</p>
+        {/* Main content card: Logo and Question */}
+        <div className="p-6 bg-[#FF765D] text-white rounded-lg shadow-md w-full max-w-md flex flex-col items-center gap-6">
+          {/* Logo */}
+          <div className="w-full max-w-[200px] sm:max-w-[250px]">
+            <Image
+              src="/assets/sip.png" // Path to your logo in the public folder
+              alt="Sip 'n Spill Logo" // Alt text for the logo
+              width={500} // Specify a base width for the image
+              height={300} // Specify a base height for the image
+              layout="responsive" // Make the image responsive
+              priority // Prioritize loading the logo
+            />
+          </div>
+          {/* Visually hidden h1 for SEO and accessibility */}
+          <h1 className="sr-only">Sip &apos;n Spill Game</h1>
+
+          {/* Question Text Area */}
+          <div className="min-h-[100px] flex flex-col justify-center items-center text-center">
+            <p className="text-2xl">{questions[currentQuestionIndex]}</p>
+          </div>
         </div>
 
-        <div className="flex gap-4 mt-4">
+        {/* Buttons container */}
+        <div className="flex gap-4 mt-4 w-full justify-center">
           <button
-            onClick={handleRestart}
-            className="px-6 py-2 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-rose-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRestart();
+            }} // Added stopPropagation
+            className="px-6 py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full sm:w-auto" // Adjusted ring offset and width
           >
             Restart
           </button>
           <button
-            onClick={handleGoHome}
-            className="px-6 py-2 bg-stone-700 text-orange-50 font-semibold rounded-lg shadow-md hover:bg-stone-600 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-rose-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleGoHome();
+            }} // Added stopPropagation
+            className="px-6 py-3 bg-stone-700 text-white font-semibold rounded-lg shadow-md hover:bg-stone-600 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full sm:w-auto" // Adjusted ring offset, text color, and width
           >
             Back to Home
           </button>
         </div>
       </main>
-      <footer className="mt-8 text-sm text-orange-100">
+      <footer className="mt-6 sm:mt-8 text-sm text-stone-700">
         <p>Tap the screen or press Space/Enter to continue.</p>
         <p>
           Question {currentQuestionIndex + 1} of {questions.length}
@@ -147,7 +190,23 @@ function GameContent() {
 // Wrap GameContent with Suspense for useSearchParams
 export default function GamePage() {
   return (
-    <Suspense fallback={<div>Loading language settings...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
+          <div className="w-full max-w-[200px] sm:max-w-[250px] mb-8">
+            <Image
+              src="/assets/sip.png"
+              alt="Sip 'n Spill Logo"
+              width={500}
+              height={300}
+              layout="responsive"
+              priority
+            />
+          </div>
+          <p className="mt-4 text-xl">Loading settings...</p>
+        </div>
+      }
+    >
       <GameContent />
     </Suspense>
   );
