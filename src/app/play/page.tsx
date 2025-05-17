@@ -1,21 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
-// Ensure your tsconfig.json has "resolveJsonModule": true under compilerOptions
-import questionsData from "../../questions.json";
+import { useState, useEffect, Suspense, useCallback } from "react"; // Added useCallback
+import { useSearchParams } from "next/navigation";
 
-// Explicitly type the imported questions
-const questions: string[] = Array.isArray(questionsData) ? questionsData : [];
+function GameContent() {
+  const searchParams = useSearchParams();
+  const lang = searchParams.get("lang") || "es"; // Default to Spanish if no lang is provided
 
-export default function GamePage() {
+  const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleInteraction = () => {
-    if (questions.length === 0) return; // Don't do anything if there are no questions
+  useEffect(() => {
+    const loadQuestions = async () => {
+      setIsLoading(true);
+      try {
+        // Dynamically import the questions file based on the lang parameter
+        const questionsModule = await import(`../../questions_${lang}.json`);
+        setQuestions(
+          Array.isArray(questionsModule.default) ? questionsModule.default : []
+        );
+      } catch (error) {
+        console.error(`Failed to load questions for language: ${lang}`, error);
+        // Fallback to default Spanish questions if the selected language file doesn't exist or fails to load
+        try {
+          const fallbackQuestionsModule = await import(
+            "../../questions_es.json"
+          );
+          setQuestions(
+            Array.isArray(fallbackQuestionsModule.default)
+              ? fallbackQuestionsModule.default
+              : []
+          );
+          console.warn("Loaded fallback Spanish questions.");
+        } catch (fallbackError) {
+          console.error(
+            "Failed to load fallback Spanish questions:",
+            fallbackError
+          );
+          setQuestions([]); // Set to empty if fallback also fails
+        }
+      }
+      setIsLoading(false);
+    };
+
+    loadQuestions();
+  }, [lang]);
+
+  const handleInteraction = useCallback(() => {
+    // Wrapped with useCallback
+    if (questions.length === 0) return;
     setCurrentQuestionIndex((prevIndex) => (prevIndex + 1) % questions.length);
-  };
+  }, [questions.length]); // Dependency is questions.length
 
-  // Handle keyboard events for spacebar and enter
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space" || event.key === "Enter") {
@@ -27,14 +64,24 @@ export default function GamePage() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleInteraction]); // Dependency is now handleInteraction
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center font-[family-name:var(--font-geist-sans)]">
+        <h1 className="text-4xl font-bold">Sip &apos;n Spill</h1>
+        <p className="mt-4 text-xl">Loading questions...</p>
+      </div>
+    );
+  }
 
   if (questions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center font-[family-name:var(--font-geist-sans)]">
         <h1 className="text-4xl font-bold">Sip &apos;n Spill</h1>
         <p className="mt-4 text-xl">
-          No questions loaded. Please check the questions file.
+          No questions loaded. Please check the questions file for the selected
+          language ({lang}).
         </p>
       </div>
     );
@@ -43,7 +90,7 @@ export default function GamePage() {
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen p-8 text-center font-[family-name:var(--font-geist-sans)] cursor-pointer"
-      onClick={handleInteraction} // Added onClick for tap functionality
+      onClick={handleInteraction}
     >
       <main className="flex flex-col gap-8 items-center">
         <h1 className="text-4xl font-bold">Sip &apos;n Spill</h1>
@@ -58,5 +105,14 @@ export default function GamePage() {
         </p>
       </footer>
     </div>
+  );
+}
+
+// Wrap GameContent with Suspense for useSearchParams
+export default function GamePage() {
+  return (
+    <Suspense fallback={<div>Loading language settings...</div>}>
+      <GameContent />
+    </Suspense>
   );
 }

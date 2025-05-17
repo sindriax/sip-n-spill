@@ -1,18 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function HomePage() {
-  const [language, setLanguage] = useState("en"); // Default language
+  const [language, setLanguage] = useState("es"); // Default language to Spanish ("es")
+  const router = useRouter(); // Initialize router
 
   const handleLanguageChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setLanguage(event.target.value);
-    // Here you would typically also save this preference (e.g., localStorage or context)
-    // and load the appropriate questions.json for that language in the game page.
-    // For now, it just updates the state.
+  };
+
+  const handleStartGame = () => {
+    // Navigate to the play page with the selected language as a query parameter
+    router.push(`/play?lang=${language}`);
   };
 
   return (
@@ -30,11 +33,11 @@ export default function HomePage() {
             onChange={handleLanguageChange}
             className="px-4 py-2 rounded-md bg-white/20 text-white border border-white/30 focus:ring-2 focus:ring-white focus:outline-none"
           >
-            <option value="en" className="text-black">
-              English
-            </option>
             <option value="es" className="text-black">
               Español
+            </option>
+            <option value="en" className="text-black">
+              English
             </option>
             <option value="fr" className="text-black">
               Français
@@ -43,11 +46,13 @@ export default function HomePage() {
           </select>
         </div>
 
-        <Link href="/play" legacyBehavior>
-          <a className="px-10 py-4 bg-yellow-400 text-purple-700 font-semibold rounded-lg text-2xl shadow-lg hover:bg-yellow-300 transition-colors duration-150 ease-in-out transform hover:scale-105">
-            Start Game
-          </a>
-        </Link>
+        {/* Updated button to call handleStartGame */}
+        <button
+          onClick={handleStartGame}
+          className="px-10 py-4 bg-yellow-400 text-purple-700 font-semibold rounded-lg text-2xl shadow-lg hover:bg-yellow-300 transition-colors duration-150 ease-in-out transform hover:scale-105"
+        >
+          Start Game
+        </button>
 
         <div className="mt-6 p-6 bg-white/5 rounded-lg max-w-md text-left">
           <h2 className="text-2xl font-semibold mb-3 text-center">
