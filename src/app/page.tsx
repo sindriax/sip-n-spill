@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // Import the Next.js Image component
-import locales from "../locales.json"; // Import the locales
+import Image from "next/image";
+import locales from "../locales.json";
 
-// Define a type for your locale strings for better type safety
 type LocaleStrings = {
   pageTitle: string;
+  pageDescription: string;
   selectLanguage: string;
   startGame: string;
   gameRulesTitle: string;
@@ -15,16 +15,13 @@ type LocaleStrings = {
   footerText: string;
 };
 
-// Define a type for the entire locales object
 type Locales = {
   en: LocaleStrings;
   es: LocaleStrings;
-  // Add other languages here if needed
 };
 
 const typedLocales: Locales = locales as Locales;
 
-// Helper component for flags to avoid direct string manipulation in JSX for language codes
 const FlagButton = ({
   lang,
   currentLang,
@@ -40,23 +37,22 @@ const FlagButton = ({
     onClick={() => onClick(lang)}
     className={`text-4xl p-2 rounded-full transition-all duration-200 ease-in-out ${
       currentLang === lang
-        ? "ring-2 ring-offset-2 ring-amber-400 ring-offset-[#FF765D] scale-110" // Adjusted ring color and offset
+        ? "ring-2 ring-offset-2 ring-amber-400 ring-offset-[#FF765D] scale-110"
         : "opacity-70 hover:opacity-100 hover:scale-110"
     }`}
-    aria-label={`Select ${lang === "en" ? "English" : "Spanish"}`} // Accessibility
+    aria-label={`Select ${lang === "en" ? "English" : "Spanish"}`}
   >
     {children}
   </button>
 );
 
 export default function HomePage() {
-  const [language, setLanguage] = useState("en"); // Default language to English ("en")
+  const [language, setLanguage] = useState("en");
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
-  const [showRules, setShowRules] = useState(false); // State to control rules visibility
+  const [showRules, setShowRules] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // Update content when language changes
     setContent(typedLocales[language as keyof Locales] || typedLocales.en);
   }, [language]);
 
@@ -74,23 +70,23 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 sm:gap-10 items-center bg-[#FF765D] text-white p-6 sm:p-10 rounded-lg shadow-xl max-w-lg w-full mt-auto mb-auto">
+      <main className="flex flex-col gap-4 sm:gap-6 items-center bg-[#FF765D] text-white p-6 sm:p-10 rounded-lg shadow-xl max-w-lg w-full mt-auto mb-auto">
         {" "}
-        {/* Added mt-auto mb-auto to center main content vertically when space allows */}
-        {/* Replace h1 with Image component */}
         <div className="w-full max-w-xs sm:max-w-sm">
           <Image
-            src="/assets/sip.png" // Path to your logo in the public folder
-            alt={content.pageTitle} // Use pageTitle for alt text
-            width={500} // Specify a base width for the image
-            height={300} // Specify a base height for the image
-            layout="responsive" // Make the image responsive
-            priority // Prioritize loading the logo
+            src="/assets/sip.png"
+            alt={content.pageTitle}
+            width={500}
+            height={300}
+            layout="responsive"
+            priority
           />
         </div>
-        {/* Visually hidden h1 for SEO and accessibility */}
         <h1 className="sr-only">{content.pageTitle}</h1>
         <div className="flex flex-col gap-3 items-center">
+          <p className="text-lg sm:text-xl font-semibold text-orange-100 pb-2">
+            {content.pageDescription}
+          </p>
           <p className="text-md sm:text-lg font-medium text-orange-100">
             {content.selectLanguage}
           </p>
@@ -100,7 +96,7 @@ export default function HomePage() {
               currentLang={language}
               onClick={handleLanguageSelect}
             >
-              🇺🇸
+              🇬🇧
             </FlagButton>
             <FlagButton
               lang="es"
@@ -109,24 +105,19 @@ export default function HomePage() {
             >
               🇪🇸
             </FlagButton>
-            {/* Add more FlagButtons here if needed, e.g., for French:
-            <FlagButton lang="fr" currentLang={language} onClick={handleLanguageSelect}>
-              🇫🇷
-            </FlagButton> */}
           </div>
         </div>
         <button
           onClick={handleStartGame}
-          className="px-8 py-3 sm:px-10 sm:py-4 bg-amber-400 text-stone-800 font-semibold rounded-lg text-xl sm:text-2xl shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D]" // Adjusted ring offset color
+          className="px-8 py-3 sm:px-10 sm:py-4 bg-amber-400 text-stone-800 font-semibold rounded-lg text-xl sm:text-2xl shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D]"
         >
           {content.startGame}
         </button>
         <div className="mt-4 sm:mt-6 bg-[#ff937d] rounded-lg max-w-md w-full text-left">
           {" "}
-          {/* Lighter shade for rules background */}
           <button
             onClick={toggleRules}
-            className="w-full flex justify-between items-center p-4 sm:p-6 text-xl sm:text-2xl font-semibold text-white focus:outline-none" // Text color for rules title
+            className="w-full flex justify-between items-center p-4 sm:p-6 text-xl sm:text-2xl font-semibold text-white focus:outline-none"
             aria-expanded={showRules}
             aria-controls="game-rules-list"
           >
@@ -142,7 +133,7 @@ export default function HomePage() {
           {showRules && (
             <ul
               id="game-rules-list"
-              className="list-disc list-inside space-y-1.5 text-sm sm:text-base text-orange-50 p-4 sm:p-6 pt-0" // Text color for rules
+              className="list-disc list-inside space-y-1.5 text-sm sm:text-base text-orange-50 p-4 sm:p-6 pt-0"
             >
               {content.rules.map((rule, index) => (
                 <li key={index}>{rule}</li>
@@ -154,8 +145,6 @@ export default function HomePage() {
 
       <footer className="w-full mt-8 sm:mt-12 text-xs text-stone-800 p-4 text-center">
         {" "}
-        {/* Ensure footer is at the bottom and centered */}{" "}
-        {/* Footer text color for contrast with #FDC03B */}
         <p>
           {content.footerText.replace(
             "{year}",

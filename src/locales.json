@@ -1,6 +1,7 @@
 {
   "en": {
     "pageTitle": "Sip 'n Spill",
+    "pageDescription": "Think you know your friends? Spill their secrets and make them sip their drinks!",
     "selectLanguage": "Select Language:",
     "startGame": "Start Game",
     "gameRulesTitle": "Game Rules",
@@ -26,6 +27,7 @@
   },
   "es": {
     "pageTitle": "Sip 'n Spill",
+    "pageDescription": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
     "selectLanguage": "Seleccionar Idioma:",
     "startGame": "Empezar Juego",
     "gameRulesTitle": "Reglas del Juego",
