@@ -12,15 +12,26 @@ function GameContent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Function to shuffle an array (Fisher-Yates shuffle)
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
   useEffect(() => {
     const loadQuestions = async () => {
       setIsLoading(true);
       try {
         // Dynamically import the questions file based on the lang parameter
         const questionsModule = await import(`../../questions_${lang}.json`);
-        setQuestions(
-          Array.isArray(questionsModule.default) ? questionsModule.default : []
-        );
+        const loadedQuestions = Array.isArray(questionsModule.default)
+          ? questionsModule.default
+          : [];
+        setQuestions(shuffleArray(loadedQuestions)); // Shuffle questions here
       } catch (error) {
         console.error(`Failed to load questions for language: ${lang}`, error);
         // Fallback to default Spanish questions if the selected language file doesn't exist or fails to load
@@ -28,12 +39,13 @@ function GameContent() {
           const fallbackQuestionsModule = await import(
             "../../questions_es.json"
           );
-          setQuestions(
-            Array.isArray(fallbackQuestionsModule.default)
-              ? fallbackQuestionsModule.default
-              : []
-          );
-          console.warn("Loaded fallback Spanish questions.");
+          const fallbackLoadedQuestions = Array.isArray(
+            fallbackQuestionsModule.default
+          )
+            ? fallbackQuestionsModule.default
+            : [];
+          setQuestions(shuffleArray(fallbackLoadedQuestions)); // Shuffle fallback questions too
+          console.warn("Loaded and shuffled fallback Spanish questions.");
         } catch (fallbackError) {
           console.error(
             "Failed to load fallback Spanish questions:",
