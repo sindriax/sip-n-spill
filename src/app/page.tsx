@@ -73,8 +73,10 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 sm:gap-10 items-center bg-[#FF765D] text-white p-6 sm:p-10 rounded-lg shadow-xl max-w-lg w-full">
+    <div className="flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col gap-8 sm:gap-10 items-center bg-[#FF765D] text-white p-6 sm:p-10 rounded-lg shadow-xl max-w-lg w-full mt-auto mb-auto">
+        {" "}
+        {/* Added mt-auto mb-auto to center main content vertically when space allows */}
         {/* Replace h1 with Image component */}
         <div className="w-full max-w-xs sm:max-w-sm">
           <Image
@@ -88,7 +90,6 @@ export default function HomePage() {
         </div>
         {/* Visually hidden h1 for SEO and accessibility */}
         <h1 className="sr-only">{content.pageTitle}</h1>
-
         <div className="flex flex-col gap-3 items-center">
           <p className="text-md sm:text-lg font-medium text-orange-100">
             {content.selectLanguage}
@@ -114,14 +115,12 @@ export default function HomePage() {
             </FlagButton> */}
           </div>
         </div>
-
         <button
           onClick={handleStartGame}
           className="px-8 py-3 sm:px-10 sm:py-4 bg-amber-400 text-stone-800 font-semibold rounded-lg text-xl sm:text-2xl shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D]" // Adjusted ring offset color
         >
           {content.startGame}
         </button>
-
         <div className="mt-4 sm:mt-6 bg-[#ff937d] rounded-lg max-w-md w-full text-left">
           {" "}
           {/* Lighter shade for rules background */}
@@ -153,8 +152,9 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="mt-8 sm:mt-12 text-xs text-stone-800">
+      <footer className="w-full mt-8 sm:mt-12 text-xs text-stone-800 p-4 text-center">
         {" "}
+        {/* Ensure footer is at the bottom and centered */}{" "}
         {/* Footer text color for contrast with #FDC03B */}
         <p>
           {content.footerText.replace(

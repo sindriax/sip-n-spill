@@ -3,11 +3,41 @@
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image"; // Import the Next.js Image component
+import locales from "../../locales.json"; // Import the locales
+
+// Define a type for your locale strings for better type safety
+type LocaleStrings = {
+  pageTitle: string;
+  selectLanguage: string;
+  startGame: string;
+  gameRulesTitle: string;
+  rules: string[];
+  footerText: string;
+  restartGame: string; // Added
+  backToHome: string; // Added
+  loadingQuestions: string; // Added
+  noQuestionsLoaded: string; // Added
+  loadingSettings: string; // Added
+  tapToContinue: string; // Added
+  questionProgress: string; // Added
+};
+
+// Define a type for the entire locales object
+type Locales = {
+  en: LocaleStrings;
+  es: LocaleStrings;
+  // Add other languages here if needed
+};
+
+const typedLocales: Locales = locales as Locales;
 
 function GameContent() {
   const searchParams = useSearchParams();
   const router = useRouter(); // Initialize useRouter
   const lang = searchParams.get("lang") || "es"; // Default to Spanish if no lang is provided
+  const [gameContent, setGameContent] = useState<LocaleStrings>(
+    typedLocales[lang as keyof Locales] || typedLocales.es
+  );
 
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -26,6 +56,7 @@ function GameContent() {
   useEffect(() => {
     const loadQuestions = async () => {
       setIsLoading(true);
+      setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es); // Update content based on lang
       try {
         // Dynamically import the questions file based on the lang parameter
         const questionsModule = await import(`../../questions_${lang}.json`);
@@ -101,7 +132,7 @@ function GameContent() {
             priority
           />
         </div>
-        <p className="mt-4 text-xl">Loading questions...</p>
+        <p className="mt-4 text-xl">{gameContent.loadingQuestions}</p>
       </div>
     );
   }
@@ -120,8 +151,7 @@ function GameContent() {
           />
         </div>
         <p className="mt-4 text-xl">
-          No questions loaded. Please check the questions file for the selected
-          language ({lang}).
+          {gameContent.noQuestionsLoaded.replace("{lang}", lang)}
         </p>
       </div>
     );
@@ -129,10 +159,10 @@ function GameContent() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)] cursor-pointer"
+      className="flex flex-col items-center justify-between min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)] cursor-pointer"
       onClick={handleInteraction}
     >
-      <main className="flex flex-col gap-8 items-center w-full px-4">
+      <main className="flex flex-col gap-8 items-center w-full px-4 mt-auto mb-auto">
         {/* Main content card: Logo and Question */}
         <div className="p-6 bg-[#FF765D] text-white rounded-lg shadow-md w-full max-w-md flex flex-col items-center gap-6">
           {/* Logo */}
@@ -164,7 +194,7 @@ function GameContent() {
             }} // Added stopPropagation
             className="px-6 py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full sm:w-auto" // Adjusted ring offset and width
           >
-            Restart
+            {gameContent.restartGame}
           </button>
           <button
             onClick={(e) => {
@@ -173,14 +203,16 @@ function GameContent() {
             }} // Added stopPropagation
             className="px-6 py-3 bg-stone-700 text-white font-semibold rounded-lg shadow-md hover:bg-stone-600 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full sm:w-auto" // Adjusted ring offset, text color, and width
           >
-            Back to Home
+            {gameContent.backToHome}
           </button>
         </div>
       </main>
-      <footer className="mt-6 sm:mt-8 text-sm text-stone-700">
-        <p>Tap the screen or press Space/Enter to continue.</p>
+      <footer className="w-full mt-6 sm:mt-8 text-sm text-stone-700 p-4 text-center">
+        <p>{gameContent.tapToContinue}</p>
         <p>
-          Question {currentQuestionIndex + 1} of {questions.length}
+          {gameContent.questionProgress
+            .replace("{current}", (currentQuestionIndex + 1).toString())
+            .replace("{total}", questions.length.toString())}
         </p>
       </footer>
     </div>
@@ -189,6 +221,17 @@ function GameContent() {
 
 // Wrap GameContent with Suspense for useSearchParams
 export default function GamePage() {
+  // Determine initial language for Suspense fallback text
+  // This is a bit of a workaround as Suspense fallback doesn't have access to URL params directly
+  // It will show English by default or Spanish if that's the only/primary expected non-English lang.
+  // A more robust solution might involve a global state or context for language.
+  const initialLang =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("lang") || "es"
+      : "es";
+  const initialContent =
+    typedLocales[initialLang as keyof Locales] || typedLocales.es;
+
   return (
     <Suspense
       fallback={
@@ -203,7 +246,7 @@ export default function GamePage() {
               priority
             />
           </div>
-          <p className="mt-4 text-xl">Loading settings...</p>
+          <p className="mt-4 text-xl">{initialContent.loadingSettings}</p>
         </div>
       }
     >
