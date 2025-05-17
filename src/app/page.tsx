@@ -59,18 +59,26 @@ export default function HomePage() {
             Game Rules
           </h2>
           <ul className="list-disc list-inside space-y-2 text-sm">
-            <li>Player one reads the first question aloud.</li>
-            <li>Player one answers the question.</li>
+            <li>Player one silently reads the first question to themselves.</li>
             <li>
-              Based on the question or answer, designated players take a sip.
+              Player one then points to each player and guesses whether they
+              have done what the question describes.
             </li>
+            <li>
+              After guessing for all players, player one reads the question
+              aloud.
+            </li>
+            <li>
+              Any player who has done what the question describes takes a sip of
+              their drink.
+            </li>
+
             <li>Player one passes the phone to the person on their right.</li>
+            <li>The next player taps the screen to reveal a new question.</li>
+            <li>The next player silently reads the question to themselves.</li>
             <li>
-              The next player taps the screen (or presses Space/Enter) to reveal
-              the next question.
-            </li>
-            <li>
-              Continue until all questions are answered or you decide to stop.
+              Continue until all questions have been answered or you decide to
+              stop.
             </li>
             <li>Most importantly: have fun and drink responsibly!</li>
           </ul>
