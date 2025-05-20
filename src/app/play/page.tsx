@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import locales from "../../locales.json";
 
 type LocaleStrings = {
@@ -29,6 +29,16 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
+const cupAnimationVariants = {
+  initial: { rotate: 0, x: 0, y: 0 },
+  tip: {
+    rotate: [0, 15, 0],
+    x: [0, 5, 0],
+    y: [0, -2, 0],
+    transition: { duration: 0.5, ease: "easeInOut" },
+  },
+};
+
 function GameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -36,6 +46,8 @@ function GameContent() {
   const [gameContent, setGameContent] = useState<LocaleStrings>(
     typedLocales[lang as keyof Locales] || typedLocales.es
   );
+  const cupControls = useAnimation();
+  const [isTipping, setIsTipping] = useState(false);
 
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -98,14 +110,20 @@ function GameContent() {
     loadQuestions();
   }, [lang]);
 
-  const handleInteraction = useCallback(() => {
+  const handleInteraction = useCallback(async () => {
     if (questions.length === 0) return;
+
+    setIsTipping(true);
+    await cupControls.start("tip");
     setCurrentQuestionIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % questions.length;
-      setQuestionKey((prevKey) => prevKey + 1);
+      setQuestionKey((prevKey) => {
+        setIsTipping(false);
+        return prevKey + 1;
+      });
       return nextIndex;
     });
-  }, [questions.length]);
+  }, [questions.length, cupControls]);
 
   const handleRestart = () => {
     setCurrentQuestionIndex(0);
@@ -138,7 +156,7 @@ function GameContent() {
           className="w-full max-w-[150px] sm:max-w-[200px] mb-6"
         >
           <Image
-            src="/assets/sip-round.png"
+            src="/assets/sippin.png"
             alt="Sip 'n Spill Logo"
             width={200}
             height={200}
@@ -158,7 +176,7 @@ function GameContent() {
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
         <div className="w-full max-w-[180px] sm:max-w-[250px] mb-6">
           <Image
-            src="/assets/sip-round.png"
+            src="/assets/sippin.png"
             alt="Sip 'n Spill Logo"
             width={250}
             height={150}
@@ -186,16 +204,23 @@ function GameContent() {
     >
       <main className="flex flex-col gap-6 items-center w-full px-2 sm:px-4 my-auto">
         <div className="p-4 sm:p-6 bg-[#FF765D] text-white rounded-lg shadow-md w-full max-w-md flex flex-col items-center gap-4 sm:gap-6">
-          <div className="w-full max-w-[150px] sm:max-w-[200px]">
+          <motion.div
+            className="w-full max-w-[150px] sm:max-w-[200px]"
+            variants={cupAnimationVariants}
+            initial="initial"
+            animate={cupControls}
+          >
             <Image
-              src="/assets/sip-round.png"
+              src={
+                isTipping ? "/assets/sippindrippin.png" : "/assets/sippin.png"
+              }
               alt="Sip 'n Spill Logo"
               width={200}
               height={120}
               className="w-full h-auto"
               priority
             />
-          </div>
+          </motion.div>
           <h1 className="sr-only">Sip &apos;n Spill Game</h1>
 
           <div className="min-h-[80px] sm:min-h-[100px] flex flex-col justify-center items-center text-center w-full">
@@ -261,7 +286,7 @@ export default function GamePage() {
         <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
           <div className="w-full max-w-[150px] sm:max-w-[200px] mb-6">
             <Image
-              src="/assets/sip-round.png"
+              src="/assets/sippin.png"
               alt="Sip 'n Spill Logo"
               width={200}
               height={120}

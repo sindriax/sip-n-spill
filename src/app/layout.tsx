@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Sip 'n Spill",
   description: "Think you know your friends?",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

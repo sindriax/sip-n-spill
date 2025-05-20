@@ -33,19 +33,26 @@ const FlagButton = ({
   currentLang: string;
   children: React.ReactNode;
   onClick: (lang: string) => void;
-}) => (
-  <button
-    onClick={() => onClick(lang)}
-    className={`text-4xl p-2 rounded-full transition-all duration-200 ease-in-out ${
-      currentLang === lang
-        ? "ring-2 ring-offset-2 ring-amber-400 ring-offset-[#FF765D] scale-110"
-        : "opacity-70 hover:opacity-100 hover:scale-110"
-    }`}
-    aria-label={`Select ${lang === "en" ? "English" : "Spanish"}`}
-  >
-    {children}
-  </button>
-);
+}) => {
+  const baseClasses =
+    "text-4xl p-2 rounded-full transition-all duration-300 ease-in-out transform focus:outline-none";
+  const selectedClasses =
+    "bg-white scale-110 shadow-xl ring-4 ring-amber-400 ring-offset-2 ring-offset-[#FF765D]";
+  const unselectedClasses =
+    "opacity-50 hover:opacity-90 hover:scale-105 bg-black/10 hover:bg-black/20";
+
+  return (
+    <button
+      onClick={() => onClick(lang)}
+      className={`${baseClasses} ${
+        currentLang === lang ? selectedClasses : unselectedClasses
+      }`}
+      aria-label={`Select ${lang === "en" ? "English" : "Spanish"}`}
+    >
+      {children}
+    </button>
+  );
+};
 
 export default function HomePage() {
   const [language, setLanguage] = useState("en");
@@ -94,7 +101,7 @@ export default function HomePage() {
           }
         >
           <Image
-            src="/assets/sip.png"
+            src="/assets/sip-round.png"
             alt={content.pageTitle}
             width={500}
             height={300}
