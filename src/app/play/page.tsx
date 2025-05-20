@@ -135,7 +135,7 @@ function GameContent() {
       <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
         <div className="w-full max-w-[200px] sm:max-w-[250px] mb-8">
           <Image
-            src="/assets/sip.png"
+            src="/assets/sip-round.png"
             alt="Sip 'n Spill Logo"
             width={500}
             height={300}

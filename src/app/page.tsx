@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import locales from "../locales.json";
 
 type LocaleStrings = {
@@ -50,6 +51,7 @@ export default function HomePage() {
   const [language, setLanguage] = useState("en");
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
   const [showRules, setShowRules] = useState(false);
+  const [isLogoAnimating, setIsLogoAnimating] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -61,7 +63,10 @@ export default function HomePage() {
   };
 
   const handleStartGame = () => {
-    router.push(`/play?lang=${language}`);
+    setIsLogoAnimating(true);
+    setTimeout(() => {
+      router.push(`/play?lang=${language}`);
+    }, 700);
   };
 
   const toggleRules = () => {
@@ -69,10 +74,25 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-4 sm:gap-6 items-center bg-[#FF765D] text-white p-6 sm:p-10 rounded-lg shadow-xl max-w-lg w-full mt-auto mb-auto">
-        {" "}
-        <div className="w-full max-w-xs sm:max-w-sm">
+    <div className="flex flex-col items-center justify-between min-h-screen p-4 sm:p-8 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)] overflow-hidden">
+      <motion.main
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="flex flex-col gap-4 sm:gap-6 items-center bg-[#FF765D] text-white p-6 sm:p-10 rounded-lg shadow-xl max-w-lg w-full mt-auto mb-auto"
+      >
+        <motion.div
+          className="w-full max-w-xs sm:max-w-sm"
+          animate={
+            isLogoAnimating
+              ? {
+                  rotateY: 360,
+                  scale: 0.8,
+                  transition: { duration: 0.5, ease: "easeInOut" },
+                }
+              : {}
+          }
+        >
           <Image
             src="/assets/sip.png"
             alt={content.pageTitle}
@@ -81,7 +101,7 @@ export default function HomePage() {
             layout="responsive"
             priority
           />
-        </div>
+        </motion.div>
         <h1 className="sr-only">{content.pageTitle}</h1>
         <div className="flex flex-col gap-3 items-center">
           <p className="text-lg sm:text-xl font-semibold text-orange-100 pb-2">
@@ -114,7 +134,6 @@ export default function HomePage() {
           {content.startGame}
         </button>
         <div className="mt-4 sm:mt-6 bg-[#ff937d] rounded-lg max-w-md w-full text-left">
-          {" "}
           <button
             onClick={toggleRules}
             className="w-full flex justify-between items-center p-4 sm:p-6 text-xl sm:text-2xl font-semibold text-white focus:outline-none"
@@ -130,21 +149,26 @@ export default function HomePage() {
               ▼
             </span>
           </button>
-          {showRules && (
-            <ul
-              id="game-rules-list"
-              className="list-disc list-inside space-y-1.5 text-sm sm:text-base text-orange-50 p-4 sm:p-6 pt-0"
-            >
-              {content.rules.map((rule, index) => (
-                <li key={index}>{rule}</li>
-              ))}
-            </ul>
-          )}
+          <AnimatePresence>
+            {showRules && (
+              <motion.ul
+                id="game-rules-list"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="list-disc list-inside space-y-1.5 text-sm sm:text-base text-orange-50 p-4 sm:p-6 pt-0 overflow-hidden"
+              >
+                {content.rules.map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </div>
-      </main>
+      </motion.main>
 
       <footer className="w-full mt-8 sm:mt-12 text-xs text-stone-800 p-4 text-center">
-        {" "}
         <p>
           {content.footerText.replace(
             "{year}",
