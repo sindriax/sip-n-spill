@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/scripts/seed-questions.mts"
+    "src/scripts/seed-questions.ts"
   ],
   "exclude": ["node_modules"]
 }

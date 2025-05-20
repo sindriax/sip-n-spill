@@ -54,27 +54,36 @@ function GameContent() {
       setIsLoading(true);
       setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es);
       try {
-        const questionsModule = await import(`../../questions_${lang}.json`);
-        const loadedQuestions = Array.isArray(questionsModule.default)
-          ? questionsModule.default
+        const response = await fetch(`/api/questions?lang=${lang}`);
+        if (!response.ok) {
+          throw new Error(`API responded with status ${response.status}`);
+        }
+        const data = await response.json();
+        const loadedQuestions = Array.isArray(data.questions)
+          ? data.questions
           : [];
         setQuestions(shuffleArray(loadedQuestions));
       } catch (error) {
         console.error(`Failed to load questions for language: ${lang}`, error);
         try {
-          const fallbackQuestionsModule = await import(
-            "../../questions_es.json"
-          );
-          const fallbackLoadedQuestions = Array.isArray(
-            fallbackQuestionsModule.default
-          )
-            ? fallbackQuestionsModule.default
+          // Fallback to Spanish questions via API
+          const fallbackResponse = await fetch("/api/questions?lang=es");
+          if (!fallbackResponse.ok) {
+            throw new Error(
+              `Fallback API responded with status ${fallbackResponse.status}`
+            );
+          }
+          const fallbackData = await fallbackResponse.json();
+          const fallbackLoadedQuestions = Array.isArray(fallbackData.questions)
+            ? fallbackData.questions
             : [];
           setQuestions(shuffleArray(fallbackLoadedQuestions));
-          console.warn("Loaded and shuffled fallback Spanish questions.");
+          console.warn(
+            "Loaded and shuffled fallback Spanish questions from API."
+          );
         } catch (fallbackError) {
           console.error(
-            "Failed to load fallback Spanish questions:",
+            "Failed to load fallback Spanish questions from API:",
             fallbackError
           );
           setQuestions([]);
