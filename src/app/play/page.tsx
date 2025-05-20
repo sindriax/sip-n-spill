@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import locales from "../../locales.json";
 
 type LocaleStrings = {
@@ -39,6 +40,7 @@ function GameContent() {
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [questionKey, setQuestionKey] = useState(0);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
@@ -63,6 +65,7 @@ function GameContent() {
           ? data.questions
           : [];
         setQuestions(shuffleArray(loadedQuestions));
+        setQuestionKey((prevKey) => prevKey + 1);
       } catch (error) {
         console.error(`Failed to load questions for language: ${lang}`, error);
         try {
@@ -78,6 +81,7 @@ function GameContent() {
             ? fallbackData.questions
             : [];
           setQuestions(shuffleArray(fallbackLoadedQuestions));
+          setQuestionKey((prevKey) => prevKey + 1);
           console.warn(
             "Loaded and shuffled fallback Spanish questions from API."
           );
@@ -97,11 +101,16 @@ function GameContent() {
 
   const handleInteraction = useCallback(() => {
     if (questions.length === 0) return;
-    setCurrentQuestionIndex((prevIndex) => (prevIndex + 1) % questions.length);
+    setCurrentQuestionIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % questions.length;
+      setQuestionKey((prevKey) => prevKey + 1);
+      return nextIndex;
+    });
   }, [questions.length]);
 
   const handleRestart = () => {
     setCurrentQuestionIndex(0);
+    setQuestionKey((prevKey) => prevKey + 1);
   };
 
   const handleGoHome = () => {
@@ -180,7 +189,18 @@ function GameContent() {
           <h1 className="sr-only">Sip &apos;n Spill Game</h1>
 
           <div className="min-h-[100px] flex flex-col justify-center items-center text-center">
-            <p className="text-2xl">{questions[currentQuestionIndex]}</p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={questionKey} // Use the key here
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl"
+              >
+                {questions[currentQuestionIndex]}
+              </motion.p>
+            </AnimatePresence>
           </div>
         </div>
 
