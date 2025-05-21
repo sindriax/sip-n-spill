@@ -49,7 +49,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
         />
       </motion.div>
       <h1 className="sr-only">Sip &apos;n Spill Game</h1>
-      <div className="min-h-[80px] sm:min-h-[100px] flex flex-col justify-center items-center text-center w-full bg-[#ff937d] p-3 sm:p-4 rounded-lg shadow-inner">
+      <div className="h-[160px] sm:h-[180px] flex flex-col justify-center items-center text-center w-full bg-[#ff937d] p-3 sm:p-4 rounded-lg shadow-inner overflow-y-auto scrollbar-thin scrollbar-thumb-amber-400 scrollbar-track-transparent">
         <AnimatePresence mode="wait">
           <motion.p
             key={questionKey}
