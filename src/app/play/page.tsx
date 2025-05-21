@@ -2,11 +2,13 @@
 
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Image from "next/image";
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { useAnimation } from "framer-motion";
 import locales from "../../locales.json";
+import GameLoadingIndicator from "../components/game-loading-indicator";
+import GameErrorDisplay from "../components/game-error-display";
+import QuestionDisplay from "../components/question-display";
+import GameControls from "../components/game-controls";
 
-// Define the structure for a single rule to match locales.json
 interface Rule {
   header: string;
   text: string;
@@ -19,7 +21,7 @@ type LocaleStrings = {
   gameRulesTitle: string;
   rules: Rule[];
   footerText: string;
-  previousQuestion: string; // Changed from restartGame
+  previousQuestion: string;
   backToHome: string;
   loadingQuestions: string;
   noQuestionsLoaded: string;
@@ -117,24 +119,25 @@ function GameContent() {
   }, [lang]);
 
   const handleInteraction = useCallback(async () => {
-    if (questions.length === 0) return;
+    if (questions.length === 0 || isTipping) return;
 
     setIsTipping(true);
     await cupControls.start("tip");
     setCurrentQuestionIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % questions.length;
       setQuestionKey((prevKey) => {
-        setIsTipping(false);
         return prevKey + 1;
       });
       return nextIndex;
     });
-  }, [questions.length, cupControls]);
+    await cupControls.start("initial");
+    setIsTipping(false);
+  }, [questions.length, cupControls, isTipping]);
 
   const handleGoBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-      setQuestionKey((prevKey) => prevKey + 1); // Re-trigger animation
+      setQuestionKey((prevKey) => prevKey + 1);
     }
   };
 
@@ -156,52 +159,16 @@ function GameContent() {
   }, [handleInteraction]);
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-full max-w-[150px] sm:max-w-[200px] mb-6"
-        >
-          <Image
-            src="/assets/sippin.png"
-            alt="Sip 'n Spill Logo Loading"
-            width={200}
-            height={200}
-            className="w-full h-auto"
-            priority
-          />
-        </motion.div>
-        <p className="mt-4 text-lg sm:text-xl">
-          {gameContent.loadingQuestions}
-        </p>
-      </div>
-    );
+    return <GameLoadingIndicator loadingText={gameContent.loadingQuestions} />;
   }
 
   if (questions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
-        <div className="w-full max-w-[180px] sm:max-w-[250px] mb-6">
-          <Image
-            src="/assets/sippin.png"
-            alt="Sip 'n Spill Logo Error"
-            width={250}
-            height={150}
-            className="w-full h-auto"
-            priority
-          />
-        </div>
-        <p className="mt-4 text-lg sm:text-xl">
-          {gameContent.noQuestionsLoaded.replace("{lang}", lang)}
-        </p>
-        <button
-          onClick={handleGoHome}
-          className="mt-6 px-6 py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg hover:bg-amber-300 transition-all duration-150 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B]"
-        >
-          {gameContent.backToHome}
-        </button>
-      </div>
+      <GameErrorDisplay
+        errorMessage={gameContent.noQuestionsLoaded.replace("{lang}", lang)}
+        onGoHome={handleGoHome}
+        goHomeText={gameContent.backToHome}
+      />
     );
   }
 
@@ -211,86 +178,20 @@ function GameContent() {
       onClick={handleInteraction}
     >
       <main className="flex flex-col gap-6 items-center w-full px-2 sm:px-4 my-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="p-4 sm:p-6 bg-[#FF765D] text-white rounded-xl shadow-xl w-full max-w-md flex flex-col items-center gap-4 sm:gap-6"
-        >
-          <motion.div
-            className="w-full max-w-[150px] sm:max-w-[200px]"
-            variants={cupAnimationVariants}
-            initial="initial"
-            animate={cupControls}
-          >
-            <Image
-              src={
-                isTipping ? "/assets/sippindrippin.png" : "/assets/sippin.png"
-              }
-              alt="Sip 'n Spill Logo"
-              width={200}
-              height={120}
-              className="w-full h-auto"
-              priority
-            />
-          </motion.div>
-          <h1 className="sr-only">Sip &apos;n Spill Game</h1>
-
-          <div className="min-h-[80px] sm:min-h-[100px] flex flex-col justify-center items-center text-center w-full bg-[#ff937d] p-3 sm:p-4 rounded-lg shadow-inner">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={questionKey}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="text-xl sm:text-2xl px-2"
-              >
-                {questions[currentQuestionIndex]}
-              </motion.p>
-            </AnimatePresence>
-          </div>
-        </motion.div>
-
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2 sm:mt-4 w-full max-w-md justify-center">
-          <motion.button
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
-            }}
-            whileTap={{
-              scale: 0.95,
-              boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleGoBack(); // Changed from handleRestart
-            }}
-            className={`px-5 py-2.5 sm:px-6 sm:py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg ${
-              currentQuestionIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={currentQuestionIndex === 0} // Disable if on first question
-          >
-            {gameContent.previousQuestion} {/* Changed from restartGame */}
-          </motion.button>
-          <motion.button
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
-            }}
-            whileTap={{
-              scale: 0.95,
-              boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleGoHome();
-            }}
-            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-stone-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg"
-          >
-            {gameContent.backToHome}
-          </motion.button>
-        </div>
+        <QuestionDisplay
+          question={questions[currentQuestionIndex]}
+          questionKey={questionKey}
+          isTipping={isTipping}
+          cupControls={cupControls}
+          cupAnimationVariants={cupAnimationVariants}
+        />
+        <GameControls
+          onGoBack={handleGoBack}
+          onGoHome={handleGoHome}
+          previousQuestionText={gameContent.previousQuestion}
+          backToHomeText={gameContent.backToHome}
+          isBackButtonDisabled={currentQuestionIndex === 0}
+        />
       </main>
       <footer className="w-full mt-4 sm:mt-6 text-xs sm:text-sm text-stone-700 p-3 sm:p-4 text-center">
         <p>{gameContent.tapToContinue}</p>
@@ -315,21 +216,10 @@ export default function GamePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
-          <div className="w-full max-w-[150px] sm:max-w-[200px] mb-6">
-            <Image
-              src="/assets/sippin.png"
-              alt="Sip 'n Spill Logo Loading Settings"
-              width={200}
-              height={120}
-              className="w-full h-auto"
-              priority
-            />
-          </div>
-          <p className="mt-4 text-lg sm:text-xl">
-            {initialContent.loadingSettings}
-          </p>
-        </div>
+        <GameLoadingIndicator
+          loadingText={initialContent.loadingSettings}
+          altText="Sip 'n Spill Logo Loading Settings"
+        />
       }
     >
       <GameContent />
