@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import locales from "../locales.json";
 import LanguagePicker from "./components/language-picker";
 import RulesSection, { Rule } from "./components/rules-section";
+import Footer from "./components/footer";
 
 type LocaleStrings = {
   pageTitle: string;
@@ -106,14 +107,7 @@ export default function HomePage() {
         />
       </motion.main>
 
-      <footer className="w-full mt-6 text-xs text-stone-800 p-3 text-center">
-        <p>
-          {content.footerText.replace(
-            "{year}",
-            new Date().getFullYear().toString()
-          )}
-        </p>
-      </footer>
+      <Footer footerText={content.footerText} />
     </div>
   );
 }
