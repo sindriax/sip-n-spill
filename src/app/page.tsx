@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import locales from "../locales.json";
+import locales from "./lib/locales.json";
 import RulesSection, { Rule } from "./components/rules-section";
 import Footer from "./components/footer";
 import HeaderLogo from "./components/header-logo";
