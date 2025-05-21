@@ -1,16 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import locales from "../locales.json";
-
-// Define the structure for a single rule
 interface Rule {
   header: string;
   text: string;
 }
+interface LanguageOption {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+const languageOptions: LanguageOption[] = [
+  { code: "en", name: "English", flag: "🇬🇧" },
+  { code: "es", name: "Español", flag: "🇪🇸" },
+];
 
 type LocaleStrings = {
   pageTitle: string;
@@ -18,7 +26,7 @@ type LocaleStrings = {
   selectLanguage: string;
   startGame: string;
   gameRulesTitle: string;
-  rules: Rule[]; // Updated to use the Rule interface
+  rules: Rule[];
   footerText: string;
 };
 
@@ -29,50 +37,40 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
-const FlagButton = ({
-  lang,
-  currentLang,
-  children,
-  onClick,
-}: {
-  lang: string;
-  currentLang: string;
-  children: React.ReactNode;
-  onClick: (lang: string) => void;
-}) => {
-  const baseClasses =
-    "text-4xl p-2 rounded-full transition-all duration-300 ease-in-out transform focus:outline-none";
-  const selectedClasses =
-    "bg-white scale-110 shadow-2xl ring-4 ring-amber-400 ring-offset-2 ring-offset-[#FF765D]";
-  const unselectedClasses =
-    "opacity-50 hover:opacity-90 hover:scale-105 bg-black/10 hover:bg-black/20";
-
-  return (
-    <button
-      onClick={() => onClick(lang)}
-      className={`${baseClasses} ${
-        currentLang === lang ? selectedClasses : unselectedClasses
-      }`}
-      aria-label={`Select ${lang === "en" ? "English" : "Spanish"}`}
-    >
-      {children}
-    </button>
-  );
-};
-
 export default function HomePage() {
   const [language, setLanguage] = useState("en");
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
   const [showRules, setShowRules] = useState(false);
   const [isLogoAnimating, setIsLogoAnimating] = useState(false);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const currentSelectedOption =
+    languageOptions.find((opt) => opt.code === language) || languageOptions[0];
 
   useEffect(() => {
     setContent(typedLocales[language as keyof Locales] || typedLocales.en);
   }, [language]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsLangDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   const handleLanguageSelect = (selectedLang: string) => {
     setLanguage(selectedLang);
+    setIsLangDropdownOpen(false);
   };
 
   const handleStartGame = () => {
@@ -125,6 +123,22 @@ export default function HomePage() {
     },
   };
 
+  const dropdownVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: -10 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      y: -10,
+      transition: { duration: 0.15, ease: "easeIn" },
+    },
+  };
+
   return (
     <div className="flex flex-col items-center justify-between min-h-screen p-4 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <motion.main
@@ -155,28 +169,65 @@ export default function HomePage() {
           />
         </motion.div>
         <h1 className="sr-only">{content.pageTitle}</h1>
-        <div className="flex flex-col gap-3 items-center">
+        <div className="flex flex-col gap-3 items-center w-full">
           <p className="text-lg md:text-xl font-semibold text-orange-100 pb-1 md:pb-2">
             {content.pageDescription}
           </p>
-          <p className="text-base md:text-lg font-medium text-orange-100">
-            {content.selectLanguage}
-          </p>
-          <div className="flex gap-4">
-            <FlagButton
-              lang="en"
-              currentLang={language}
-              onClick={handleLanguageSelect}
+
+          {/* Language Dropdown */}
+          <div className="relative w-full max-w-xs mt-2 mb-2" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-[#FF765D] transition-colors duration-150"
+              aria-haspopup="listbox"
+              aria-expanded={isLangDropdownOpen}
+              aria-label={content.selectLanguage}
             >
-              🇬🇧
-            </FlagButton>
-            <FlagButton
-              lang="es"
-              currentLang={language}
-              onClick={handleLanguageSelect}
-            >
-              🇪🇸
-            </FlagButton>
+              <span className="flex items-center">
+                <span className="mr-2 text-2xl">
+                  {currentSelectedOption.flag}
+                </span>
+                {currentSelectedOption.name}
+              </span>
+              <span
+                className={`transform transition-transform duration-200 ${
+                  isLangDropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
+              >
+                ▼
+              </span>
+            </button>
+
+            <AnimatePresence>
+              {isLangDropdownOpen && (
+                <motion.ul
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="absolute mt-1 w-full bg-[#ff937d] rounded-md shadow-lg z-10 overflow-hidden ring-1 ring-black ring-opacity-5"
+                  role="listbox"
+                >
+                  {languageOptions.map((option) => (
+                    <li
+                      key={option.code}
+                      onClick={() => handleLanguageSelect(option.code)}
+                      className={`px-4 py-3 text-left text-sm md:text-base cursor-pointer hover:bg-white/10 transition-colors duration-150 ${
+                        language === option.code
+                          ? "font-semibold bg-white/5"
+                          : "font-normal"
+                      }`}
+                      role="option"
+                      aria-selected={language === option.code}
+                    >
+                      <span className="mr-3 text-xl">{option.flag}</span>
+                      {option.name}
+                    </li>
+                  ))}
+                </motion.ul>
+              )}
+            </AnimatePresence>
           </div>
         </div>
         <button
