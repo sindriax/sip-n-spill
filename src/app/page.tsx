@@ -6,13 +6,19 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import locales from "../locales.json";
 
+// Define the structure for a single rule
+interface Rule {
+  header: string;
+  text: string;
+}
+
 type LocaleStrings = {
   pageTitle: string;
   pageDescription: string;
   selectLanguage: string;
   startGame: string;
   gameRulesTitle: string;
-  rules: string[];
+  rules: Rule[]; // Updated to use the Rule interface
   footerText: string;
 };
 
@@ -203,7 +209,7 @@ export default function HomePage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="list-disc list-inside space-y-2 text-sm md:text-base text-orange-50 p-4 md:p-5 pt-2 md:pt-3 bg-white/5 rounded-b-lg overflow-hidden"
+                className="space-y-2 text-sm md:text-base text-orange-50 p-4 md:p-5 pt-2 md:pt-3 bg-white/5 rounded-b-lg overflow-hidden"
               >
                 {content.rules.map((rule, index) => (
                   <motion.li
@@ -211,7 +217,10 @@ export default function HomePage() {
                     variants={ruleItemVariants}
                     className="leading-relaxed"
                   >
-                    {rule}
+                    {rule.header && (
+                      <strong className="block mb-0.5">{rule.header}</strong>
+                    )}
+                    {rule.text}
                   </motion.li>
                 ))}
               </motion.ul>

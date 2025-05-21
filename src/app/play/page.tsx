@@ -6,12 +6,18 @@ import Image from "next/image";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import locales from "../../locales.json";
 
+// Define the structure for a single rule to match locales.json
+interface Rule {
+  header: string;
+  text: string;
+}
+
 type LocaleStrings = {
   pageTitle: string;
   selectLanguage: string;
   startGame: string;
   gameRulesTitle: string;
-  rules: string[];
+  rules: Rule[]; // Updated to use the Rule interface
   footerText: string;
   restartGame: string;
   backToHome: string;

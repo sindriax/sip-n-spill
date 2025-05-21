@@ -3,18 +3,37 @@
     "pageTitle": "Sip 'n Spill",
     "pageDescription": "Think you know your friends? Spill their secrets and make them sip their drinks!",
     "selectLanguage": "Select Language:",
-    "startGame": "Start Game",
-    "gameRulesTitle": "Game Rules",
+    "startGame": "¡Start Drinking!",
+    "gameRulesTitle": "How To Play",
     "rules": [
-      "Player one silently reads the first question to themselves.",
-      "Player one then points to each player and guesses whether they have done what the question describes.",
-      "After guessing for all players, player one reads the question aloud.",
-      "Any player who has done what the question describes takes a sip of their drink.",
-      "Player one passes the phone to the person on their right.",
-      "The next player taps the screen to reveal a new question.",
-      "The next player silently reads the question to themselves.",
-      "Continue until all questions have been answered or you decide to stop.",
-      "Most importantly: have fun and drink responsibly!"
+      {
+        "header": "Who's Up?",
+        "text": "The current player (the 'Guesser') reads the question silently."
+      },
+      {
+        "header": "Make Your Bets!",
+        "text": "For everyone else, the Guesser secretly predicts: *Did they do it?*"
+      },
+      {
+        "header": "The Reveal!",
+        "text": "The Guesser reads the question aloud."
+      },
+      {
+        "header": "Sip Time!",
+        "text": "If the Guesser correctly predicted a player *did it*, that player sips. If the Guesser made *any* incorrect prediction (for any player), the Guesser sips once!"
+      },
+      {
+        "header": "Pass It On!",
+        "text": "Give the device to the next player (to the right)."
+      },
+      {
+        "header": "New Round!",
+        "text": "The new Guesser taps for a new question, reads it silently, and their turn begins!"
+      },
+      {
+        "header": "",
+        "text": "Keep going until you're out of questions or decide to stop. Have fun and drink responsibly!"
+      }
     ],
     "footerText": "© {year} Sip 'n Spill. Created by Sindriax 🍉.",
     "restartGame": "Restart",
@@ -29,18 +48,37 @@
     "pageTitle": "Sip 'n Spill",
     "pageDescription": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
     "selectLanguage": "Seleccionar Idioma:",
-    "startGame": "Empezar Juego",
-    "gameRulesTitle": "Reglas del Juego",
+    "startGame": "¡Empieza a Beber!",
+    "gameRulesTitle": "Cómo Jugar",
     "rules": [
-      "El primer jugador lee en silencio la primera pregunta para sí mismo.",
-      "Luego, el primer jugador señala a cada jugador y adivina si han hecho lo que describe la pregunta.",
-      "Después de adivinar para todos los jugadores, el primer jugador lee la pregunta en voz alta.",
-      "Cualquier jugador que haya hecho lo que describe la pregunta toma un sorbo de su bebida.",
-      "El primer jugador pasa el teléfono a la persona a su derecha.",
-      "El siguiente jugador toca la pantalla para revelar una nueva pregunta.",
-      "El siguiente jugador lee en silencio la pregunta para sí mismo.",
-      "Continúa hasta que todas las preguntas hayan sido respondidas o decidas parar.",
-      "Lo más importante: ¡diviértete y bebe con responsabilidad!"
+      {
+        "header": "¿Quién juega?",
+        "text": "El jugador actual (el 'Adivino/a') lee la pregunta en silencio para sí."
+      },
+      {
+        "header": "¡A apostar!",
+        "text": "Para los demás, el Adivino/a predice en secreto: *¿Lo han hecho?*"
+      },
+      {
+        "header": "¡La revelación!",
+        "text": "El Adivino/a lee la pregunta en voz alta."
+      },
+      {
+        "header": "¡A beber!",
+        "text": "Si el Adivino/a acertó que un jugador *lo hizo*, ese jugador bebe un sorbo. Si el Adivino/a se equivocó en *alguna* predicción (para cualquier jugador), ¡el Adivino/a bebe un sorbo!"
+      },
+      {
+        "header": "¡Pásalo!",
+        "text": "Entrega el dispositivo al siguiente jugador (a la derecha)."
+      },
+      {
+        "header": "¡Nueva ronda!",
+        "text": "El nuevo Adivino/a toca para una nueva pregunta, la lee en silencio, ¡y empieza su turno!"
+      },
+      {
+        "header": "",
+        "text": "Seguid hasta que se acaben las preguntas o decidáis parar. ¡Divertíos y bebed con responsabilidad!"
+      }
     ],
     "footerText": "© {year} Sip 'n Spill. Creado por Sindriax 🍉.",
     "restartGame": "Reiniciar",
