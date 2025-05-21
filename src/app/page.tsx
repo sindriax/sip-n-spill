@@ -1,24 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import locales from "../locales.json";
+import LanguagePicker from "./components/language-picker";
+
 interface Rule {
   header: string;
   text: string;
 }
-interface LanguageOption {
-  code: string;
-  name: string;
-  flag: string;
-}
-
-const languageOptions: LanguageOption[] = [
-  { code: "en", name: "English", flag: "🇬🇧" },
-  { code: "es", name: "Español", flag: "🇪🇸" },
-];
 
 type LocaleStrings = {
   pageTitle: string;
@@ -42,35 +34,14 @@ export default function HomePage() {
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
   const [showRules, setShowRules] = useState(false);
   const [isLogoAnimating, setIsLogoAnimating] = useState(false);
-  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const router = useRouter();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const currentSelectedOption =
-    languageOptions.find((opt) => opt.code === language) || languageOptions[0];
 
   useEffect(() => {
     setContent(typedLocales[language as keyof Locales] || typedLocales.en);
   }, [language]);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsLangDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
-
   const handleLanguageSelect = (selectedLang: string) => {
     setLanguage(selectedLang);
-    setIsLangDropdownOpen(false);
   };
 
   const handleStartGame = () => {
@@ -123,22 +94,6 @@ export default function HomePage() {
     },
   };
 
-  const dropdownVariants = {
-    hidden: { opacity: 0, scale: 0.95, y: -10 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { duration: 0.2, ease: "easeOut" },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.95,
-      y: -10,
-      transition: { duration: 0.15, ease: "easeIn" },
-    },
-  };
-
   return (
     <div className="flex flex-col items-center justify-between min-h-screen p-4 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <motion.main
@@ -174,61 +129,11 @@ export default function HomePage() {
             {content.pageDescription}
           </p>
 
-          {/* Language Dropdown */}
-          <div className="relative w-full max-w-xs mt-2 mb-2" ref={dropdownRef}>
-            <button
-              type="button"
-              onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-[#FF765D] transition-colors duration-150"
-              aria-haspopup="listbox"
-              aria-expanded={isLangDropdownOpen}
-              aria-label={content.selectLanguage}
-            >
-              <span className="flex items-center">
-                <span className="mr-2 text-2xl">
-                  {currentSelectedOption.flag}
-                </span>
-                {currentSelectedOption.name}
-              </span>
-              <span
-                className={`transform transition-transform duration-200 ${
-                  isLangDropdownOpen ? "rotate-180" : "rotate-0"
-                }`}
-              >
-                ▼
-              </span>
-            </button>
-
-            <AnimatePresence>
-              {isLangDropdownOpen && (
-                <motion.ul
-                  variants={dropdownVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="absolute mt-1 w-full bg-[#ff937d] rounded-md shadow-lg z-10 overflow-hidden ring-1 ring-black ring-opacity-5"
-                  role="listbox"
-                >
-                  {languageOptions.map((option) => (
-                    <li
-                      key={option.code}
-                      onClick={() => handleLanguageSelect(option.code)}
-                      className={`px-4 py-3 text-left text-sm md:text-base cursor-pointer hover:bg-white/10 transition-colors duration-150 ${
-                        language === option.code
-                          ? "font-semibold bg-white/5"
-                          : "font-normal"
-                      }`}
-                      role="option"
-                      aria-selected={language === option.code}
-                    >
-                      <span className="mr-3 text-xl">{option.flag}</span>
-                      {option.name}
-                    </li>
-                  ))}
-                </motion.ul>
-              )}
-            </AnimatePresence>
-          </div>
+          <LanguagePicker
+            currentLanguage={language}
+            onLanguageChange={handleLanguageSelect}
+            selectLanguageLabel={content.selectLanguage}
+          />
         </div>
         <button
           onClick={handleStartGame}
