@@ -37,7 +37,7 @@ const FlagButton = ({
   const baseClasses =
     "text-4xl p-2 rounded-full transition-all duration-300 ease-in-out transform focus:outline-none";
   const selectedClasses =
-    "bg-white scale-110 shadow-xl ring-4 ring-amber-400 ring-offset-2 ring-offset-[#FF765D]";
+    "bg-white scale-110 shadow-2xl ring-4 ring-amber-400 ring-offset-2 ring-offset-[#FF765D]";
   const unselectedClasses =
     "opacity-50 hover:opacity-90 hover:scale-105 bg-black/10 hover:bg-black/20";
 
@@ -86,7 +86,7 @@ export default function HomePage() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        className="flex flex-col gap-4 items-center bg-[#FF765D] text-white p-6 md:p-10 rounded-lg shadow-xl max-w-md w-full my-auto"
+        className="flex flex-col gap-4 items-center bg-[#FF765D] text-white p-6 md:p-10 rounded-lg shadow-2xl max-w-md w-full my-auto hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] hover:-translate-y-2 transition-all duration-300 ease-out"
       >
         <motion.div
           className="w-full max-w-[200px] sm:max-w-[250px] md:max-w-xs"
@@ -136,14 +136,14 @@ export default function HomePage() {
         </div>
         <button
           onClick={handleStartGame}
-          className="px-6 py-3 md:px-10 md:py-4 bg-amber-400 text-stone-800 font-semibold rounded-lg text-lg md:text-2xl shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full max-w-xs"
+          className="px-6 py-3 md:px-10 md:py-4 bg-amber-400 text-stone-800 font-semibold rounded-lg text-lg md:text-2xl shadow-lg hover:bg-amber-300 transition-all duration-150 ease-in-out transform hover:scale-105 hover:shadow-xl active:scale-95 active:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full max-w-xs"
         >
           {content.startGame}
         </button>
-        <div className="mt-4 md:mt-6 bg-[#ff937d] rounded-lg max-w-md w-full text-left">
+        <div className="mt-4 md:mt-6 bg-[#ff937d] rounded-lg shadow-lg max-w-md w-full text-left">
           <button
             onClick={toggleRules}
-            className="w-full flex justify-between items-center p-4 md:p-5 text-lg md:text-xl font-semibold text-white focus:outline-none"
+            className="w-full flex justify-between items-center p-4 md:p-5 text-lg md:text-xl font-semibold text-white focus:outline-none rounded-t-lg hover:bg-white/5 transition-colors duration-150"
             aria-expanded={showRules}
             aria-controls="game-rules-list"
           >

@@ -157,7 +157,7 @@ function GameContent() {
         >
           <Image
             src="/assets/sippin.png"
-            alt="Sip 'n Spill Logo"
+            alt="Sip 'n Spill Logo Loading"
             width={200}
             height={200}
             className="w-full h-auto"
@@ -177,7 +177,7 @@ function GameContent() {
         <div className="w-full max-w-[180px] sm:max-w-[250px] mb-6">
           <Image
             src="/assets/sippin.png"
-            alt="Sip 'n Spill Logo"
+            alt="Sip 'n Spill Logo Error"
             width={250}
             height={150}
             className="w-full h-auto"
@@ -189,7 +189,7 @@ function GameContent() {
         </p>
         <button
           onClick={handleGoHome}
-          className="mt-6 px-6 py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B]"
+          className="mt-6 px-6 py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg hover:bg-amber-300 transition-all duration-150 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B]"
         >
           {gameContent.backToHome}
         </button>
@@ -203,7 +203,12 @@ function GameContent() {
       onClick={handleInteraction}
     >
       <main className="flex flex-col gap-6 items-center w-full px-2 sm:px-4 my-auto">
-        <div className="p-4 sm:p-6 bg-[#FF765D] text-white rounded-lg shadow-md w-full max-w-md flex flex-col items-center gap-4 sm:gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="p-4 sm:p-6 bg-[#FF765D] text-white rounded-xl shadow-xl w-full max-w-md flex flex-col items-center gap-4 sm:gap-6"
+        >
           <motion.div
             className="w-full max-w-[150px] sm:max-w-[200px]"
             variants={cupAnimationVariants}
@@ -223,7 +228,7 @@ function GameContent() {
           </motion.div>
           <h1 className="sr-only">Sip &apos;n Spill Game</h1>
 
-          <div className="min-h-[80px] sm:min-h-[100px] flex flex-col justify-center items-center text-center w-full">
+          <div className="min-h-[80px] sm:min-h-[100px] flex flex-col justify-center items-center text-center w-full bg-[#ff937d] p-3 sm:p-4 rounded-lg shadow-inner">
             <AnimatePresence mode="wait">
               <motion.p
                 key={questionKey}
@@ -237,27 +242,43 @@ function GameContent() {
               </motion.p>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2 sm:mt-4 w-full max-w-md justify-center">
-          <button
+          <motion.button
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
+            }}
+            whileTap={{
+              scale: 0.95,
+              boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
+            }}
             onClick={(e) => {
               e.stopPropagation();
               handleRestart();
             }}
-            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-md hover:bg-amber-300 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full sm:w-auto text-base sm:text-lg"
+            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg"
           >
             {gameContent.restartGame}
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
+            }}
+            whileTap={{
+              scale: 0.95,
+              boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
+            }}
             onClick={(e) => {
               e.stopPropagation();
               handleGoHome();
             }}
-            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-stone-700 text-white font-semibold rounded-lg shadow-md hover:bg-stone-600 transition-colors duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full sm:w-auto text-base sm:text-lg"
+            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-stone-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg"
           >
             {gameContent.backToHome}
-          </button>
+          </motion.button>
         </div>
       </main>
       <footer className="w-full mt-4 sm:mt-6 text-xs sm:text-sm text-stone-700 p-3 sm:p-4 text-center">
@@ -287,7 +308,7 @@ export default function GamePage() {
           <div className="w-full max-w-[150px] sm:max-w-[200px] mb-6">
             <Image
               src="/assets/sippin.png"
-              alt="Sip 'n Spill Logo"
+              alt="Sip 'n Spill Logo Loading Settings"
               width={200}
               height={120}
               className="w-full h-auto"
