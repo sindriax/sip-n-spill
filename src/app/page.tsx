@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import locales from "../locales.json";
-import LanguagePicker from "./components/language-picker";
 import RulesSection, { Rule } from "./components/rules-section";
 import Footer from "./components/footer";
+import HeaderLogo from "./components/header-logo";
+import IntroSection from "./components/intro-section";
+import StartGameButton from "./components/start-game-button";
 
 type LocaleStrings = {
   pageTitle: string;
@@ -60,45 +61,14 @@ export default function HomePage() {
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="flex flex-col gap-4 items-center bg-[#FF765D] text-white p-6 md:p-10 rounded-lg shadow-2xl max-w-md w-full my-auto hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] hover:-translate-y-2 transition-all duration-300 ease-out"
       >
-        <motion.div
-          className="w-full max-w-[200px] sm:max-w-[250px] md:max-w-xs"
-          animate={
-            isLogoAnimating
-              ? {
-                  rotateY: 360,
-                  scale: 0.8,
-                  transition: { duration: 0.5, ease: "easeInOut" },
-                }
-              : {}
-          }
-        >
-          <Image
-            src="/assets/sip-round.png"
-            alt={content.pageTitle}
-            width={500}
-            height={300}
-            className="w-full h-auto"
-            priority
-          />
-        </motion.div>
-        <h1 className="sr-only">{content.pageTitle}</h1>
-        <div className="flex flex-col gap-3 items-center w-full">
-          <p className="text-lg md:text-xl font-semibold text-orange-100 pb-1 md:pb-2">
-            {content.pageDescription}
-          </p>
-
-          <LanguagePicker
-            currentLanguage={language}
-            onLanguageChange={handleLanguageSelect}
-            selectLanguageLabel={content.selectLanguage}
-          />
-        </div>
-        <button
-          onClick={handleStartGame}
-          className="px-6 py-3 md:px-10 md:py-4 bg-amber-400 text-stone-800 font-semibold rounded-lg text-lg md:text-2xl shadow-lg hover:bg-amber-300 transition-all duration-150 ease-in-out transform hover:scale-105 hover:shadow-xl active:scale-95 active:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FF765D] w-full max-w-xs"
-        >
-          {content.startGame}
-        </button>
+        <HeaderLogo altText={content.pageTitle} isAnimating={isLogoAnimating} />
+        <IntroSection
+          pageDescription={content.pageDescription}
+          currentLanguage={language}
+          onLanguageChange={handleLanguageSelect}
+          selectLanguageLabel={content.selectLanguage}
+        />
+        <StartGameButton onClick={handleStartGame} label={content.startGame} />
         <RulesSection
           gameRulesTitle={content.gameRulesTitle}
           rules={content.rules}
