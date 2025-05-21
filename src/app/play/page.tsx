@@ -17,9 +17,9 @@ type LocaleStrings = {
   selectLanguage: string;
   startGame: string;
   gameRulesTitle: string;
-  rules: Rule[]; // Updated to use the Rule interface
+  rules: Rule[];
   footerText: string;
-  restartGame: string;
+  previousQuestion: string; // Changed from restartGame
   backToHome: string;
   loadingQuestions: string;
   noQuestionsLoaded: string;
@@ -131,9 +131,11 @@ function GameContent() {
     });
   }, [questions.length, cupControls]);
 
-  const handleRestart = () => {
-    setCurrentQuestionIndex(0);
-    setQuestionKey((prevKey) => prevKey + 1);
+  const handleGoBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+      setQuestionKey((prevKey) => prevKey + 1); // Re-trigger animation
+    }
   };
 
   const handleGoHome = () => {
@@ -262,11 +264,14 @@ function GameContent() {
             }}
             onClick={(e) => {
               e.stopPropagation();
-              handleRestart();
+              handleGoBack(); // Changed from handleRestart
             }}
-            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg"
+            className={`px-5 py-2.5 sm:px-6 sm:py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg ${
+              currentQuestionIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={currentQuestionIndex === 0} // Disable if on first question
           >
-            {gameContent.restartGame}
+            {gameContent.previousQuestion} {/* Changed from restartGame */}
           </motion.button>
           <motion.button
             whileHover={{

@@ -36,7 +36,7 @@
       }
     ],
     "footerText": "© {year} Sip 'n Spill. Created by Sindriax 🍉.",
-    "restartGame": "Restart",
+    "previousQuestion": "Previous question",
     "backToHome": "Home",
     "loadingQuestions": "Loading questions...",
     "noQuestionsLoaded": "No questions loaded. Please check the questions file for the selected language ({lang}).",
@@ -81,7 +81,7 @@
       }
     ],
     "footerText": "© {year} Sip 'n Spill. Creado por Sindriax 🍉.",
-    "restartGame": "Reiniciar",
+    "previousQuestion": "Pregunta anterior",
     "backToHome": "Inicio",
     "loadingQuestions": "Cargando preguntas...",
     "noQuestionsLoaded": "No se cargaron preguntas. Por favor, revisa el archivo de preguntas para el idioma seleccionado ({lang}).",
