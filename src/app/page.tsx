@@ -80,6 +80,45 @@ export default function HomePage() {
     setShowRules(!showRules);
   };
 
+  const rulesContainerVariants = {
+    hidden: { opacity: 0, height: 0 },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.4,
+        ease: "easeInOut",
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+    exit: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut",
+        when: "afterChildren",
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+      },
+    },
+  };
+
+  const ruleItemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+    exit: {
+      opacity: 0,
+      y: -10,
+      transition: { duration: 0.2, ease: "easeIn" },
+    },
+  };
+
   return (
     <div className="flex flex-col items-center justify-between min-h-screen p-4 text-center bg-[#FDC03B] font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <motion.main
@@ -143,7 +182,7 @@ export default function HomePage() {
         <div className="mt-4 md:mt-6 bg-[#ff937d] rounded-lg shadow-lg max-w-md w-full text-left">
           <button
             onClick={toggleRules}
-            className="w-full flex justify-between items-center p-4 md:p-5 text-lg md:text-xl font-semibold text-white focus:outline-none rounded-t-lg hover:bg-white/5 transition-colors duration-150"
+            className="w-full flex justify-between items-center p-4 md:p-5 text-lg md:text-xl font-semibold text-white focus:outline-none rounded-t-lg hover:bg-white/10 active:bg-white/20 transition-colors duration-150"
             aria-expanded={showRules}
             aria-controls="game-rules-list"
           >
@@ -160,14 +199,20 @@ export default function HomePage() {
             {showRules && (
               <motion.ul
                 id="game-rules-list"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="list-disc list-inside space-y-1 text-sm md:text-base text-orange-50 p-4 md:p-5 pt-0 overflow-hidden"
+                variants={rulesContainerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="list-disc list-inside space-y-2 text-sm md:text-base text-orange-50 p-4 md:p-5 pt-2 md:pt-3 bg-white/5 rounded-b-lg overflow-hidden"
               >
                 {content.rules.map((rule, index) => (
-                  <li key={index}>{rule}</li>
+                  <motion.li
+                    key={index}
+                    variants={ruleItemVariants}
+                    className="leading-relaxed"
+                  >
+                    {rule}
+                  </motion.li>
                 ))}
               </motion.ul>
             )}
