@@ -1,9 +1,10 @@
 "use client";
 
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface Rule {
-  header: string;
+  header?: string;
   text: string;
 }
 
@@ -12,6 +13,17 @@ interface RulesSectionProps {
   rules: Rule[];
   showRules: boolean;
   toggleRules: () => void;
+}
+
+function formatText(text: string): (string | React.JSX.Element)[] {
+  const parts = text.split(/(\*[^*]+\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith("*") && part.endsWith("*")) {
+      const boldText = part.slice(1, -1);
+      return <strong key={index}>{boldText}</strong>;
+    }
+    return part;
+  });
 }
 
 const rulesContainerVariants = {
@@ -95,7 +107,7 @@ export default function RulesSection({
                 {rule.header && (
                   <strong className="block mb-0.5">{rule.header}</strong>
                 )}
-                {rule.text}
+                {formatText(rule.text)}
               </motion.li>
             ))}
           </motion.ul>
