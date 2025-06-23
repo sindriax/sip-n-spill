@@ -21,40 +21,53 @@ const GameControls: React.FC<GameControlsProps> = ({
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2 sm:mt-4 w-full max-w-md justify-center">
       <motion.button
         whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
+          scale: 1.08,
+          rotateZ: 1,
+          boxShadow: "0px 15px 30px rgba(255, 147, 125, 0.4)",
+          backgroundColor: "#ff8a65",
         }}
         whileTap={{
-          scale: 0.95,
-          boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
+          scale: 0.92,
+          rotateZ: -1,
+          boxShadow: "0px 8px 15px rgba(255, 147, 125, 0.3)",
         }}
         onClick={(e) => {
           e.stopPropagation();
           onGoNext();
         }}
-        className={`px-5 py-2.5 sm:px-6 sm:py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg ${
-          isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""
+        className={`px-6 py-3 sm:px-8 sm:py-4 bg-[#FF765D] text-white font-bold rounded-2xl shadow-2xl transition-all duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-lg sm:text-xl transform hover:shadow-orange-500/25 ${
+          isNextButtonDisabled ? "opacity-60 cursor-not-allowed grayscale" : ""
         }`}
         disabled={isNextButtonDisabled}
       >
-        {nextQuestionText}
+        <span className="flex items-center justify-center gap-2">
+          <span className="text-2xl">🍺</span>
+          <span>{nextQuestionText}</span>
+          <span className="text-xl">→</span>
+        </span>
       </motion.button>
       <motion.button
         whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
+          scale: 1.08,
+          rotateZ: -1,
+          boxShadow: "0px 15px 30px rgba(120, 113, 108, 0.4)",
+          backgroundColor: "#57534e",
         }}
         whileTap={{
-          scale: 0.95,
-          boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
+          scale: 0.92,
+          rotateZ: 1,
+          boxShadow: "0px 8px 15px rgba(120, 113, 108, 0.3)",
         }}
         onClick={(e) => {
           e.stopPropagation();
           onGoHome();
         }}
-        className="px-5 py-2.5 sm:px-6 sm:py-3 bg-stone-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-base sm:text-lg"
+        className="px-6 py-3 sm:px-8 sm:py-4 bg-stone-600 text-white font-bold rounded-2xl shadow-2xl transition-all duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-stone-400 focus:ring-offset-2 focus:ring-offset-[#FDC03B] w-full sm:w-auto text-lg sm:text-xl transform hover:shadow-stone-500/25"
       >
-        {backToHomeText}
+        <span className="flex items-center justify-center gap-2">
+          <span className="text-2xl">🏠</span>
+          <span>{backToHomeText}</span>
+        </span>
       </motion.button>
     </div>
   );
