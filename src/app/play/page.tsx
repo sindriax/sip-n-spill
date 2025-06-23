@@ -21,7 +21,7 @@ type LocaleStrings = {
   gameRulesTitle: string;
   rules: Rule[];
   footerText: string;
-  previousQuestion: string;
+  nextQuestion: string;
   backToHome: string;
   loadingQuestions: string;
   noQuestionsLoaded: string;
@@ -134,13 +134,6 @@ function GameContent() {
     setIsTipping(false);
   }, [questions.length, cupControls, isTipping]);
 
-  const handleGoBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
-      setQuestionKey((prevKey) => prevKey + 1);
-    }
-  };
-
   const handleGoHome = () => {
     router.push("/");
   };
@@ -186,11 +179,11 @@ function GameContent() {
           cupAnimationVariants={cupAnimationVariants}
         />
         <GameControls
-          onGoBack={handleGoBack}
+          onGoNext={handleInteraction}
           onGoHome={handleGoHome}
-          previousQuestionText={gameContent.previousQuestion}
+          nextQuestionText={gameContent.nextQuestion}
           backToHomeText={gameContent.backToHome}
-          isBackButtonDisabled={currentQuestionIndex === 0}
+          isNextButtonDisabled={questions.length === 0 || isTipping}
         />
       </main>
       <footer className="w-full mt-4 sm:mt-6 text-xs sm:text-sm text-stone-700 p-3 sm:p-4 text-center">
