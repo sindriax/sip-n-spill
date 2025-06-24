@@ -41,7 +41,6 @@
     "loadingQuestions": "Loading questions...",
     "noQuestionsLoaded": "No questions loaded. Please check the questions file for the selected language ({lang}).",
     "loadingSettings": "Loading settings...",
-    "tapToContinue": "Tap the screen or press Space to continue.",
     "questionProgress": "Question {current} of {total}"
   },
   "es": {
@@ -86,7 +85,6 @@
     "loadingQuestions": "Cargando preguntas...",
     "noQuestionsLoaded": "No se cargaron preguntas. Por favor, revisa el archivo de preguntas para el idioma seleccionado ({lang}).",
     "loadingSettings": "Cargando configuración...",
-    "tapToContinue": "Toca la pantalla o presiona Espacio para continuar.",
     "questionProgress": "Pregunta {current} de {total}"
   }
 }

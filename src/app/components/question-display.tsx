@@ -31,7 +31,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="p-4 sm:p-6 bg-[#FF765D] text-white rounded-xl shadow-xl w-full max-w-md flex flex-col items-center gap-4 sm:gap-6"
+      className="p-3 sm:p-6 bg-[#FF765D] text-white rounded-xl shadow-xl w-full max-w-md flex flex-col items-center gap-3 sm:gap-6"
     >
       <motion.div
         className="w-full max-w-[150px] sm:max-w-[200px]"
@@ -49,7 +49,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
         />
       </motion.div>
       <h1 className="sr-only">Sip &apos;n Spill Game</h1>
-      <div className="h-[160px] sm:h-[180px] flex flex-col justify-center items-center text-center w-full bg-[#ff937d] p-3 sm:p-4 rounded-lg shadow-inner overflow-y-auto scrollbar-thin scrollbar-thumb-amber-400 scrollbar-track-transparent">
+      <div className="min-h-[120px] sm:min-h-[160px] max-h-[180px] sm:max-h-[200px] flex flex-col justify-center items-center text-center w-full bg-[#ff937d] p-3 sm:p-4 rounded-lg shadow-inner overflow-y-auto scrollbar-thin scrollbar-thumb-amber-400 scrollbar-track-transparent">
         <AnimatePresence mode="wait">
           <motion.p
             key={questionKey}
@@ -57,7 +57,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="text-xl sm:text-2xl px-2"
+            className="text-lg sm:text-xl lg:text-2xl px-2 leading-relaxed"
           >
             {question}
           </motion.p>

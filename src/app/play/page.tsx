@@ -26,7 +26,6 @@ type LocaleStrings = {
   loadingQuestions: string;
   noQuestionsLoaded: string;
   loadingSettings: string;
-  tapToContinue: string;
   questionProgress: string;
 };
 
@@ -167,10 +166,10 @@ function GameContent() {
 
   return (
     <div
-      className="flex flex-col items-center justify-between min-h-screen p-4 sm:p-6 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)] cursor-pointer"
+      className="flex flex-col items-center min-h-screen p-4 sm:p-6 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)] cursor-pointer"
       onClick={handleInteraction}
     >
-      <main className="flex flex-col gap-6 items-center w-full px-2 sm:px-4 my-auto">
+      <main className="flex-1 flex flex-col gap-6 items-center justify-center w-full px-2 sm:px-4 py-4">
         <QuestionDisplay
           question={questions[currentQuestionIndex]}
           questionKey={questionKey}
@@ -186,8 +185,7 @@ function GameContent() {
           isNextButtonDisabled={questions.length === 0 || isTipping}
         />
       </main>
-      <footer className="w-full mt-4 sm:mt-6 text-xs sm:text-sm text-stone-700 p-3 sm:p-4 text-center">
-        <p>{gameContent.tapToContinue}</p>
+      <footer className="w-full mt-2 sm:mt-4 text-xs sm:text-sm text-stone-700 p-3 sm:p-4 text-center">
         <p>
           {gameContent.questionProgress
             .replace("{current}", (currentQuestionIndex + 1).toString())
