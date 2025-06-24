@@ -41,7 +41,50 @@
     "loadingQuestions": "Loading questions...",
     "noQuestionsLoaded": "No questions loaded. Please check the questions file for the selected language ({lang}).",
     "loadingSettings": "Loading settings...",
-    "questionProgress": "Question {current} of {total}"
+    "questionProgress": "Question {current} of {total}",
+    "tutorialTitle": "How to Play Tutorial",
+    "skipTutorial": "Skip",
+    "nextStep": "Next",
+    "prevStep": "Back",
+    "finishTutorial": "Start Playing!",
+    "showTutorial": "Show Tutorial",
+    "tutorialSteps": [
+      {
+        "title": "Welcome to Sip 'n Spill!",
+        "description": "This isn't your typical 'Never Have I Ever' game. You'll be guessing what your friends have done, not sharing your own experiences!",
+        "visual": "🤔"
+      },
+      {
+        "title": "Step 1: The Guesser",
+        "description": "One player becomes the 'Guesser' and reads a question silently to themselves first.",
+        "visual": "👀"
+      },
+      {
+        "title": "Step 2: Make Predictions",
+        "description": "The Guesser then secretly predicts for each other player: 'Did they do this or not?' without revealing the question yet.",
+        "visual": "🎯"
+      },
+      {
+        "title": "Step 3: The Reveal",
+        "description": "After making all predictions, the Guesser reads the question out loud to everyone.",
+        "visual": "📢"
+      },
+      {
+        "title": "Step 4: Truth Time",
+        "description": "Each player honestly answers whether they've done the thing in the question.",
+        "visual": "✋"
+      },
+      {
+        "title": "Step 5: Drinking Rules",
+        "description": "If the Guesser was RIGHT about a player doing it - that player drinks! If the Guesser was WRONG about anyone - the Guesser drinks for each mistake!",
+        "visual": "🍺"
+      },
+      {
+        "title": "Step 6: Pass & Repeat",
+        "description": "Pass the phone to the next player who becomes the new Guesser, and repeat! The game gets funnier as you learn surprising things about your friends.",
+        "visual": "🔄"
+      }
+    ]
   },
   "es": {
     "pageTitle": "Sip 'n Spill",
@@ -85,6 +128,49 @@
     "loadingQuestions": "Cargando preguntas...",
     "noQuestionsLoaded": "No se cargaron preguntas. Por favor, revisa el archivo de preguntas para el idioma seleccionado ({lang}).",
     "loadingSettings": "Cargando configuración...",
-    "questionProgress": "Pregunta {current} de {total}"
+    "questionProgress": "Pregunta {current} de {total}",
+    "tutorialTitle": "Tutorial de Cómo Jugar",
+    "skipTutorial": "Omitir",
+    "nextStep": "Siguiente",
+    "prevStep": "Atrás",
+    "finishTutorial": "¡Empezar a Jugar!",
+    "showTutorial": "Mostrar Tutorial",
+    "tutorialSteps": [
+      {
+        "title": "¡Bienvenido a Sip 'n Spill!",
+        "description": "Este no es tu típico juego de 'Yo Nunca'. ¡Vas a adivinar lo que han hecho tus amigos, no a compartir tus propias experiencias!",
+        "visual": "🤔"
+      },
+      {
+        "title": "Paso 1: El Adivino",
+        "description": "Un jugador se convierte en el 'Adivino' y lee una pregunta en silencio para sí mismo primero.",
+        "visual": "👀"
+      },
+      {
+        "title": "Paso 2: Hacer Predicciones",
+        "description": "El Adivino entonces predice en secreto para cada otro jugador: '¿Lo han hecho o no?' sin revelar la pregunta aún.",
+        "visual": "🎯"
+      },
+      {
+        "title": "Paso 3: La Revelación",
+        "description": "Después de hacer todas las predicciones, el Adivino lee la pregunta en voz alta a todos.",
+        "visual": "📢"
+      },
+      {
+        "title": "Paso 4: Momento de la Verdad",
+        "description": "Cada jugador responde honestamente si han hecho lo que dice la pregunta.",
+        "visual": "✋"
+      },
+      {
+        "title": "Paso 5: Reglas de Beber",
+        "description": "Si el Adivino ACERTÓ sobre un jugador haciéndolo - ¡ese jugador bebe! Si el Adivino se EQUIVOCÓ sobre alguien - ¡el Adivino bebe por cada error!",
+        "visual": "🍺"
+      },
+      {
+        "title": "Paso 6: Pasar y Repetir",
+        "description": "¡Pasa el teléfono al siguiente jugador que se convierte en el nuevo Adivino, y repite! El juego se vuelve más divertido mientras aprendes cosas sorprendentes sobre tus amigos.",
+        "visual": "🔄"
+      }
+    ]
   }
 }
