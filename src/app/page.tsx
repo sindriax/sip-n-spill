@@ -132,9 +132,9 @@ export default function HomePage() {
               <Image
                 src="/assets/sip-logo.png"
                 alt={content.pageTitle}
-                width={350}
-                height={220}
-                className="w-[350px] h-auto"
+                width={250}
+                height={157}
+                className="w-[250px] h-auto"
                 priority
               />
             </motion.div>
@@ -196,18 +196,18 @@ export default function HomePage() {
               onClick={handleStartGame}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full max-w-[380px] mb-12 relative"
+              className="w-full max-w-[280px] mb-12 relative"
             >
-              <div className="gradient-gold-shine rounded-[32px] p-4 glow-gold border-2 border-white/40">
+              <div className="gradient-gold-shine rounded-[24px] p-3 glow-gold border-2 border-white/40">
                 <div className="relative">
                   <Image
                     src="/assets/lets-play.png"
                     alt={content.startGame}
-                    width={220}
-                    height={90}
+                    width={180}
+                    height={74}
                     className="w-full h-auto"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-transparent rounded-[32px] pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-transparent rounded-[24px] pointer-events-none" />
                 </div>
               </div>
             </motion.button>
