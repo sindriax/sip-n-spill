@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAnimation } from "framer-motion";
+import Image from "next/image";
 import locales from "../lib/locales.json";
 import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
@@ -180,10 +181,12 @@ function GameContent() {
             className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
             aria-label="Go back"
           >
-            <img
+            <Image
               src="/assets/sippin.png"
               alt="Back"
-              className="w-[80%] h-[80%] object-contain"
+              width={40}
+              height={40}
+              className="object-contain"
             />
           </button>
 
@@ -203,10 +206,12 @@ function GameContent() {
             className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
             aria-label="Show tutorial"
           >
-            <img
+            <Image
               src="/assets/qs.png"
               alt="Help"
-              className="w-[80%] h-[80%] object-contain"
+              width={40}
+              height={40}
+              className="object-contain"
             />
           </button>
         </div>

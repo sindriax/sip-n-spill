@@ -38,7 +38,6 @@ export default function HomePage() {
   const [language, setLanguage] = useState("en");
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [isLogoAnimating, setIsLogoAnimating] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
@@ -57,10 +56,7 @@ export default function HomePage() {
   };
 
   const handleStartGame = () => {
-    setIsLogoAnimating(true);
-    setTimeout(() => {
-      router.push(`/play?lang=${language}`);
-    }, 700);
+    router.push(`/play?lang=${language}`);
   };
 
   const handleShowTutorial = () => {
