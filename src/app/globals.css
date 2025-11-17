@@ -1,15 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Dark nightlife theme - matching sip-native */
+  --background: #120028;
+  --background-secondary: #260046;
+  --foreground: #ffffff;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Brand colors */
+  --primary-pink: #FF5DA0;
+  --neon-pink: #FF3D9A;
+  --primary-orange: #FFA84E;
+  --accent-gold: #FFD36E;
+
+  /* Accent colors */
+  --sparkle-purple: #B864F6;
+  --sparkle-aqua: #4FF0E8;
+
+  /* Shadow colors for glow effects */
+  --shadow-pink: #FF5DA0;
+  --shadow-purple: #B864F6;
+  --shadow-gold: #FFD36E;
 }
 
 html,
@@ -33,10 +43,61 @@ body {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #fbbf24;
+  background: var(--accent-gold);
   border-radius: 2px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #f59e0b;
+  background: var(--primary-orange);
+}
+
+/* Gradient utilities */
+.gradient-nightlife {
+  background: linear-gradient(180deg, #120028 0%, #260046 100%);
+}
+
+.gradient-pink-orange {
+  background: linear-gradient(135deg, #FF5DA0 0%, #FFA84E 100%);
+}
+
+.gradient-gold-shine {
+  background: linear-gradient(135deg, #FFD36E 0%, #FFA84E 100%);
+}
+
+.gradient-neon-pink {
+  background: linear-gradient(135deg, #FF3D9A 0%, #FF5DA0 100%);
+}
+
+.gradient-vibrant-night {
+  background: linear-gradient(135deg, #FF5DA0 0%, #FFA84E 50%, #FFD36E 100%);
+}
+
+/* Glow effects */
+.glow-pink {
+  box-shadow: 0 8px 32px rgba(255, 93, 160, 0.5);
+}
+
+.glow-gold {
+  box-shadow: 0 8px 32px rgba(255, 211, 110, 0.5);
+}
+
+.glow-purple {
+  box-shadow: 0 8px 32px rgba(184, 100, 246, 0.5);
+}
+
+/* Animation for sparkles */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px) scale(1.2);
+    opacity: 0.6;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

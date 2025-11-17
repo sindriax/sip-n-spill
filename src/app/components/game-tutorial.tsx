@@ -59,13 +59,13 @@ export default function GameTutorial({
         <h2 className="text-2xl font-bold text-white">{tutorialTitle}</h2>
         <button
           onClick={onSkipTutorial}
-          className="px-3 py-1 bg-[#FF9D89] bg-opacity-20 text-white rounded-full text-sm font-medium hover:bg-opacity-30 transition-all"
+          className="px-3 py-1 bg-white/10 text-white rounded-full text-sm font-medium hover:bg-white/20 transition-all"
         >
           {skipText}
         </button>
       </div>
 
-      <div className="bg-[#FF9D89] rounded-lg p-6 min-h-[300px] flex flex-col justify-center">
+      <div className="bg-[#260046] rounded-lg p-6 min-h-[300px] flex flex-col justify-center border border-white/10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -93,7 +93,7 @@ export default function GameTutorial({
           {!isFirstStep && (
             <button
               onClick={goToPrev}
-              className="px-4 py-2 bg-[#FF9D89] text-white rounded-lg font-semibold hover:bg-[#FF8A73] transition-colors"
+              className="px-4 py-2 gradient-neon-pink text-white rounded-lg font-semibold hover:scale-105 transition-all duration-150"
             >
               {prevText}
             </button>
@@ -106,7 +106,7 @@ export default function GameTutorial({
               key={index}
               className={`w-3 h-3 rounded-full transition-colors ${
                 index === currentStep
-                  ? "bg-white shadow-lg"
+                  ? "bg-white shadow-lg glow-gold"
                   : "bg-white bg-opacity-20 border border-white border-opacity-30"
               }`}
             />
@@ -116,7 +116,7 @@ export default function GameTutorial({
         <div className="absolute right-0">
           <button
             onClick={goToNext}
-            className="px-4 py-2 bg-[#FDC03B] text-stone-800 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+            className="px-4 py-2 gradient-gold-shine text-stone-800 rounded-lg font-semibold hover:scale-105 transition-all duration-150 glow-gold"
           >
             {isLastStep ? finishText : nextText}
           </button>

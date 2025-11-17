@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import GradientBackground from "./gradient-background";
 
 interface GameErrorDisplayProps {
   errorMessage: string;
@@ -18,25 +19,27 @@ const GameErrorDisplay: React.FC<GameErrorDisplayProps> = ({
   altText = "Sip 'n Spill Logo Error",
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)]">
-      <div className="w-full max-w-[180px] sm:max-w-[250px] mb-6">
-        <Image
-          src={imageSrc}
-          alt={altText}
-          width={250}
-          height={150}
-          className="w-full h-auto"
-          priority
-        />
+    <GradientBackground withSparkles>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center text-white font-[family-name:var(--font-geist-sans)]">
+        <div className="w-full max-w-[180px] sm:max-w-[250px] mb-6">
+          <Image
+            src={imageSrc}
+            alt={altText}
+            width={250}
+            height={150}
+            className="w-full h-auto"
+            priority
+          />
+        </div>
+        <p className="mt-4 text-lg sm:text-xl">{errorMessage}</p>
+        <button
+          onClick={onGoHome}
+          className="mt-6 px-6 py-3 gradient-gold-shine text-stone-800 font-bold rounded-2xl shadow-lg glow-gold hover:scale-105 transition-all duration-150 ease-in-out transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#FFD36E] focus:ring-offset-2 focus:ring-offset-transparent"
+        >
+          {goHomeText}
+        </button>
       </div>
-      <p className="mt-4 text-lg sm:text-xl">{errorMessage}</p>
-      <button
-        onClick={onGoHome}
-        className="mt-6 px-6 py-3 bg-amber-400 text-stone-800 font-semibold rounded-lg shadow-lg hover:bg-amber-300 transition-all duration-150 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-[#FDC03B]"
-      >
-        {goHomeText}
-      </button>
-    </div>
+    </GradientBackground>
   );
 };
 
