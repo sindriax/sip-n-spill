@@ -116,7 +116,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
-            className="flex-1 flex flex-col items-center justify-center gap-0 w-full max-w-[400px] pb-16"
+            className="flex-1 flex flex-col items-center w-full max-w-[400px]"
           >
             <motion.div
               animate={{
@@ -190,40 +190,36 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="flex-1" />
-
             <motion.button
               onClick={handleStartGame}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full max-w-[280px] mb-12 relative"
+              className="w-full max-w-[220px] relative mt-8"
             >
-              <div className="gradient-gold-shine rounded-[24px] p-3 glow-gold border-2 border-white/40">
+              <div className="gradient-gold-shine rounded-[20px] py-2 px-3 glow-gold border-2 border-white/40">
                 <div className="relative">
                   <Image
                     src="/assets/lets-play.png"
                     alt={content.startGame}
-                    width={180}
-                    height={74}
+                    width={140}
+                    height={58}
                     className="w-full h-auto"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-transparent rounded-[24px] pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-transparent rounded-[20px] pointer-events-none" />
                 </div>
               </div>
             </motion.button>
-
-            <div className="flex-1" />
-
-            <footer className="text-xs text-white/70 text-center">
-              <p>
-                {content.footerText.replace(
-                  "{year}",
-                  new Date().getFullYear().toString()
-                )}
-              </p>
-            </footer>
           </motion.div>
         )}
+
+        <footer className="text-xs text-white/70 text-center py-4">
+          <p>
+            {content.footerText.replace(
+              "{year}",
+              new Date().getFullYear().toString()
+            )}
+          </p>
+        </footer>
       </div>
     </GradientBackground>
   );
