@@ -7,7 +7,7 @@ import locales from "../lib/locales.json";
 import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
 import QuestionDisplay from "../components/question-display";
-import GameControls from "../components/game-controls";
+import GradientBackground from "../components/gradient-background";
 
 interface Rule {
   header: string;
@@ -164,35 +164,76 @@ function GameContent() {
     );
   }
 
+  const progress = questions.length > 0
+    ? ((currentQuestionIndex + 1) / questions.length) * 100
+    : 0;
+
   return (
-    <div
-      className="flex flex-col items-center min-h-screen p-4 sm:p-6 text-center bg-[#FDC03B] text-stone-800 font-[family-name:var(--font-geist-sans)] cursor-pointer"
-      onClick={handleInteraction}
-    >
-      <main className="flex-1 flex flex-col gap-6 items-center justify-center w-full px-2 sm:px-4 py-4">
-        <QuestionDisplay
-          question={questions[currentQuestionIndex]}
-          questionKey={questionKey}
-          isTipping={isTipping}
-          cupControls={cupControls}
-          cupAnimationVariants={cupAnimationVariants}
-        />
-        <GameControls
-          onGoNext={handleInteraction}
-          onGoHome={handleGoHome}
-          nextQuestionText={gameContent.nextQuestion}
-          backToHomeText={gameContent.backToHome}
-          isNextButtonDisabled={questions.length === 0 || isTipping}
-        />
-      </main>
-      <footer className="w-full mt-2 sm:mt-4 text-xs sm:text-sm text-stone-700 p-3 sm:p-4 text-center">
-        <p>
-          {gameContent.questionProgress
-            .replace("{current}", (currentQuestionIndex + 1).toString())
-            .replace("{total}", questions.length.toString())}
-        </p>
-      </footer>
-    </div>
+    <GradientBackground withSparkles>
+      <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
+        <div className="flex items-center justify-between px-6 pt-12 pb-6">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleGoHome();
+            }}
+            className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+            aria-label="Go back"
+          >
+            <img
+              src="/assets/sippin.png"
+              alt="Back"
+              className="w-[80%] h-[80%] object-contain"
+            />
+          </button>
+
+          <div className="flex-1 flex flex-col items-center gap-1">
+            <p className="text-lg font-bold text-white text-center">
+              {gameContent.pageTitle}
+            </p>
+            <p className="text-sm font-medium text-white/80">
+              {currentQuestionIndex + 1} / {questions.length}
+            </p>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+            aria-label="Show tutorial"
+          >
+            <img
+              src="/assets/qs.png"
+              alt="Help"
+              className="w-[80%] h-[80%] object-contain"
+            />
+          </button>
+        </div>
+
+        <div className="px-6 pb-4">
+          <div className="h-[6px] bg-white/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div
+          className="flex-1 flex items-center justify-center px-6 cursor-pointer"
+          onClick={handleInteraction}
+        >
+          <QuestionDisplay
+            question={questions[currentQuestionIndex]}
+            questionKey={questionKey}
+            isTipping={isTipping}
+            cupControls={cupControls}
+            cupAnimationVariants={cupAnimationVariants}
+          />
+        </div>
+      </div>
+    </GradientBackground>
   );
 }
 
