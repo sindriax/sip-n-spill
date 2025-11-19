@@ -75,7 +75,7 @@ export default function HomePage() {
   const renderSubtitle = () => {
     const parts = content.pageDescription.split(/(SIP|SPILL|BEBER|REVELAR)/g);
     return (
-      <p className="text-lg text-white text-center opacity-95 max-w-[300px] leading-relaxed mb-8">
+      <p className="text-base sm:text-lg text-white text-center opacity-95 max-w-[280px] sm:max-w-[320px] leading-relaxed px-2">
         {parts.map((part, index) => {
           if (
             part === "SIP" ||
@@ -84,7 +84,7 @@ export default function HomePage() {
             part === "REVELAR"
           ) {
             return (
-              <span key={index} className="font-extrabold text-xl text-[#F0478C]">
+              <span key={index} className="font-extrabold text-lg sm:text-xl text-[#F0478C]">
                 {part}
               </span>
             );
@@ -97,7 +97,7 @@ export default function HomePage() {
 
   return (
     <GradientBackground withSparkles>
-      <div className="flex flex-col items-center min-h-screen p-6 font-[family-name:var(--font-geist-sans)]">
+      <div className="flex flex-col items-center min-h-screen min-h-[100dvh] p-4 sm:p-6 font-[family-name:var(--font-geist-sans)] safe-area-inset">
         {showTutorial ? (
           <div className="flex-1 flex items-center justify-center w-full max-w-md">
             <GameTutorial
@@ -127,33 +127,35 @@ export default function HomePage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="flex items-center justify-center mt-20 mb-4"
+              className="flex items-center justify-center mt-12 sm:mt-16 md:mt-20 mb-3 sm:mb-4"
             >
               <Image
                 src="/assets/sip-logo.png"
                 alt={content.pageTitle}
                 width={250}
                 height={157}
-                className="w-[250px] h-auto"
+                className="w-[200px] sm:w-[250px] h-auto"
                 priority
               />
             </motion.div>
 
-            {renderSubtitle()}
+            <div className="mb-6 sm:mb-8">
+              {renderSubtitle()}
+            </div>
 
-            <div className="w-full flex flex-col items-center gap-4 mb-8">
+            <div className="w-full flex flex-col items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
               <div className="flex gap-2 bg-white/10 rounded-2xl p-1">
                 <button
                   onClick={() => handleLanguageSelect("en")}
-                  className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
+                  className={`flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-3 sm:px-4 rounded-xl min-w-[65px] sm:min-w-[70px] transition-all ${
                     language === "en"
                       ? "bg-white/25"
                       : "bg-transparent opacity-70"
                   }`}
                 >
-                  <span className="text-lg">🇺🇸</span>
+                  <span className="text-base sm:text-lg">🇺🇸</span>
                   <span
-                    className={`text-sm font-semibold text-white ${
+                    className={`text-xs sm:text-sm font-semibold text-white ${
                       language === "en" ? "opacity-100 font-bold" : "opacity-70"
                     }`}
                   >
@@ -162,15 +164,15 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => handleLanguageSelect("es")}
-                  className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
+                  className={`flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-3 sm:px-4 rounded-xl min-w-[65px] sm:min-w-[70px] transition-all ${
                     language === "es"
                       ? "bg-white/25"
                       : "bg-transparent opacity-70"
                   }`}
                 >
-                  <span className="text-lg">🇪🇸</span>
+                  <span className="text-base sm:text-lg">🇪🇸</span>
                   <span
-                    className={`text-sm font-semibold text-white ${
+                    className={`text-xs sm:text-sm font-semibold text-white ${
                       language === "es" ? "opacity-100 font-bold" : "opacity-70"
                     }`}
                   >
@@ -181,10 +183,10 @@ export default function HomePage() {
 
               <button
                 onClick={handleShowTutorial}
-                className="flex items-center justify-center gap-2 py-2 px-6 rounded-2xl bg-white/10 hover:bg-white/20 transition-all"
+                className="flex items-center justify-center gap-2 py-2 px-5 sm:px-6 rounded-2xl bg-white/10 hover:bg-white/20 active:bg-white/30 transition-all touch-manipulation"
               >
-                <span className="text-lg">📖</span>
-                <span className="text-sm font-semibold text-white opacity-85">
+                <span className="text-base sm:text-lg">📖</span>
+                <span className="text-xs sm:text-sm font-semibold text-white opacity-85">
                   {content.showTutorial}
                 </span>
               </button>
@@ -194,7 +196,7 @@ export default function HomePage() {
               onClick={handleStartGame}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full max-w-[220px] relative mt-8"
+              className="w-full max-w-[200px] sm:max-w-[220px] relative mt-4 sm:mt-8 touch-manipulation"
             >
               <div className="gradient-gold-shine rounded-[20px] py-2 px-3 glow-gold border-2 border-white/40">
                 <div className="relative">
@@ -212,8 +214,8 @@ export default function HomePage() {
           </motion.div>
         )}
 
-        <footer className="text-xs text-white/70 text-center py-4">
-          <p>
+        <footer className="text-xs text-white/70 text-center py-3 sm:py-4 px-4">
+          <p className="break-words">
             {content.footerText.replace(
               "{year}",
               new Date().getFullYear().toString()

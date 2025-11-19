@@ -72,10 +72,10 @@ export default function RulesSection({
   toggleRules,
 }: RulesSectionProps) {
   return (
-    <div className="mt-4 md:mt-6 bg-[#ff937d] rounded-lg shadow-lg max-w-md w-full text-left">
+    <div className="mt-2 sm:mt-4 md:mt-6 bg-[#ff937d] rounded-lg shadow-lg max-w-md w-full text-left">
       <button
         onClick={toggleRules}
-        className="w-full flex justify-between items-center p-4 md:p-5 text-lg md:text-xl font-semibold text-white focus:outline-none rounded-t-lg hover:bg-white/10 active:bg-white/20 transition-colors duration-150"
+        className="w-full flex justify-between items-center p-3 sm:p-4 md:p-5 text-base sm:text-lg md:text-xl font-semibold text-white focus:outline-none rounded-t-lg hover:bg-white/10 active:bg-white/20 transition-colors duration-150 touch-manipulation"
         aria-expanded={showRules}
         aria-controls="game-rules-list"
       >
@@ -96,7 +96,7 @@ export default function RulesSection({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="space-y-2 text-sm md:text-base text-orange-50 p-4 md:p-5 pt-2 md:pt-3 bg-white/5 rounded-b-lg overflow-hidden"
+            className="space-y-2 text-xs sm:text-sm md:text-base text-orange-50 p-3 sm:p-4 md:p-5 pt-2 md:pt-3 bg-white/5 rounded-b-lg overflow-hidden max-h-[60vh] overflow-y-auto"
           >
             {rules.map((rule, index) => (
               <motion.li

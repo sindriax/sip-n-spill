@@ -1,22 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  /* Dark nightlife theme - matching sip-native */
   --background: #120028;
   --background-secondary: #260046;
   --foreground: #ffffff;
 
-  /* Brand colors */
   --primary-pink: #FF5DA0;
   --neon-pink: #FF3D9A;
   --primary-orange: #FFA84E;
   --accent-gold: #FFD36E;
 
-  /* Accent colors */
   --sparkle-purple: #B864F6;
   --sparkle-aqua: #4FF0E8;
 
-  /* Shadow colors for glow effects */
   --shadow-pink: #FF5DA0;
   --shadow-purple: #B864F6;
   --shadow-gold: #FFD36E;
@@ -25,6 +21,9 @@
 html,
 body {
   height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
   overflow-x: hidden;
 }
 
@@ -32,6 +31,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@supports (-webkit-touch-callout: none) {
+  html,
+  body {
+    height: -webkit-fill-available;
+  }
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -51,7 +59,6 @@ body {
   background: var(--primary-orange);
 }
 
-/* Gradient utilities */
 .gradient-nightlife {
   background: linear-gradient(180deg, #120028 0%, #260046 100%);
 }
@@ -72,7 +79,6 @@ body {
   background: linear-gradient(135deg, #FF5DA0 0%, #FFA84E 50%, #FFD36E 100%);
 }
 
-/* Glow effects */
 .glow-pink {
   box-shadow: 0 8px 32px rgba(255, 93, 160, 0.5);
 }
@@ -85,7 +91,6 @@ body {
   box-shadow: 0 8px 32px rgba(184, 100, 246, 0.5);
 }
 
-/* Animation for sparkles */
 @keyframes float {
   0%,
   100% {

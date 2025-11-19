@@ -9,6 +9,7 @@ import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
 import QuestionDisplay from "../components/question-display";
 import GradientBackground from "../components/gradient-background";
+import RulesSection from "../components/rules-section";
 
 interface Rule {
   header: string;
@@ -61,6 +62,7 @@ function GameContent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [questionKey, setQuestionKey] = useState(0);
+  const [showRules, setShowRules] = useState(false);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
@@ -138,6 +140,10 @@ function GameContent() {
     router.push("/");
   };
 
+  const toggleRules = () => {
+    setShowRules(!showRules);
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space" || event.key === "Enter") {
@@ -171,30 +177,30 @@ function GameContent() {
 
   return (
     <GradientBackground withSparkles>
-      <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
-        <div className="flex items-center justify-between px-6 pt-12 pb-6">
+      <div className="flex flex-col min-h-screen min-h-[100dvh] text-white font-[family-name:var(--font-geist-sans)]">
+        <div className="flex items-center justify-between px-4 sm:px-6 pt-8 sm:pt-10 md:pt-12 pb-4 sm:pb-6">
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleGoHome();
             }}
-            className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+            className="w-[44px] h-[44px] sm:w-[50px] sm:h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors touch-manipulation flex-shrink-0"
             aria-label="Go back"
           >
             <Image
               src="/assets/sippin.png"
               alt="Back"
-              width={40}
-              height={40}
-              className="object-contain"
+              width={32}
+              height={32}
+              className="object-contain w-8 h-8 sm:w-10 sm:h-10"
             />
           </button>
 
-          <div className="flex-1 flex flex-col items-center gap-1">
-            <p className="text-lg font-bold text-white text-center">
+          <div className="flex-1 flex flex-col items-center gap-0.5 sm:gap-1 min-w-0 px-2">
+            <p className="text-base sm:text-lg font-bold text-white text-center truncate w-full">
               {gameContent.pageTitle}
             </p>
-            <p className="text-sm font-medium text-white/80">
+            <p className="text-xs sm:text-sm font-medium text-white/80">
               {currentQuestionIndex + 1} / {questions.length}
             </p>
           </div>
@@ -202,22 +208,23 @@ function GameContent() {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              toggleRules();
             }}
-            className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-            aria-label="Show tutorial"
+            className="w-[44px] h-[44px] sm:w-[50px] sm:h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors touch-manipulation flex-shrink-0"
+            aria-label="Show rules"
           >
             <Image
               src="/assets/qs.png"
               alt="Help"
-              width={40}
-              height={40}
-              className="object-contain"
+              width={20}
+              height={20}
+              className="object-contain w-5 h-5 sm:w-6 sm:h-6"
             />
           </button>
         </div>
 
-        <div className="px-6 pb-4">
-          <div className="h-[6px] bg-white/20 rounded-full overflow-hidden">
+        <div className="px-4 sm:px-6 pb-3 sm:pb-4">
+          <div className="h-[5px] sm:h-[6px] bg-white/20 rounded-full overflow-hidden">
             <div
               className="h-full bg-white rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -225,18 +232,29 @@ function GameContent() {
           </div>
         </div>
 
-        <div
-          className="flex-1 flex items-center justify-center px-6 cursor-pointer"
-          onClick={handleInteraction}
-        >
-          <QuestionDisplay
-            question={questions[currentQuestionIndex]}
-            questionKey={questionKey}
-            isTipping={isTipping}
-            cupControls={cupControls}
-            cupAnimationVariants={cupAnimationVariants}
-          />
-        </div>
+        {showRules ? (
+          <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 py-3 sm:py-4 overflow-y-auto">
+            <RulesSection
+              gameRulesTitle={gameContent.gameRulesTitle}
+              rules={gameContent.rules}
+              showRules={showRules}
+              toggleRules={toggleRules}
+            />
+          </div>
+        ) : (
+          <div
+            className="flex-1 flex items-center justify-center px-3 sm:px-6 cursor-pointer py-2 sm:py-4"
+            onClick={handleInteraction}
+          >
+            <QuestionDisplay
+              question={questions[currentQuestionIndex]}
+              questionKey={questionKey}
+              isTipping={isTipping}
+              cupControls={cupControls}
+              cupAnimationVariants={cupAnimationVariants}
+            />
+          </div>
+        )}
       </div>
     </GradientBackground>
   );
