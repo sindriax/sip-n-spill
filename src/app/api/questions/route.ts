@@ -3,6 +3,9 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+const VALID_CATEGORIES = ["chill", "spicy", "unhinged"] as const;
+type Category = (typeof VALID_CATEGORIES)[number];
+
 if (!MONGODB_URI) {
   console.error("CRITICAL: MONGODB_URI environment variable is not defined.");
 }
@@ -57,13 +60,18 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const lang = searchParams.get("lang") || "es";
+  const categoryParam = searchParams.get("category") || "spicy";
+
+  const category: Category = VALID_CATEGORIES.includes(categoryParam as Category)
+    ? (categoryParam as Category)
+    : "spicy";
 
   try {
     const mongoClient = await clientPromise;
     const db = mongoClient.db("sip-n-spill");
     const questionsCollection = db.collection("questions");
 
-    const query = { lang: lang };
+    const query = { lang: lang, category: category };
     const questionsFromDb = await questionsCollection
       .find(query)
       .project({ text: 1, _id: 0 })
@@ -71,7 +79,7 @@ export async function GET(req: NextRequest) {
 
     const questionsTextArray = questionsFromDb.map((qDoc) => qDoc.text);
 
-    return NextResponse.json({ questions: questionsTextArray });
+    return NextResponse.json({ questions: questionsTextArray, category });
   } catch (error) {
     console.error("Failed to fetch questions from MongoDB:", error);
     const errorMessage =

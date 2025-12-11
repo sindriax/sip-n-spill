@@ -8,10 +8,16 @@ import locales from "./lib/locales.json";
 import GameTutorial from "./components/game-tutorial";
 import GradientBackground from "./components/gradient-background";
 
+type CategoryInfo = {
+  name: string;
+  description: string;
+};
+
 type LocaleStrings = {
   pageTitle: string;
   pageDescription: string;
   selectLanguage: string;
+  selectCategory: string;
   startGame: string;
   footerText: string;
   tutorialTitle: string;
@@ -20,6 +26,11 @@ type LocaleStrings = {
   prevStep: string;
   finishTutorial: string;
   showTutorial: string;
+  categories: {
+    chill: CategoryInfo;
+    spicy: CategoryInfo;
+    unhinged: CategoryInfo;
+  };
   tutorialSteps: Array<{
     title: string;
     description: string;
@@ -34,8 +45,17 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
+type Category = "chill" | "spicy" | "unhinged";
+
+const CATEGORY_ICONS: Record<Category, string> = {
+  chill: "😎",
+  spicy: "🌶️",
+  unhinged: "🔥",
+};
+
 export default function HomePage() {
   const [language, setLanguage] = useState("en");
+  const [category, setCategory] = useState<Category>("spicy");
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
   const [showTutorial, setShowTutorial] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -55,8 +75,12 @@ export default function HomePage() {
     setLanguage(selectedLang);
   };
 
+  const handleCategorySelect = (selectedCategory: Category) => {
+    setCategory(selectedCategory);
+  };
+
   const handleStartGame = () => {
-    router.push(`/play?lang=${language}`);
+    router.push(`/play?lang=${language}&category=${category}`);
   };
 
   const handleShowTutorial = () => {
@@ -141,7 +165,7 @@ export default function HomePage() {
 
             {renderSubtitle()}
 
-            <div className="w-full flex flex-col items-center gap-4 mb-8">
+            <div className="w-full flex flex-col items-center gap-4 mb-6">
               <div className="flex gap-2 bg-white/10 rounded-2xl p-1">
                 <button
                   onClick={() => handleLanguageSelect("en")}
@@ -178,7 +202,42 @@ export default function HomePage() {
                   </span>
                 </button>
               </div>
+            </div>
 
+            <div className="w-full flex flex-col items-center gap-3 mb-6">
+              <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
+                {content.selectCategory}
+              </p>
+              <div className="w-full flex flex-col gap-2">
+                {(["chill", "spicy", "unhinged"] as Category[]).map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategorySelect(cat)}
+                    className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
+                      category === cat
+                        ? cat === "chill"
+                          ? "bg-gradient-to-r from-cyan-500/40 to-blue-500/40 border-2 border-cyan-400/60"
+                          : cat === "spicy"
+                          ? "bg-gradient-to-r from-orange-500/40 to-pink-500/40 border-2 border-orange-400/60"
+                          : "bg-gradient-to-r from-red-600/40 to-purple-600/40 border-2 border-red-500/60"
+                        : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                    }`}
+                  >
+                    <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
+                    <div className="flex flex-col items-start">
+                      <span className="text-base font-bold text-white">
+                        {content.categories[cat].name}
+                      </span>
+                      <span className="text-xs text-white/70">
+                        {content.categories[cat].description}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-full flex justify-center mb-4">
               <button
                 onClick={handleShowTutorial}
                 className="flex items-center justify-center gap-2 py-2 px-6 rounded-2xl bg-white/10 hover:bg-white/20 transition-all"
