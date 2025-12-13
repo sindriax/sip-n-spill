@@ -9,10 +9,17 @@ import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
 import QuestionDisplay from "../components/question-display";
 import GradientBackground from "../components/gradient-background";
+import GameTutorial from "../components/game-tutorial";
 
 interface Rule {
   header: string;
   text: string;
+}
+
+interface TutorialStep {
+  title: string;
+  description: string;
+  visual?: string;
 }
 
 type LocaleStrings = {
@@ -28,6 +35,13 @@ type LocaleStrings = {
   noQuestionsLoaded: string;
   loadingSettings: string;
   questionProgress: string;
+  tutorialTitle: string;
+  skipTutorial: string;
+  nextStep: string;
+  prevStep: string;
+  finishTutorial: string;
+  showTutorial: string;
+  tutorialSteps: TutorialStep[];
 };
 
 type Locales = {
@@ -61,6 +75,7 @@ function GameContent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [questionKey, setQuestionKey] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
@@ -169,6 +184,25 @@ function GameContent() {
     ? ((currentQuestionIndex + 1) / questions.length) * 100
     : 0;
 
+  if (showTutorial) {
+    return (
+      <GradientBackground withSparkles>
+        <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)] items-center justify-center px-6">
+          <GameTutorial
+            onSkipTutorial={() => setShowTutorial(false)}
+            onCompleteTutorial={() => setShowTutorial(false)}
+            skipText={gameContent.skipTutorial}
+            nextText={gameContent.nextStep}
+            prevText={gameContent.prevStep}
+            finishText={gameContent.finishTutorial}
+            tutorialTitle={gameContent.tutorialTitle}
+            tutorialSteps={gameContent.tutorialSteps}
+          />
+        </div>
+      </GradientBackground>
+    );
+  }
+
   return (
     <GradientBackground withSparkles>
       <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
@@ -202,6 +236,7 @@ function GameContent() {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              setShowTutorial(true);
             }}
             className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
             aria-label="Show tutorial"
@@ -209,8 +244,8 @@ function GameContent() {
             <Image
               src="/assets/qs.png"
               alt="Help"
-              width={40}
-              height={40}
+              width={28}
+              height={28}
               className="object-contain"
             />
           </button>
