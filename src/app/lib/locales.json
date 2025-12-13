@@ -4,12 +4,13 @@
     "pageDescription": "Think you know your friends? Spill their secrets and make them sip their drinks!",
     "selectLanguage": "Select Language:",
     "selectCategory": "Pick Your Vibe",
+    "selectPartyMode": "Party Mode",
     "startGame": "Start Drinking!",
     "gameRulesTitle": "How To Play",
     "categories": {
       "chill": {
-        "name": "Chill Mode",
-        "description": "Safe for work, family-friendly fun"
+        "name": "Warmup",
+        "description": "Secrets, drama & social chaos"
       },
       "spicy": {
         "name": "Spicy",
@@ -19,6 +20,19 @@
         "name": "Unhinged",
         "description": "No limits. Play at your own risk."
       }
+    },
+    "partyModes": {
+      "hotseat": {
+        "name": "Hot Seat",
+        "description": "Questions target specific players by name"
+      }
+    },
+    "hotseat": {
+      "addPlayers": "Add Player Names",
+      "placeholder": "Enter name...",
+      "addButton": "Add",
+      "minPlayers": "Add at least 2 players to start",
+      "playerCount": "{count} players ready to play!"
     },
     "rules": [
       {
@@ -106,12 +120,13 @@
     "pageDescription": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
     "selectLanguage": "Seleccionar Idioma:",
     "selectCategory": "Elige Tu Nivel",
+    "selectPartyMode": "Modo de Fiesta",
     "startGame": "¡Empieza a Beber!",
     "gameRulesTitle": "Cómo Jugar",
     "categories": {
       "chill": {
-        "name": "Modo Chill",
-        "description": "Apto para el trabajo, diversión familiar"
+        "name": "Calentamiento",
+        "description": "Secretos, drama y caos social"
       },
       "spicy": {
         "name": "Picante",
@@ -121,6 +136,19 @@
         "name": "Sin Límites",
         "description": "Sin filtros. Juega bajo tu propio riesgo."
       }
+    },
+    "partyModes": {
+      "hotseat": {
+        "name": "Hot Seat",
+        "description": "Las preguntas van dirigidas a jugadores específicos"
+      }
+    },
+    "hotseat": {
+      "addPlayers": "Añade los Nombres",
+      "placeholder": "Escribe nombre...",
+      "addButton": "Añadir",
+      "minPlayers": "Añade al menos 2 jugadores para empezar",
+      "playerCount": "¡{count} jugadores listos!"
     },
     "rules": [
       {

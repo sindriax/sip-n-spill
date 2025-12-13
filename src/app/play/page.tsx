@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback } from "react";
+import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAnimation } from "framer-motion";
 import Image from "next/image";
@@ -47,13 +47,16 @@ const cupAnimationVariants = {
   },
 };
 
-type Category = "chill" | "spicy" | "unhinged";
-
 function GameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const lang = searchParams.get("lang") || "es";
-  const category = (searchParams.get("category") || "spicy") as Category;
+  const categories = searchParams.get("categories") || searchParams.get("category") || "spicy";
+  const mode = searchParams.get("mode");
+  const playersParam = searchParams.get("players");
+  const players = useMemo(() => {
+    return playersParam ? JSON.parse(decodeURIComponent(playersParam)) : [];
+  }, [playersParam]);
   const [gameContent, setGameContent] = useState<LocaleStrings>(
     typedLocales[lang as keyof Locales] || typedLocales.es
   );
@@ -79,7 +82,13 @@ function GameContent() {
       setIsLoading(true);
       setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es);
       try {
-        const response = await fetch(`/api/questions?lang=${lang}&category=${category}`);
+        let apiUrl = `/api/questions?lang=${lang}`;
+        if (mode === "hotseat") {
+          apiUrl += `&mode=hotseat`;
+        } else {
+          apiUrl += `&categories=${categories}`;
+        }
+        const response = await fetch(apiUrl);
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
@@ -89,10 +98,19 @@ function GameContent() {
           : [];
         setQuestions(shuffleArray(loadedQuestions));
         setQuestionKey((prevKey) => prevKey + 1);
+        if (mode === "hotseat" && players.length > 0) {
+          setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
+        }
       } catch (error) {
-        console.error(`Failed to load questions for language: ${lang}, category: ${category}`, error);
+        console.error(`Failed to load questions for language: ${lang}, categories: ${categories}`, error);
         try {
-          const fallbackResponse = await fetch(`/api/questions?lang=es&category=${category}`);
+          let fallbackUrl = `/api/questions?lang=es`;
+          if (mode === "hotseat") {
+            fallbackUrl += `&mode=hotseat`;
+          } else {
+            fallbackUrl += `&categories=${categories}`;
+          }
+          const fallbackResponse = await fetch(fallbackUrl);
           if (!fallbackResponse.ok) {
             throw new Error(
               `Fallback API responded with status ${fallbackResponse.status}`
@@ -104,6 +122,9 @@ function GameContent() {
             : [];
           setQuestions(shuffleArray(fallbackLoadedQuestions));
           setQuestionKey((prevKey) => prevKey + 1);
+          if (mode === "hotseat" && players.length > 0) {
+            setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
+          }
           console.warn(
             "Loaded and shuffled fallback Spanish questions from API."
           );
@@ -119,7 +140,18 @@ function GameContent() {
     };
 
     loadQuestions();
-  }, [lang, category]);
+  }, [lang, categories, mode, players]);
+
+  const [currentTargetPlayer, setCurrentTargetPlayer] = useState<string>("");
+
+  const getCurrentQuestion = useCallback(() => {
+    if (questions.length === 0) return "";
+    const question = questions[currentQuestionIndex];
+    if (mode === "hotseat" && currentTargetPlayer) {
+      return question.replace("{player}", currentTargetPlayer);
+    }
+    return question;
+  }, [questions, currentQuestionIndex, mode, currentTargetPlayer]);
 
   const handleInteraction = useCallback(async () => {
     if (questions.length === 0 || isTipping) return;
@@ -133,9 +165,12 @@ function GameContent() {
       });
       return nextIndex;
     });
+    if (mode === "hotseat" && players.length > 0) {
+      setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
+    }
     await cupControls.start("initial");
     setIsTipping(false);
-  }, [questions.length, cupControls, isTipping]);
+  }, [questions.length, cupControls, isTipping, mode, players]);
 
   const handleGoHome = () => {
     router.push("/");
@@ -195,7 +230,10 @@ function GameContent() {
 
           <div className="flex-1 flex flex-col items-center gap-1">
             <p className="text-lg font-bold text-white text-center">
-              {gameContent.pageTitle}
+              {mode === "hotseat" && currentTargetPlayer
+                ? `🎯 ${currentTargetPlayer}`
+                : gameContent.pageTitle
+              }
             </p>
             <p className="text-sm font-medium text-white/80">
               {currentQuestionIndex + 1} / {questions.length}
@@ -233,7 +271,7 @@ function GameContent() {
           onClick={handleInteraction}
         >
           <QuestionDisplay
-            question={questions[currentQuestionIndex]}
+            question={getCurrentQuestion()}
             questionKey={questionKey}
             isTipping={isTipping}
             cupControls={cupControls}
