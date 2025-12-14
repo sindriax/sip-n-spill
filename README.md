@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sip 'n Spill
 
-## Getting Started
+A drinking game web app with a twist - instead of sharing your own secrets, you guess what your friends have done!
 
-First, run the development server:
+> **18+** | Please drink responsibly
+
+  <table>
+    <tr>
+      <td align="center"><img src="screenshots/homepage.jpeg" width="300" /><br><em>Home</em></td>
+      <td align="center"><img src="screenshots/gameplay.jpeg" width="300" /><br><em>Gameplay</em></td>
+    </tr>
+  </table>
+
+## How to Play
+
+1. **The Guesser** reads a question silently
+2. **Make predictions** about each player - did they do it or not?
+3. **Reveal** the question out loud
+4. **Drink up!** - If you guessed right about someone, they drink. If you guessed wrong, you drink!
+
+## Features
+
+- 500+ questions across multiple categories
+- **Chill Mode** - Safe for work, still fun
+- **Spicy** - Classic party mode
+- **Unhinged** - No limits, play at your own risk
+- Bilingual support (English & Spanish)
+- Interactive tutorial
+- Mobile-first design
+
+## Tech Stack
+
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- MongoDB
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file:
 
-## Learn More
+```
+MONGODB_URI=your_mongodb_connection_string
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Seeding the Database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx tsx src/scripts/seed-questions.ts
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Created by
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[Sindriax](https://github.com/sindriax)
