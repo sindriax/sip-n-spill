@@ -6,8 +6,8 @@ A drinking game web app with a twist - instead of sharing your own secrets, you 
 
   <table>
     <tr>
-      <td align="center"><img src="screenshots/homepage.jpeg" width="300" /><br><em>Home</em></td>
-      <td align="center"><img src="screenshots/gameplay.jpeg" width="300" /><br><em>Gameplay</em></td>
+      <td align="center"><img src="public/screenshots/homepage.jpeg" width="300" /><br><em>Home</em></td>
+      <td align="center"><img src="public/screenshots/gameplay.jpeg" width="300" /><br><em>Gameplay</em></td>
     </tr>
   </table>
 
