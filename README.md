@@ -4,13 +4,6 @@ A drinking game web app with a twist - instead of sharing your own secrets, you 
 
 > **18+** | Please drink responsibly
 
-  <table>
-    <tr>
-      <td align="center"><img src="public/screenshots/homepage.jpeg" width="300" /><br><em>Home</em></td>
-      <td align="center"><img src="public/screenshots/gameplay.jpeg" width="300" /><br><em>Gameplay</em></td>
-    </tr>
-  </table>
-
 ## How to Play
 
 1. **The Guesser** reads a question silently
@@ -27,6 +20,15 @@ A drinking game web app with a twist - instead of sharing your own secrets, you 
 - Bilingual support (English & Spanish)
 - Interactive tutorial
 - Mobile-first design
+
+ ## Screenshots
+
+  <table>
+    <tr>
+      <td align="center"><img src="public/screenshots/homepage.jpeg" width="300" /><br><em>Home</em></td>
+      <td align="center"><img src="public/screenshots/gameplay.jpeg" width="300" /><br><em>Gameplay</em></td>
+    </tr>
+  </table>
 
 ## Tech Stack
 
