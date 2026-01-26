@@ -3,8 +3,23 @@
     "pageTitle": "Sip 'n Spill",
     "pageDescription": "Think you know your friends? Spill their secrets and make them sip their drinks!",
     "selectLanguage": "Select Language:",
+    "selectCategory": "Pick Your Vibe",
     "startGame": "Start Drinking!",
     "gameRulesTitle": "How To Play",
+    "categories": {
+      "chill": {
+        "name": "Chill Mode",
+        "description": "Safe for work, family-friendly fun"
+      },
+      "spicy": {
+        "name": "Spicy",
+        "description": "Classic party mode - relationships & hookups"
+      },
+      "unhinged": {
+        "name": "Unhinged",
+        "description": "No limits. Play at your own risk."
+      }
+    },
     "rules": [
       {
         "header": "Who's Up?",
@@ -90,8 +105,23 @@
     "pageTitle": "Sip 'n Spill",
     "pageDescription": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
     "selectLanguage": "Seleccionar Idioma:",
+    "selectCategory": "Elige Tu Nivel",
     "startGame": "¡Empieza a Beber!",
     "gameRulesTitle": "Cómo Jugar",
+    "categories": {
+      "chill": {
+        "name": "Modo Chill",
+        "description": "Apto para el trabajo, diversión familiar"
+      },
+      "spicy": {
+        "name": "Picante",
+        "description": "Modo fiesta clásico - relaciones y ligues"
+      },
+      "unhinged": {
+        "name": "Sin Límites",
+        "description": "Sin filtros. Juega bajo tu propio riesgo."
+      }
+    },
     "rules": [
       {
         "header": "¿Quién juega?",

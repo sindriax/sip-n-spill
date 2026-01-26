@@ -61,10 +61,13 @@ const cupAnimationVariants = {
   },
 };
 
+type Category = "chill" | "spicy" | "unhinged";
+
 function GameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const lang = searchParams.get("lang") || "es";
+  const category = (searchParams.get("category") || "spicy") as Category;
   const [gameContent, setGameContent] = useState<LocaleStrings>(
     typedLocales[lang as keyof Locales] || typedLocales.es
   );
@@ -91,7 +94,7 @@ function GameContent() {
       setIsLoading(true);
       setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es);
       try {
-        const response = await fetch(`/api/questions?lang=${lang}`);
+        const response = await fetch(`/api/questions?lang=${lang}&category=${category}`);
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
@@ -102,9 +105,9 @@ function GameContent() {
         setQuestions(shuffleArray(loadedQuestions));
         setQuestionKey((prevKey) => prevKey + 1);
       } catch (error) {
-        console.error(`Failed to load questions for language: ${lang}`, error);
+        console.error(`Failed to load questions for language: ${lang}, category: ${category}`, error);
         try {
-          const fallbackResponse = await fetch("/api/questions?lang=es");
+          const fallbackResponse = await fetch(`/api/questions?lang=es&category=${category}`);
           if (!fallbackResponse.ok) {
             throw new Error(
               `Fallback API responded with status ${fallbackResponse.status}`
@@ -131,7 +134,7 @@ function GameContent() {
     };
 
     loadQuestions();
-  }, [lang]);
+  }, [lang, category]);
 
   const handleInteraction = useCallback(async () => {
     if (questions.length === 0 || isTipping) return;
