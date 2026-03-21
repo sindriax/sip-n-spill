@@ -8,6 +8,7 @@ import locales from "../lib/locales.json";
 import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
 import QuestionDisplay from "../components/question-display";
+import RulesSection from "../components/rules-section";
 import GradientBackground from "../components/gradient-background";
 
 interface Rule {
@@ -37,16 +38,6 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
-const cupAnimationVariants = {
-  initial: { rotate: 0, x: 0, y: 0 },
-  tip: {
-    rotate: [0, 15, 0],
-    x: [0, 5, 0],
-    y: [0, -2, 0],
-    transition: { duration: 0.5, ease: "easeInOut" },
-  },
-};
-
 function GameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -74,6 +65,7 @@ function GameContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [questionKey, setQuestionKey] = useState(0);
   const [currentTargetPlayer, setCurrentTargetPlayer] = useState<string>("");
+  const [showRules, setShowRules] = useState(false);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
@@ -248,9 +240,10 @@ function GameContent() {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              setShowRules(true);
             }}
             className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-            aria-label="Show tutorial"
+            aria-label="Show rules"
           >
             <Image
               src="/assets/qs.png"
@@ -278,11 +271,14 @@ function GameContent() {
           <QuestionDisplay
             question={getCurrentQuestion()}
             questionKey={questionKey}
-            isTipping={isTipping}
-            cupControls={cupControls}
-            cupAnimationVariants={cupAnimationVariants}
           />
         </div>
+        <RulesSection
+          gameRulesTitle={gameContent.gameRulesTitle}
+          rules={gameContent.rules}
+          isOpen={showRules}
+          onClose={() => setShowRules(false)}
+        />
       </div>
     </GradientBackground>
   );

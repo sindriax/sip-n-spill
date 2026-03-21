@@ -11,8 +11,8 @@ export interface Rule {
 interface RulesSectionProps {
   gameRulesTitle: string;
   rules: Rule[];
-  showRules: boolean;
-  toggleRules: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 function formatText(text: string): (string | React.JSX.Element)[] {
@@ -20,99 +20,86 @@ function formatText(text: string): (string | React.JSX.Element)[] {
   return parts.map((part, index) => {
     if (part.startsWith("*") && part.endsWith("*")) {
       const boldText = part.slice(1, -1);
-      return <strong key={index}>{boldText}</strong>;
+      return (
+        <strong key={index} className="text-white">
+          {boldText}
+        </strong>
+      );
     }
     return part;
   });
 }
 
-const rulesContainerVariants = {
-  hidden: { opacity: 0, height: 0 },
-  visible: {
-    opacity: 1,
-    height: "auto",
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
-      when: "beforeChildren",
-      staggerChildren: 0.1,
-    },
-  },
-  exit: {
-    opacity: 0,
-    height: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeInOut",
-      when: "afterChildren",
-      staggerChildren: 0.05,
-      staggerDirection: -1,
-    },
-  },
-};
-
-const ruleItemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    transition: { duration: 0.2, ease: "easeIn" },
-  },
-};
-
 export default function RulesSection({
   gameRulesTitle,
   rules,
-  showRules,
-  toggleRules,
+  isOpen,
+  onClose,
 }: RulesSectionProps) {
   return (
-    <div className="mt-4 md:mt-6 bg-[#ff937d] rounded-lg shadow-lg max-w-md w-full text-left">
-      <button
-        onClick={toggleRules}
-        className="w-full flex justify-between items-center p-4 md:p-5 text-lg md:text-xl font-semibold text-white focus:outline-none rounded-t-lg hover:bg-white/10 active:bg-white/20 transition-colors duration-150"
-        aria-expanded={showRules}
-        aria-controls="game-rules-list"
-      >
-        <span>{gameRulesTitle}</span>
-        <span
-          className={`transform transition-transform duration-200 ${
-            showRules ? "rotate-180" : "rotate-0"
-          }`}
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          onClick={onClose}
         >
-          ▼
-        </span>
-      </button>
-      <AnimatePresence>
-        {showRules && (
-          <motion.ul
-            id="game-rules-list"
-            variants={rulesContainerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="space-y-2 text-sm md:text-base text-orange-50 p-4 md:p-5 pt-2 md:pt-3 bg-white/5 rounded-b-lg overflow-hidden"
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="relative w-full max-w-md max-h-[80vh] overflow-y-auto rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            {rules.map((rule, index) => (
-              <motion.li
-                key={index}
-                variants={ruleItemVariants}
-                className="leading-relaxed"
+            {/* Header */}
+            <div className="sticky top-0 z-10 flex items-center justify-between p-5 pb-3 bg-[#2a1035]/95 backdrop-blur-md rounded-t-3xl border-b border-white/10">
+              <h2 className="text-xl font-bold text-white">{gameRulesTitle}</h2>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/25 transition-colors text-white/80 hover:text-white"
+                aria-label="Close rules"
               >
-                {rule.header && (
-                  <strong className="block mb-0.5">{rule.header}</strong>
-                )}
-                {formatText(rule.text)}
-              </motion.li>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </div>
+                ✕
+              </button>
+            </div>
+
+            {/* Rules List */}
+            <ul className="p-5 pt-4 space-y-4">
+              {rules.map((rule, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05, duration: 0.2 }}
+                  className="flex gap-3"
+                >
+                  {rule.header && (
+                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-sm font-bold text-white/90">
+                      {index + 1}
+                    </span>
+                  )}
+                  <div className="text-sm text-white/80 leading-relaxed">
+                    {rule.header && (
+                      <strong className="block text-white mb-0.5">
+                        {rule.header}
+                      </strong>
+                    )}
+                    {formatText(rule.text)}
+                  </div>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

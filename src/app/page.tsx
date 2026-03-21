@@ -263,6 +263,8 @@ export default function HomePage() {
               <div className="flex gap-2 bg-white/10 rounded-2xl p-1">
                 <button
                   onClick={() => handleLanguageSelect("en")}
+                  aria-label="Switch to English"
+                  aria-pressed={language === "en"}
                   className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
                     language === "en"
                       ? "bg-white/25"
@@ -280,6 +282,8 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => handleLanguageSelect("es")}
+                  aria-label="Cambiar a Español"
+                  aria-pressed={language === "es"}
                   className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
                     language === "es"
                       ? "bg-white/25"
@@ -303,11 +307,13 @@ export default function HomePage() {
               <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
                 {content.selectGameMode}
               </p>
-              <div className="w-full flex gap-2">
+              <div className="w-full flex gap-2" role="group" aria-label={content.selectGameMode}>
                 {(["classic", "party"] as GameMode[]).map((mode) => (
                   <button
                     key={mode}
                     onClick={() => handleGameModeSelect(mode)}
+                    aria-pressed={gameMode === mode}
+                    aria-label={`${content.gameModes[mode].name}: ${content.gameModes[mode].description}`}
                     className={`flex-1 flex flex-col items-center gap-1 py-3 px-3 rounded-2xl transition-all ${
                       gameMode === mode
                         ? mode === "classic"
@@ -454,6 +460,7 @@ export default function HomePage() {
                                 <span className="text-white text-sm">{player}</span>
                                 <button
                                   onClick={() => handleRemovePlayer(player)}
+                                  aria-label={`Remove ${player}`}
                                   className="text-white/70 hover:text-white text-lg leading-none"
                                 >
                                   ×
@@ -495,6 +502,7 @@ export default function HomePage() {
               whileHover={canStartGame ? { scale: 1.02 } : {}}
               whileTap={canStartGame ? { scale: 0.98 } : {}}
               disabled={!canStartGame}
+              aria-label={content.startGame}
               className={`w-full max-w-[220px] relative mt-4 ${!canStartGame ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div className="gradient-gold-shine rounded-[20px] py-2 px-3 glow-gold border-2 border-white/40">
