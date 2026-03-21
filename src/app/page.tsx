@@ -26,8 +26,10 @@ type LocaleStrings = {
   gameModes: {
     classic: GameModeInfo;
     party: GameModeInfo;
+    date: GameModeInfo;
   };
   selectCategory: string;
+  selectCategoryHint: string;
   selectPartyMode: string;
   startGame: string;
   footerText: string;
@@ -66,7 +68,7 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
-type GameMode = "classic" | "party";
+type GameMode = "classic" | "party" | "date";
 type Category = "chill" | "spicy" | "unhinged";
 
 const CATEGORY_ICONS: Record<Category, string> = {
@@ -78,12 +80,13 @@ const CATEGORY_ICONS: Record<Category, string> = {
 const GAME_MODE_ICONS: Record<GameMode, string> = {
   classic: "🍻",
   party: "🎉",
+  date: "💕",
 };
 
 export default function HomePage() {
   const [language, setLanguage] = useState("en");
   const [gameMode, setGameMode] = useState<GameMode>("classic");
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>(["spicy"]);
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [isHotSeat, setIsHotSeat] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
@@ -108,9 +111,9 @@ export default function HomePage() {
 
   const handleGameModeSelect = (mode: GameMode) => {
     setGameMode(mode);
-    if (mode === "classic") {
+    if (mode === "classic" || mode === "date") {
       setIsHotSeat(false);
-      setSelectedCategories(["spicy"]);
+      setSelectedCategories([]);
       setPlayers([]);
       setNewPlayerName("");
     }
@@ -133,7 +136,7 @@ export default function HomePage() {
     if (!isHotSeat) {
       setSelectedCategories([]);
     } else {
-      setSelectedCategories(["spicy"]);
+      setSelectedCategories([]);
     }
   };
 
@@ -156,7 +159,7 @@ export default function HomePage() {
   };
 
   const canStartGame =
-    gameMode === "classic"
+    gameMode === "classic" || gameMode === "date"
       ? true
       : isHotSeat
       ? players.length >= 2
@@ -167,6 +170,8 @@ export default function HomePage() {
 
     if (gameMode === "classic") {
       router.push(`/play?lang=${language}&mode=classic`);
+    } else if (gameMode === "date") {
+      router.push(`/play?lang=${language}&mode=date`);
     } else if (isHotSeat) {
       const playersParam = encodeURIComponent(JSON.stringify(players));
       router.push(`/play?lang=${language}&mode=hotseat&players=${playersParam}`);
@@ -308,16 +313,18 @@ export default function HomePage() {
                 {content.selectGameMode}
               </p>
               <div className="w-full flex gap-2" role="group" aria-label={content.selectGameMode}>
-                {(["classic", "party"] as GameMode[]).map((mode) => (
+                {(["classic", "party", "date"] as GameMode[]).map((mode) => (
                   <button
                     key={mode}
                     onClick={() => handleGameModeSelect(mode)}
                     aria-pressed={gameMode === mode}
                     aria-label={`${content.gameModes[mode].name}: ${content.gameModes[mode].description}`}
-                    className={`flex-1 flex flex-col items-center gap-1 py-3 px-3 rounded-2xl transition-all ${
+                    className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-2xl transition-all ${
                       gameMode === mode
                         ? mode === "classic"
                           ? "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-2 border-amber-400/60"
+                          : mode === "date"
+                          ? "bg-gradient-to-b from-pink-500/40 to-rose-600/40 border-2 border-pink-400/60"
                           : "bg-gradient-to-b from-fuchsia-500/40 to-purple-600/40 border-2 border-fuchsia-400/60"
                         : "bg-white/10 border-2 border-transparent hover:bg-white/15"
                     }`}
@@ -387,6 +394,11 @@ export default function HomePage() {
                         );
                       })}
                     </div>
+                    {!isHotSeat && selectedCategories.length === 0 && (
+                      <p className="text-xs text-white/50 text-center mt-1">
+                        {content.selectCategoryHint}
+                      </p>
+                    )}
                   </div>
 
                   {/* Hot Seat Toggle */}

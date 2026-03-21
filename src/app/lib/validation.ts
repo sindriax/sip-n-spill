@@ -1,6 +1,6 @@
 export const VALID_LANGUAGES = ["en", "es"] as const;
-export const VALID_CATEGORIES = ["chill", "spicy", "unhinged", "hotseat"] as const;
-export const VALID_MODES = ["classic", "standard", "hotseat"] as const;
+export const VALID_CATEGORIES = ["chill", "spicy", "unhinged", "hotseat", "date"] as const;
+export const VALID_MODES = ["classic", "standard", "hotseat", "date"] as const;
 
 export type Language = (typeof VALID_LANGUAGES)[number];
 export type Category = (typeof VALID_CATEGORIES)[number];

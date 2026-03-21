@@ -82,8 +82,8 @@ function GameContent() {
       setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es);
       try {
         let apiUrl = `/api/questions?lang=${lang}`;
-        if (mode === "hotseat") {
-          apiUrl += `&mode=hotseat`;
+        if (mode === "hotseat" || mode === "date" || mode === "classic") {
+          apiUrl += `&mode=${mode}`;
         } else {
           apiUrl += `&categories=${categories}`;
         }
@@ -104,8 +104,8 @@ function GameContent() {
         console.error(`Failed to load questions for language: ${lang}, categories: ${categories}`, error);
         try {
           let fallbackUrl = `/api/questions?lang=es`;
-          if (mode === "hotseat") {
-            fallbackUrl += `&mode=hotseat`;
+          if (mode === "hotseat" || mode === "date" || mode === "classic") {
+            fallbackUrl += `&mode=${mode}`;
           } else {
             fallbackUrl += `&categories=${categories}`;
           }

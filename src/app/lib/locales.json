@@ -12,9 +12,14 @@
       "party": {
         "name": "Party Mode",
         "description": "Choose your chaos level"
+      },
+      "date": {
+        "name": "Spill Mode (1:1)",
+        "description": "Confess, get closer, no filter"
       }
     },
     "selectCategory": "Pick Your Vibe",
+    "selectCategoryHint": "Select at least one vibe to start",
     "selectPartyMode": "Party Mode",
     "startGame": "Start Drinking!",
     "gameRulesTitle": "How To Play",
@@ -139,9 +144,14 @@
       "party": {
         "name": "Modo Fiesta",
         "description": "Elige el nivel de caos"
+      },
+      "date": {
+        "name": "Modo Confesión (1:1)",
+        "description": "Confiesa, acércate, sin filtro"
       }
     },
     "selectCategory": "Elige Tu Nivel",
+    "selectCategoryHint": "Selecciona al menos un nivel para empezar",
     "selectPartyMode": "Modo de Fiesta",
     "startGame": "¡Empieza a Beber!",
     "gameRulesTitle": "Cómo Jugar",

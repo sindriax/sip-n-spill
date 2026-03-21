@@ -67,9 +67,11 @@ export async function GET(req: NextRequest) {
     let query;
     if (mode === "hotseat") {
       query = { lang: lang, category: "hotseat" };
+    } else if (mode === "date") {
+      query = { lang: lang, category: "date" };
     } else if (mode === "classic") {
-      // Classic mode: all non-hotseat questions (including docs without a category field)
-      query = { lang: lang, category: { $nin: ["hotseat"] } };
+      // Classic mode: all standard questions (excluding hotseat and date)
+      query = { lang: lang, category: { $nin: ["hotseat", "date"] } };
     } else if (categories.length === 1) {
       query = { lang: lang, category: categories[0] };
     } else {

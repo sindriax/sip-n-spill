@@ -92,6 +92,7 @@ describe("validation utilities", () => {
       expect(validateMode("classic")).toBe("classic");
       expect(validateMode("standard")).toBe("standard");
       expect(validateMode("hotseat")).toBe("hotseat");
+      expect(validateMode("date")).toBe("date");
     });
 
     it("should return null for invalid modes", () => {
@@ -145,6 +146,7 @@ describe("validation utilities", () => {
       expect(VALID_CATEGORIES).toContain("spicy");
       expect(VALID_CATEGORIES).toContain("unhinged");
       expect(VALID_CATEGORIES).toContain("hotseat");
+      expect(VALID_CATEGORIES).toContain("date");
     });
   });
 });
