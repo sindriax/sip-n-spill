@@ -55,7 +55,13 @@ function GameContent() {
   const mode = searchParams.get("mode");
   const playersParam = searchParams.get("players");
   const players = useMemo(() => {
-    return playersParam ? JSON.parse(decodeURIComponent(playersParam)) : [];
+    if (!playersParam) return [];
+    try {
+      const parsed = JSON.parse(decodeURIComponent(playersParam));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }, [playersParam]);
   const [gameContent, setGameContent] = useState<LocaleStrings>(
     typedLocales[lang as keyof Locales] || typedLocales.es
@@ -67,6 +73,7 @@ function GameContent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [questionKey, setQuestionKey] = useState(0);
+  const [currentTargetPlayer, setCurrentTargetPlayer] = useState<string>("");
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
@@ -142,13 +149,11 @@ function GameContent() {
     loadQuestions();
   }, [lang, categories, mode, players]);
 
-  const [currentTargetPlayer, setCurrentTargetPlayer] = useState<string>("");
-
   const getCurrentQuestion = useCallback(() => {
     if (questions.length === 0) return "";
     const question = questions[currentQuestionIndex];
     if (mode === "hotseat" && currentTargetPlayer) {
-      return question.replace("{player}", currentTargetPlayer);
+      return question.replaceAll("{player}", currentTargetPlayer);
     }
     return question;
   }, [questions, currentQuestionIndex, mode, currentTargetPlayer]);
@@ -252,7 +257,7 @@ function GameContent() {
               alt="Help"
               width={40}
               height={40}
-              className="object-contain"
+              className="object-contain max-w-[28px] max-h-[28px]"
             />
           </button>
         </div>

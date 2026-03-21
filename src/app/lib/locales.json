@@ -3,6 +3,17 @@
     "pageTitle": "Sip 'n Spill",
     "pageDescription": "Think you know your friends? Spill their secrets and make them sip their drinks!",
     "selectLanguage": "Select Language:",
+    "selectGameMode": "Choose Your Mode",
+    "gameModes": {
+      "classic": {
+        "name": "Classic",
+        "description": "The one you know and love"
+      },
+      "party": {
+        "name": "Party Mode",
+        "description": "Choose your chaos level"
+      }
+    },
     "selectCategory": "Pick Your Vibe",
     "selectPartyMode": "Party Mode",
     "startGame": "Start Drinking!",
@@ -119,6 +130,17 @@
     "pageTitle": "Sip 'n Spill",
     "pageDescription": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
     "selectLanguage": "Seleccionar Idioma:",
+    "selectGameMode": "Elige Tu Modo",
+    "gameModes": {
+      "classic": {
+        "name": "Clásico",
+        "description": "El de siempre"
+      },
+      "party": {
+        "name": "Modo Fiesta",
+        "description": "Elige el nivel de caos"
+      }
+    },
     "selectCategory": "Elige Tu Nivel",
     "selectPartyMode": "Modo de Fiesta",
     "startGame": "¡Empieza a Beber!",

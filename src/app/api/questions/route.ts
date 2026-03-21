@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ServerApiVersion } from "mongodb";
+import { validateQueryParams } from "../../lib/validation";
 
 const MONGODB_URI = process.env.MONGODB_URI;
-
-const VALID_CATEGORIES = ["chill", "spicy", "unhinged", "hotseat"] as const;
-type Category = (typeof VALID_CATEGORIES)[number];
 
 if (!MONGODB_URI) {
   console.error("CRITICAL: MONGODB_URI environment variable is not defined.");
@@ -59,16 +57,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const lang = searchParams.get("lang") || "es";
-  const categoriesParam = searchParams.get("categories") || searchParams.get("category") || "spicy";
-  const mode = searchParams.get("mode");
-
-  const requestedCategories = categoriesParam.split(",").map((c) => c.trim());
-  const validCategories: Category[] = requestedCategories.filter((c) =>
-    VALID_CATEGORIES.includes(c as Category)
-  ) as Category[];
-
-  const categories: Category[] = validCategories.length > 0 ? validCategories : ["spicy"];
+  const { lang, categories, mode } = validateQueryParams(searchParams);
 
   try {
     const mongoClient = await clientPromise;
@@ -78,6 +67,9 @@ export async function GET(req: NextRequest) {
     let query;
     if (mode === "hotseat") {
       query = { lang: lang, category: "hotseat" };
+    } else if (mode === "classic") {
+      // Classic mode: all non-hotseat questions (including docs without a category field)
+      query = { lang: lang, category: { $nin: ["hotseat"] } };
     } else if (categories.length === 1) {
       query = { lang: lang, category: categories[0] };
     } else {
@@ -94,7 +86,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       questions: questionsTextArray,
       categories: mode === "hotseat" ? ["hotseat"] : categories,
-      mode: mode || "standard"
+      mode: mode || "standard",
     });
   } catch (error) {
     console.error("Failed to fetch questions from MongoDB:", error);

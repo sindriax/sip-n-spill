@@ -13,10 +13,20 @@ type CategoryInfo = {
   description: string;
 };
 
+type GameModeInfo = {
+  name: string;
+  description: string;
+};
+
 type LocaleStrings = {
   pageTitle: string;
   pageDescription: string;
   selectLanguage: string;
+  selectGameMode: string;
+  gameModes: {
+    classic: GameModeInfo;
+    party: GameModeInfo;
+  };
   selectCategory: string;
   selectPartyMode: string;
   startGame: string;
@@ -56,6 +66,7 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
+type GameMode = "classic" | "party";
 type Category = "chill" | "spicy" | "unhinged";
 
 const CATEGORY_ICONS: Record<Category, string> = {
@@ -64,8 +75,14 @@ const CATEGORY_ICONS: Record<Category, string> = {
   unhinged: "🔥",
 };
 
+const GAME_MODE_ICONS: Record<GameMode, string> = {
+  classic: "🍻",
+  party: "🎉",
+};
+
 export default function HomePage() {
   const [language, setLanguage] = useState("en");
+  const [gameMode, setGameMode] = useState<GameMode>("classic");
   const [selectedCategories, setSelectedCategories] = useState<Category[]>(["spicy"]);
   const [isHotSeat, setIsHotSeat] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
@@ -87,6 +104,16 @@ export default function HomePage() {
 
   const handleLanguageSelect = (selectedLang: string) => {
     setLanguage(selectedLang);
+  };
+
+  const handleGameModeSelect = (mode: GameMode) => {
+    setGameMode(mode);
+    if (mode === "classic") {
+      setIsHotSeat(false);
+      setSelectedCategories(["spicy"]);
+      setPlayers([]);
+      setNewPlayerName("");
+    }
   };
 
   const handleCategoryToggle = (cat: Category) => {
@@ -128,12 +155,19 @@ export default function HomePage() {
     }
   };
 
-  const canStartGame = isHotSeat ? players.length >= 2 : selectedCategories.length > 0;
+  const canStartGame =
+    gameMode === "classic"
+      ? true
+      : isHotSeat
+      ? players.length >= 2
+      : selectedCategories.length > 0;
 
   const handleStartGame = () => {
     if (!canStartGame) return;
 
-    if (isHotSeat) {
+    if (gameMode === "classic") {
+      router.push(`/play?lang=${language}&mode=classic`);
+    } else if (isHotSeat) {
       const playersParam = encodeURIComponent(JSON.stringify(players));
       router.push(`/play?lang=${language}&mode=hotseat&players=${playersParam}`);
     } else {
@@ -158,7 +192,7 @@ export default function HomePage() {
   const renderSubtitle = () => {
     const parts = content.pageDescription.split(/(SIP|SPILL|BEBER|REVELAR)/g);
     return (
-      <p className="text-lg text-white text-center opacity-95 max-w-[300px] leading-relaxed mb-8">
+      <p className="text-lg text-white text-center opacity-95 max-w-[300px] leading-relaxed mb-6">
         {parts.map((part, index) => {
           if (
             part === "SIP" ||
@@ -224,6 +258,7 @@ export default function HomePage() {
 
             {renderSubtitle()}
 
+            {/* Language Picker */}
             <div className="w-full flex flex-col items-center gap-4 mb-4">
               <div className="flex gap-2 bg-white/10 rounded-2xl p-1">
                 <button
@@ -263,139 +298,185 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Game Mode Selector */}
             <div className="w-full flex flex-col items-center gap-3 mb-4">
               <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
-                {content.selectCategory}
+                {content.selectGameMode}
               </p>
-              <div className="w-full flex flex-col gap-2">
-                {(["chill", "spicy", "unhinged"] as Category[]).map((cat) => {
-                  const isSelected = selectedCategories.includes(cat);
-                  const isDisabled = isHotSeat;
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => handleCategoryToggle(cat)}
-                      disabled={isDisabled}
-                      className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
-                        isDisabled
-                          ? "bg-white/5 border-2 border-transparent opacity-40 cursor-not-allowed"
-                          : isSelected
-                          ? cat === "chill"
-                            ? "bg-gradient-to-r from-cyan-500/40 to-blue-500/40 border-2 border-cyan-400/60"
-                            : cat === "spicy"
-                            ? "bg-gradient-to-r from-orange-500/40 to-pink-500/40 border-2 border-orange-400/60"
-                            : "bg-gradient-to-r from-red-600/40 to-purple-600/40 border-2 border-red-500/60"
-                          : "bg-white/10 border-2 border-transparent hover:bg-white/15"
-                      }`}
-                    >
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
-                        isSelected ? "bg-white/30 border-white/60" : "border-white/40"
-                      }`}>
-                        {isSelected && <span className="text-white text-xs">✓</span>}
-                      </div>
-                      <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
-                      <div className="flex flex-col items-start">
-                        <span className="text-base font-bold text-white">
-                          {content.categories[cat].name}
-                        </span>
-                        <span className="text-xs text-white/70">
-                          {content.categories[cat].description}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="w-full flex gap-2">
+                {(["classic", "party"] as GameMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => handleGameModeSelect(mode)}
+                    className={`flex-1 flex flex-col items-center gap-1 py-3 px-3 rounded-2xl transition-all ${
+                      gameMode === mode
+                        ? mode === "classic"
+                          ? "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-2 border-amber-400/60"
+                          : "bg-gradient-to-b from-fuchsia-500/40 to-purple-600/40 border-2 border-fuchsia-400/60"
+                        : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                    }`}
+                  >
+                    <span className="text-2xl">{GAME_MODE_ICONS[mode]}</span>
+                    <span className="text-sm font-bold text-white">
+                      {content.gameModes[mode].name}
+                    </span>
+                    <span className="text-[11px] text-white/70 text-center leading-tight">
+                      {content.gameModes[mode].description}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="w-full flex flex-col items-center gap-3 mb-4">
-              <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
-                {content.selectPartyMode}
-              </p>
-              <button
-                onClick={handleHotSeatToggle}
-                className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
-                  isHotSeat
-                    ? "bg-gradient-to-r from-yellow-500/40 to-red-500/40 border-2 border-yellow-400/60"
-                    : "bg-white/10 border-2 border-transparent hover:bg-white/15"
-                }`}
-              >
-                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
-                  isHotSeat ? "bg-white/30 border-white/60" : "border-white/40"
-                }`}>
-                  {isHotSeat && <span className="text-white text-xs">✓</span>}
-                </div>
-                <span className="text-2xl">🎯</span>
-                <div className="flex flex-col items-start">
-                  <span className="text-base font-bold text-white">
-                    {content.partyModes.hotseat.name}
-                  </span>
-                  <span className="text-xs text-white/70">
-                    {content.partyModes.hotseat.description}
-                  </span>
-                </div>
-              </button>
-            </div>
-
+            {/* Party Mode Config */}
             <AnimatePresence>
-              {isHotSeat && (
+              {gameMode === "party" && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="w-full flex flex-col gap-3 mb-4 overflow-hidden"
+                  className="w-full flex flex-col gap-4 mb-4 overflow-hidden"
                 >
-                  <p className="text-sm font-semibold text-white/80 text-center">
-                    {content.hotseat.addPlayers}
-                  </p>
+                  {/* Category Picker */}
+                  <div className="w-full flex flex-col items-center gap-3">
+                    <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
+                      {content.selectCategory}
+                    </p>
+                    <div className="w-full flex flex-col gap-2">
+                      {(["chill", "spicy", "unhinged"] as Category[]).map((cat) => {
+                        const isSelected = selectedCategories.includes(cat);
+                        const isDisabled = isHotSeat;
+                        return (
+                          <button
+                            key={cat}
+                            onClick={() => handleCategoryToggle(cat)}
+                            disabled={isDisabled}
+                            className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
+                              isDisabled
+                                ? "bg-white/5 border-2 border-transparent opacity-40 cursor-not-allowed"
+                                : isSelected
+                                ? cat === "chill"
+                                  ? "bg-gradient-to-r from-cyan-500/40 to-blue-500/40 border-2 border-cyan-400/60"
+                                  : cat === "spicy"
+                                  ? "bg-gradient-to-r from-orange-500/40 to-pink-500/40 border-2 border-orange-400/60"
+                                  : "bg-gradient-to-r from-red-600/40 to-purple-600/40 border-2 border-red-500/60"
+                                : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                              isSelected ? "bg-white/30 border-white/60" : "border-white/40"
+                            }`}>
+                              {isSelected && <span className="text-white text-xs">✓</span>}
+                            </div>
+                            <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
+                            <div className="flex flex-col items-start">
+                              <span className="text-base font-bold text-white">
+                                {content.categories[cat].name}
+                              </span>
+                              <span className="text-xs text-white/70">
+                                {content.categories[cat].description}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newPlayerName}
-                      onChange={(e) => setNewPlayerName(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder={content.hotseat.placeholder}
-                      className="flex-1 bg-white/10 border-2 border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/40"
-                      maxLength={20}
-                    />
+                  {/* Hot Seat Toggle */}
+                  <div className="w-full flex flex-col items-center gap-3">
+                    <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
+                      {content.selectPartyMode}
+                    </p>
                     <button
-                      onClick={handleAddPlayer}
-                      className="bg-white/20 hover:bg-white/30 border-2 border-white/20 rounded-xl px-4 py-2 text-white font-semibold transition-all"
+                      onClick={handleHotSeatToggle}
+                      className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
+                        isHotSeat
+                          ? "bg-gradient-to-r from-yellow-500/40 to-red-500/40 border-2 border-yellow-400/60"
+                          : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                      }`}
                     >
-                      {content.hotseat.addButton}
+                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                        isHotSeat ? "bg-white/30 border-white/60" : "border-white/40"
+                      }`}>
+                        {isHotSeat && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className="text-2xl">🎯</span>
+                      <div className="flex flex-col items-start">
+                        <span className="text-base font-bold text-white">
+                          {content.partyModes.hotseat.name}
+                        </span>
+                        <span className="text-xs text-white/70">
+                          {content.partyModes.hotseat.description}
+                        </span>
+                      </div>
                     </button>
                   </div>
 
-                  {players.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {players.map((player) => (
-                        <div
-                          key={player}
-                          className="flex items-center gap-2 bg-white/20 rounded-full px-3 py-1"
-                        >
-                          <span className="text-white text-sm">{player}</span>
+                  {/* Hot Seat Player Input */}
+                  <AnimatePresence>
+                    {isHotSeat && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="w-full flex flex-col gap-3 overflow-hidden"
+                      >
+                        <p className="text-sm font-semibold text-white/80 text-center">
+                          {content.hotseat.addPlayers}
+                        </p>
+
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newPlayerName}
+                            onChange={(e) => setNewPlayerName(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            placeholder={content.hotseat.placeholder}
+                            className="flex-1 bg-white/10 border-2 border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/40"
+                            maxLength={20}
+                          />
                           <button
-                            onClick={() => handleRemovePlayer(player)}
-                            className="text-white/70 hover:text-white text-lg leading-none"
+                            onClick={handleAddPlayer}
+                            className="bg-white/20 hover:bg-white/30 border-2 border-white/20 rounded-xl px-4 py-2 text-white font-semibold transition-all"
                           >
-                            ×
+                            {content.hotseat.addButton}
                           </button>
                         </div>
-                      ))}
-                    </div>
-                  )}
 
-                  <p className={`text-xs text-center ${players.length >= 2 ? "text-green-400" : "text-white/50"}`}>
-                    {players.length >= 2
-                      ? content.hotseat.playerCount.replace("{count}", players.length.toString())
-                      : content.hotseat.minPlayers
-                    }
-                  </p>
+                        {players.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {players.map((player) => (
+                              <div
+                                key={player}
+                                className="flex items-center gap-2 bg-white/20 rounded-full px-3 py-1"
+                              >
+                                <span className="text-white text-sm">{player}</span>
+                                <button
+                                  onClick={() => handleRemovePlayer(player)}
+                                  className="text-white/70 hover:text-white text-lg leading-none"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <p className={`text-xs text-center ${players.length >= 2 ? "text-green-400" : "text-white/50"}`}>
+                          {players.length >= 2
+                            ? content.hotseat.playerCount.replace("{count}", players.length.toString())
+                            : content.hotseat.minPlayers
+                          }
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
             </AnimatePresence>
 
+            {/* Tutorial Button */}
             <div className="w-full flex justify-center mb-2">
               <button
                 onClick={handleShowTutorial}
@@ -408,6 +489,7 @@ export default function HomePage() {
               </button>
             </div>
 
+            {/* Start Button */}
             <motion.button
               onClick={handleStartGame}
               whileHover={canStartGame ? { scale: 1.02 } : {}}
