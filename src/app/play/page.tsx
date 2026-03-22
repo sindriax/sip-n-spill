@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback } from "react";
+import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAnimation } from "framer-motion";
 import Image from "next/image";
@@ -8,18 +8,12 @@ import locales from "../lib/locales.json";
 import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
 import QuestionDisplay from "../components/question-display";
+import RulesSection from "../components/rules-section";
 import GradientBackground from "../components/gradient-background";
-import GameTutorial from "../components/game-tutorial";
 
 interface Rule {
   header: string;
   text: string;
-}
-
-interface TutorialStep {
-  title: string;
-  description: string;
-  visual?: string;
 }
 
 type LocaleStrings = {
@@ -35,13 +29,6 @@ type LocaleStrings = {
   noQuestionsLoaded: string;
   loadingSettings: string;
   questionProgress: string;
-  tutorialTitle: string;
-  skipTutorial: string;
-  nextStep: string;
-  prevStep: string;
-  finishTutorial: string;
-  showTutorial: string;
-  tutorialSteps: TutorialStep[];
 };
 
 type Locales = {
@@ -51,20 +38,22 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
-const cupAnimationVariants = {
-  initial: { rotate: 0, x: 0, y: 0 },
-  tip: {
-    rotate: [0, 15, 0],
-    x: [0, 5, 0],
-    y: [0, -2, 0],
-    transition: { duration: 0.5, ease: "easeInOut" },
-  },
-};
-
 function GameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const lang = searchParams.get("lang") || "es";
+  const categories = searchParams.get("categories") || searchParams.get("category") || "spicy";
+  const mode = searchParams.get("mode");
+  const playersParam = searchParams.get("players");
+  const players = useMemo(() => {
+    if (!playersParam) return [];
+    try {
+      const parsed = JSON.parse(decodeURIComponent(playersParam));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }, [playersParam]);
   const [gameContent, setGameContent] = useState<LocaleStrings>(
     typedLocales[lang as keyof Locales] || typedLocales.es
   );
@@ -75,7 +64,8 @@ function GameContent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [questionKey, setQuestionKey] = useState(0);
-  const [showTutorial, setShowTutorial] = useState(false);
+  const [currentTargetPlayer, setCurrentTargetPlayer] = useState<string>("");
+  const [showRules, setShowRules] = useState(false);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
@@ -91,7 +81,13 @@ function GameContent() {
       setIsLoading(true);
       setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es);
       try {
-        const response = await fetch(`/api/questions?lang=${lang}`);
+        let apiUrl = `/api/questions?lang=${lang}`;
+        if (mode === "hotseat" || mode === "date" || mode === "classic") {
+          apiUrl += `&mode=${mode}`;
+        } else {
+          apiUrl += `&categories=${categories}`;
+        }
+        const response = await fetch(apiUrl);
         if (!response.ok) {
           throw new Error(`API responded with status ${response.status}`);
         }
@@ -101,10 +97,19 @@ function GameContent() {
           : [];
         setQuestions(shuffleArray(loadedQuestions));
         setQuestionKey((prevKey) => prevKey + 1);
+        if (mode === "hotseat" && players.length > 0) {
+          setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
+        }
       } catch (error) {
-        console.error(`Failed to load questions for language: ${lang}`, error);
+        console.error(`Failed to load questions for language: ${lang}, categories: ${categories}`, error);
         try {
-          const fallbackResponse = await fetch("/api/questions?lang=es");
+          let fallbackUrl = `/api/questions?lang=es`;
+          if (mode === "hotseat" || mode === "date" || mode === "classic") {
+            fallbackUrl += `&mode=${mode}`;
+          } else {
+            fallbackUrl += `&categories=${categories}`;
+          }
+          const fallbackResponse = await fetch(fallbackUrl);
           if (!fallbackResponse.ok) {
             throw new Error(
               `Fallback API responded with status ${fallbackResponse.status}`
@@ -116,6 +121,9 @@ function GameContent() {
             : [];
           setQuestions(shuffleArray(fallbackLoadedQuestions));
           setQuestionKey((prevKey) => prevKey + 1);
+          if (mode === "hotseat" && players.length > 0) {
+            setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
+          }
           console.warn(
             "Loaded and shuffled fallback Spanish questions from API."
           );
@@ -131,7 +139,16 @@ function GameContent() {
     };
 
     loadQuestions();
-  }, [lang]);
+  }, [lang, categories, mode, players]);
+
+  const getCurrentQuestion = useCallback(() => {
+    if (questions.length === 0) return "";
+    const question = questions[currentQuestionIndex];
+    if (mode === "hotseat" && currentTargetPlayer) {
+      return question.replaceAll("{player}", currentTargetPlayer);
+    }
+    return question;
+  }, [questions, currentQuestionIndex, mode, currentTargetPlayer]);
 
   const handleInteraction = useCallback(async () => {
     if (questions.length === 0 || isTipping) return;
@@ -145,9 +162,12 @@ function GameContent() {
       });
       return nextIndex;
     });
+    if (mode === "hotseat" && players.length > 0) {
+      setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
+    }
     await cupControls.start("initial");
     setIsTipping(false);
-  }, [questions.length, cupControls, isTipping]);
+  }, [questions.length, cupControls, isTipping, mode, players]);
 
   const handleGoHome = () => {
     router.push("/");
@@ -184,25 +204,6 @@ function GameContent() {
     ? ((currentQuestionIndex + 1) / questions.length) * 100
     : 0;
 
-  if (showTutorial) {
-    return (
-      <GradientBackground withSparkles>
-        <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)] items-center justify-center px-6">
-          <GameTutorial
-            onSkipTutorial={() => setShowTutorial(false)}
-            onCompleteTutorial={() => setShowTutorial(false)}
-            skipText={gameContent.skipTutorial}
-            nextText={gameContent.nextStep}
-            prevText={gameContent.prevStep}
-            finishText={gameContent.finishTutorial}
-            tutorialTitle={gameContent.tutorialTitle}
-            tutorialSteps={gameContent.tutorialSteps}
-          />
-        </div>
-      </GradientBackground>
-    );
-  }
-
   return (
     <GradientBackground withSparkles>
       <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
@@ -226,7 +227,10 @@ function GameContent() {
 
           <div className="flex-1 flex flex-col items-center gap-1">
             <p className="text-lg font-bold text-white text-center">
-              {gameContent.pageTitle}
+              {mode === "hotseat" && currentTargetPlayer
+                ? `🎯 ${currentTargetPlayer}`
+                : gameContent.pageTitle
+              }
             </p>
             <p className="text-sm font-medium text-white/80">
               {currentQuestionIndex + 1} / {questions.length}
@@ -236,17 +240,17 @@ function GameContent() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setShowTutorial(true);
+              setShowRules(true);
             }}
             className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-            aria-label="Show tutorial"
+            aria-label="Show rules"
           >
             <Image
               src="/assets/qs.png"
               alt="Help"
-              width={28}
-              height={28}
-              className="object-contain"
+              width={40}
+              height={40}
+              className="object-contain max-w-[28px] max-h-[28px]"
             />
           </button>
         </div>
@@ -265,13 +269,16 @@ function GameContent() {
           onClick={handleInteraction}
         >
           <QuestionDisplay
-            question={questions[currentQuestionIndex]}
+            question={getCurrentQuestion()}
             questionKey={questionKey}
-            isTipping={isTipping}
-            cupControls={cupControls}
-            cupAnimationVariants={cupAnimationVariants}
           />
         </div>
+        <RulesSection
+          gameRulesTitle={gameContent.gameRulesTitle}
+          rules={gameContent.rules}
+          isOpen={showRules}
+          onClose={() => setShowRules(false)}
+        />
       </div>
     </GradientBackground>
   );

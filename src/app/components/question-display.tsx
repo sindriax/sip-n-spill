@@ -1,22 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence, AnimationControls } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 interface QuestionDisplayProps {
   question: string;
   questionKey: number;
-  isTipping: boolean;
-  cupControls: AnimationControls;
-  cupAnimationVariants: {
-    initial: { rotate: number; x: number; y: number };
-    tip: {
-      rotate: number[];
-      x: number[];
-      y: number[];
-      transition: { duration: number; ease: string };
-    };
-  };
 }
 
 const QuestionDisplay: React.FC<QuestionDisplayProps> = ({

@@ -2,16 +2,35 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import locales from "./lib/locales.json";
 import GameTutorial from "./components/game-tutorial";
 import GradientBackground from "./components/gradient-background";
 
+type CategoryInfo = {
+  name: string;
+  description: string;
+};
+
+type GameModeInfo = {
+  name: string;
+  description: string;
+};
+
 type LocaleStrings = {
   pageTitle: string;
   pageDescription: string;
   selectLanguage: string;
+  selectGameMode: string;
+  gameModes: {
+    classic: GameModeInfo;
+    party: GameModeInfo;
+    date: GameModeInfo;
+  };
+  selectCategory: string;
+  selectCategoryHint: string;
+  selectPartyMode: string;
   startGame: string;
   footerText: string;
   tutorialTitle: string;
@@ -20,6 +39,21 @@ type LocaleStrings = {
   prevStep: string;
   finishTutorial: string;
   showTutorial: string;
+  categories: {
+    chill: CategoryInfo;
+    spicy: CategoryInfo;
+    unhinged: CategoryInfo;
+  };
+  partyModes: {
+    hotseat: CategoryInfo;
+  };
+  hotseat: {
+    addPlayers: string;
+    placeholder: string;
+    addButton: string;
+    minPlayers: string;
+    playerCount: string;
+  };
   tutorialSteps: Array<{
     title: string;
     description: string;
@@ -34,8 +68,28 @@ type Locales = {
 
 const typedLocales: Locales = locales as Locales;
 
+type GameMode = "classic" | "party" | "date";
+type Category = "chill" | "spicy" | "unhinged";
+
+const CATEGORY_ICONS: Record<Category, string> = {
+  chill: "😎",
+  spicy: "🌶️",
+  unhinged: "🔥",
+};
+
+const GAME_MODE_ICONS: Record<GameMode, string> = {
+  classic: "🍻",
+  party: "🎉",
+  date: "💕",
+};
+
 export default function HomePage() {
   const [language, setLanguage] = useState("en");
+  const [gameMode, setGameMode] = useState<GameMode>("classic");
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+  const [isHotSeat, setIsHotSeat] = useState(false);
+  const [players, setPlayers] = useState<string[]>([]);
+  const [newPlayerName, setNewPlayerName] = useState("");
   const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
   const [showTutorial, setShowTutorial] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -55,8 +109,76 @@ export default function HomePage() {
     setLanguage(selectedLang);
   };
 
+  const handleGameModeSelect = (mode: GameMode) => {
+    setGameMode(mode);
+    if (mode === "classic" || mode === "date") {
+      setIsHotSeat(false);
+      setSelectedCategories([]);
+      setPlayers([]);
+      setNewPlayerName("");
+    }
+  };
+
+  const handleCategoryToggle = (cat: Category) => {
+    if (isHotSeat) return;
+
+    setSelectedCategories((prev) => {
+      if (prev.includes(cat)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((c) => c !== cat);
+      }
+      return [...prev, cat];
+    });
+  };
+
+  const handleHotSeatToggle = () => {
+    setIsHotSeat(!isHotSeat);
+    if (!isHotSeat) {
+      setSelectedCategories([]);
+    } else {
+      setSelectedCategories([]);
+    }
+  };
+
+  const handleAddPlayer = () => {
+    const trimmedName = newPlayerName.trim();
+    if (trimmedName && !players.includes(trimmedName)) {
+      setPlayers([...players, trimmedName]);
+      setNewPlayerName("");
+    }
+  };
+
+  const handleRemovePlayer = (playerToRemove: string) => {
+    setPlayers(players.filter((p) => p !== playerToRemove));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleAddPlayer();
+    }
+  };
+
+  const canStartGame =
+    gameMode === "classic" || gameMode === "date"
+      ? true
+      : isHotSeat
+      ? players.length >= 2
+      : selectedCategories.length > 0;
+
   const handleStartGame = () => {
-    router.push(`/play?lang=${language}`);
+    if (!canStartGame) return;
+
+    if (gameMode === "classic") {
+      router.push(`/play?lang=${language}&mode=classic`);
+    } else if (gameMode === "date") {
+      router.push(`/play?lang=${language}&mode=date`);
+    } else if (isHotSeat) {
+      const playersParam = encodeURIComponent(JSON.stringify(players));
+      router.push(`/play?lang=${language}&mode=hotseat&players=${playersParam}`);
+    } else {
+      const categoriesParam = selectedCategories.join(",");
+      router.push(`/play?lang=${language}&categories=${categoriesParam}`);
+    }
   };
 
   const handleShowTutorial = () => {
@@ -75,7 +197,7 @@ export default function HomePage() {
   const renderSubtitle = () => {
     const parts = content.pageDescription.split(/(SIP|SPILL|BEBER|REVELAR)/g);
     return (
-      <p className="text-lg text-white text-center opacity-95 max-w-[300px] leading-relaxed mb-8">
+      <p className="text-lg text-white text-center opacity-95 max-w-[300px] leading-relaxed mb-6">
         {parts.map((part, index) => {
           if (
             part === "SIP" ||
@@ -127,24 +249,27 @@ export default function HomePage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="flex items-center justify-center mt-20 mb-4"
+              className="flex items-center justify-center mt-12 mb-4"
             >
               <Image
                 src="/assets/sip-logo.png"
                 alt={content.pageTitle}
-                width={250}
-                height={157}
-                className="w-[250px] h-auto"
+                width={220}
+                height={138}
+                className="w-[220px] h-auto"
                 priority
               />
             </motion.div>
 
             {renderSubtitle()}
 
-            <div className="w-full flex flex-col items-center gap-4 mb-8">
+            {/* Language Picker */}
+            <div className="w-full flex flex-col items-center gap-4 mb-4">
               <div className="flex gap-2 bg-white/10 rounded-2xl p-1">
                 <button
                   onClick={() => handleLanguageSelect("en")}
+                  aria-label="Switch to English"
+                  aria-pressed={language === "en"}
                   className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
                     language === "en"
                       ? "bg-white/25"
@@ -162,6 +287,8 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => handleLanguageSelect("es")}
+                  aria-label="Cambiar a Español"
+                  aria-pressed={language === "es"}
                   className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
                     language === "es"
                       ? "bg-white/25"
@@ -178,7 +305,198 @@ export default function HomePage() {
                   </span>
                 </button>
               </div>
+            </div>
 
+            {/* Game Mode Selector */}
+            <div className="w-full flex flex-col items-center gap-3 mb-4">
+              <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
+                {content.selectGameMode}
+              </p>
+              <div className="w-full flex gap-2" role="group" aria-label={content.selectGameMode}>
+                {(["classic", "party", "date"] as GameMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => handleGameModeSelect(mode)}
+                    aria-pressed={gameMode === mode}
+                    aria-label={`${content.gameModes[mode].name}: ${content.gameModes[mode].description}`}
+                    className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-2xl transition-all ${
+                      gameMode === mode
+                        ? mode === "classic"
+                          ? "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-2 border-amber-400/60"
+                          : mode === "date"
+                          ? "bg-gradient-to-b from-pink-500/40 to-rose-600/40 border-2 border-pink-400/60"
+                          : "bg-gradient-to-b from-fuchsia-500/40 to-purple-600/40 border-2 border-fuchsia-400/60"
+                        : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                    }`}
+                  >
+                    <span className="text-2xl">{GAME_MODE_ICONS[mode]}</span>
+                    <span className="text-sm font-bold text-white">
+                      {content.gameModes[mode].name}
+                    </span>
+                    <span className="text-[11px] text-white/70 text-center leading-tight">
+                      {content.gameModes[mode].description}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Party Mode Config */}
+            <AnimatePresence>
+              {gameMode === "party" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="w-full flex flex-col gap-4 mb-4 overflow-hidden"
+                >
+                  {/* Category Picker */}
+                  <div className="w-full flex flex-col items-center gap-3">
+                    <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
+                      {content.selectCategory}
+                    </p>
+                    <div className="w-full flex flex-col gap-2">
+                      {(["chill", "spicy", "unhinged"] as Category[]).map((cat) => {
+                        const isSelected = selectedCategories.includes(cat);
+                        const isDisabled = isHotSeat;
+                        return (
+                          <button
+                            key={cat}
+                            onClick={() => handleCategoryToggle(cat)}
+                            disabled={isDisabled}
+                            className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
+                              isDisabled
+                                ? "bg-white/5 border-2 border-transparent opacity-40 cursor-not-allowed"
+                                : isSelected
+                                ? cat === "chill"
+                                  ? "bg-gradient-to-r from-cyan-500/40 to-blue-500/40 border-2 border-cyan-400/60"
+                                  : cat === "spicy"
+                                  ? "bg-gradient-to-r from-orange-500/40 to-pink-500/40 border-2 border-orange-400/60"
+                                  : "bg-gradient-to-r from-red-600/40 to-purple-600/40 border-2 border-red-500/60"
+                                : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                              isSelected ? "bg-white/30 border-white/60" : "border-white/40"
+                            }`}>
+                              {isSelected && <span className="text-white text-xs">✓</span>}
+                            </div>
+                            <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
+                            <div className="flex flex-col items-start">
+                              <span className="text-base font-bold text-white">
+                                {content.categories[cat].name}
+                              </span>
+                              <span className="text-xs text-white/70">
+                                {content.categories[cat].description}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {!isHotSeat && selectedCategories.length === 0 && (
+                      <p className="text-xs text-white/50 text-center mt-1">
+                        {content.selectCategoryHint}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Hot Seat Toggle */}
+                  <div className="w-full flex flex-col items-center gap-3">
+                    <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
+                      {content.selectPartyMode}
+                    </p>
+                    <button
+                      onClick={handleHotSeatToggle}
+                      className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
+                        isHotSeat
+                          ? "bg-gradient-to-r from-yellow-500/40 to-red-500/40 border-2 border-yellow-400/60"
+                          : "bg-white/10 border-2 border-transparent hover:bg-white/15"
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                        isHotSeat ? "bg-white/30 border-white/60" : "border-white/40"
+                      }`}>
+                        {isHotSeat && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className="text-2xl">🎯</span>
+                      <div className="flex flex-col items-start">
+                        <span className="text-base font-bold text-white">
+                          {content.partyModes.hotseat.name}
+                        </span>
+                        <span className="text-xs text-white/70">
+                          {content.partyModes.hotseat.description}
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Hot Seat Player Input */}
+                  <AnimatePresence>
+                    {isHotSeat && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="w-full flex flex-col gap-3 overflow-hidden"
+                      >
+                        <p className="text-sm font-semibold text-white/80 text-center">
+                          {content.hotseat.addPlayers}
+                        </p>
+
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newPlayerName}
+                            onChange={(e) => setNewPlayerName(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            placeholder={content.hotseat.placeholder}
+                            className="flex-1 bg-white/10 border-2 border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/40"
+                            maxLength={20}
+                          />
+                          <button
+                            onClick={handleAddPlayer}
+                            className="bg-white/20 hover:bg-white/30 border-2 border-white/20 rounded-xl px-4 py-2 text-white font-semibold transition-all"
+                          >
+                            {content.hotseat.addButton}
+                          </button>
+                        </div>
+
+                        {players.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {players.map((player) => (
+                              <div
+                                key={player}
+                                className="flex items-center gap-2 bg-white/20 rounded-full px-3 py-1"
+                              >
+                                <span className="text-white text-sm">{player}</span>
+                                <button
+                                  onClick={() => handleRemovePlayer(player)}
+                                  aria-label={`Remove ${player}`}
+                                  className="text-white/70 hover:text-white text-lg leading-none"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <p className={`text-xs text-center ${players.length >= 2 ? "text-green-400" : "text-white/50"}`}>
+                          {players.length >= 2
+                            ? content.hotseat.playerCount.replace("{count}", players.length.toString())
+                            : content.hotseat.minPlayers
+                          }
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Tutorial Button */}
+            <div className="w-full flex justify-center mb-2">
               <button
                 onClick={handleShowTutorial}
                 className="flex items-center justify-center gap-2 py-2 px-6 rounded-2xl bg-white/10 hover:bg-white/20 transition-all"
@@ -190,11 +508,14 @@ export default function HomePage() {
               </button>
             </div>
 
+            {/* Start Button */}
             <motion.button
               onClick={handleStartGame}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full max-w-[220px] relative mt-8"
+              whileHover={canStartGame ? { scale: 1.02 } : {}}
+              whileTap={canStartGame ? { scale: 0.98 } : {}}
+              disabled={!canStartGame}
+              aria-label={content.startGame}
+              className={`w-full max-w-[220px] relative mt-4 ${!canStartGame ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div className="gradient-gold-shine rounded-[20px] py-2 px-3 glow-gold border-2 border-white/40">
                 <div className="relative">

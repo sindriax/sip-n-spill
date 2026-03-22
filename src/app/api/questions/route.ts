@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ServerApiVersion } from "mongodb";
+import { validateQueryParams } from "../../lib/validation";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -56,14 +57,27 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const lang = searchParams.get("lang") || "es";
+  const { lang, categories, mode } = validateQueryParams(searchParams);
 
   try {
     const mongoClient = await clientPromise;
     const db = mongoClient.db("sip-n-spill");
     const questionsCollection = db.collection("questions");
 
-    const query = { lang: lang };
+    let query;
+    if (mode === "hotseat") {
+      query = { lang: lang, category: "hotseat" };
+    } else if (mode === "date") {
+      query = { lang: lang, category: "date" };
+    } else if (mode === "classic") {
+      // Classic mode: all standard questions (excluding hotseat and date)
+      query = { lang: lang, category: { $nin: ["hotseat", "date"] } };
+    } else if (categories.length === 1) {
+      query = { lang: lang, category: categories[0] };
+    } else {
+      query = { lang: lang, category: { $in: categories } };
+    }
+
     const questionsFromDb = await questionsCollection
       .find(query)
       .project({ text: 1, _id: 0 })
@@ -71,7 +85,11 @@ export async function GET(req: NextRequest) {
 
     const questionsTextArray = questionsFromDb.map((qDoc) => qDoc.text);
 
-    return NextResponse.json({ questions: questionsTextArray });
+    return NextResponse.json({
+      questions: questionsTextArray,
+      categories: mode === "hotseat" ? ["hotseat"] : categories,
+      mode: mode || "standard",
+    });
   } catch (error) {
     console.error("Failed to fetch questions from MongoDB:", error);
     const errorMessage =
