@@ -104,9 +104,7 @@ function Game() {
   }
 
   const question = config.mode === "hotseat" && currentPlayer ? deck[index].replaceAll("{player}", currentPlayer) : deck[index];
-  const turnLabel = currentPlayer
-    ? format(config.mode === "hotseat" ? strings.game.hotseatTurn : strings.game.turn, { name: currentPlayer })
-    : strings.modes[config.mode].name;
+  const turnLabel = currentPlayer ? format(strings.game.hotseatTurn, { name: currentPlayer }) : strings.modes[config.mode].name;
   const kicker = config.mode === "classic" ? strings.game.kicker : "";
 
   return (

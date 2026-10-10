@@ -85,7 +85,7 @@ export function canStart(config: GameConfig): boolean {
 export function toSearchParams(config: GameConfig): URLSearchParams {
   const params = new URLSearchParams({ lang: config.lang, mode: config.mode });
   if (config.mode === "classic") params.set("vibes", config.vibes.join(","));
-  if (config.mode !== "date" && config.players.length > 0) params.set("players", config.players.join(","));
+  if (config.mode === "hotseat") params.set("players", config.players.join(","));
   return params;
 }
 

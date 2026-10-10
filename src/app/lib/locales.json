@@ -2,23 +2,42 @@
   "en": {
     "title": "Sip 'n Spill",
     "tagline": "Think you know your friends? Spill their secrets and make them sip their drinks!",
-    "language": { "label": "Language" },
+    "language": {
+      "label": "Language"
+    },
     "modes": {
       "label": "Pick a mode",
-      "classic": { "name": "Classic", "tagline": "Bet on what your friends have done" },
-      "hotseat": { "name": "Hot Seat", "tagline": "One name on the card, everyone bets" },
-      "date": { "name": "Spill 1:1", "tagline": "Two of you, no filter" }
+      "classic": {
+        "name": "Classic",
+        "tagline": "Bet on what your friends have done"
+      },
+      "hotseat": {
+        "name": "Hot Seat",
+        "tagline": "One name on the card, everyone bets"
+      },
+      "date": {
+        "name": "Spill 1:1",
+        "tagline": "Two of you, no filter"
+      }
     },
     "vibes": {
       "label": "Pick your vibe",
       "hint": "Mix as many as you like",
-      "chill": { "name": "Warmup", "description": "Secrets, drama & social chaos" },
-      "spicy": { "name": "Spicy", "description": "Relationships & hookups" },
-      "unhinged": { "name": "Unhinged", "description": "No limits. Play at your own risk." }
+      "chill": {
+        "name": "Warmup",
+        "description": "Secrets, drama & social chaos"
+      },
+      "spicy": {
+        "name": "Spicy",
+        "description": "Relationships & hookups"
+      },
+      "unhinged": {
+        "name": "Unhinged",
+        "description": "No limits. Play at your own risk."
+      }
     },
     "players": {
       "label": "Who's playing?",
-      "optionalHint": "Optional. Add names and the game tracks whose turn it is.",
       "requiredHint": "Add at least {min} names to start.",
       "placeholder": "Name",
       "add": "Add",
@@ -33,20 +52,50 @@
       "close": "Close",
       "gotIt": "Got it",
       "classic": [
-        { "title": "Read it to yourself", "text": "The Guesser reads the card silently. Nobody else peeks." },
-        { "title": "Place your bets", "text": "For every other player, the Guesser secretly decides: did they do it?" },
-        { "title": "Read it out loud", "text": "The Guesser reveals the card and everyone confesses." },
-        { "title": "Sip time", "text": "Caught someone? They sip. Got anyone wrong? The Guesser sips." },
-        { "title": "Pass the phone", "text": "Tap the card for a new one and hand the phone to the next Guesser." }
+        {
+          "title": "Read it to yourself",
+          "text": "The Guesser reads the card silently. Nobody else peeks."
+        },
+        {
+          "title": "Place your bets",
+          "text": "For every other player, the Guesser secretly decides: did they do it?"
+        },
+        {
+          "title": "Read it out loud",
+          "text": "The Guesser reveals the card and everyone confesses."
+        },
+        {
+          "title": "Sip time",
+          "text": "Caught someone? They sip. Got anyone wrong? The Guesser sips."
+        },
+        {
+          "title": "Pass the phone",
+          "text": "Tap the card for a new one and hand the phone to the next Guesser."
+        }
       ],
       "hotseat": [
-        { "title": "Someone's in the hot seat", "text": "Every card names a player. Everyone else bets: did they do it?" },
-        { "title": "Confession", "text": "The hot seat answers. Honestly." },
-        { "title": "Sip time", "text": "Wrong bets sip. If everyone nailed it, the hot seat sips." }
+        {
+          "title": "Someone's in the hot seat",
+          "text": "Every card names a player. Everyone else bets: did they do it?"
+        },
+        {
+          "title": "Confession",
+          "text": "The hot seat answers. Honestly."
+        },
+        {
+          "title": "Sip time",
+          "text": "Wrong bets sip. If everyone nailed it, the hot seat sips."
+        }
       ],
       "date": [
-        { "title": "Just the two of you", "text": "Take turns reading a card to each other." },
-        { "title": "Answer or sip", "text": "Answer honestly, or take a sip and skip. No judging." }
+        {
+          "title": "Just the two of you",
+          "text": "Take turns reading a card to each other."
+        },
+        {
+          "title": "Answer or sip",
+          "text": "Answer honestly, or take a sip and skip. No judging."
+        }
       ]
     },
     "game": {
@@ -57,34 +106,53 @@
       "back": "Back to setup",
       "rules": "Rules",
       "kicker": "Who here has…",
-      "turn": "{name} reads first",
       "hotseatTurn": "{name} is in the hot seat",
       "tapForNext": "Tap the card for the next one",
       "deckEmpty": "You drained the deck!",
       "deckEmptyHint": "{count} cards, zero secrets left.",
       "shuffleAgain": "Shuffle again"
-    }
+    },
+    "options": "Game options"
   },
   "es": {
     "title": "Sip 'n Spill",
     "tagline": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
-    "language": { "label": "Idioma" },
+    "language": {
+      "label": "Idioma"
+    },
     "modes": {
       "label": "Elige un modo",
-      "classic": { "name": "Clásico", "tagline": "Apuesta sobre lo que han hecho tus amigos" },
-      "hotseat": { "name": "Hot Seat", "tagline": "Un nombre en la carta, todos apuestan" },
-      "date": { "name": "Confesión 1:1", "tagline": "Vosotros dos, sin filtro" }
+      "classic": {
+        "name": "Clásico",
+        "tagline": "Apuesta sobre lo que han hecho tus amigos"
+      },
+      "hotseat": {
+        "name": "Hot Seat",
+        "tagline": "Un nombre en la carta, todos apuestan"
+      },
+      "date": {
+        "name": "Confesión 1:1",
+        "tagline": "Vosotros dos, sin filtro"
+      }
     },
     "vibes": {
       "label": "Elige tu nivel",
       "hint": "Mezcla los que quieras",
-      "chill": { "name": "Calentamiento", "description": "Secretos, drama y caos social" },
-      "spicy": { "name": "Picante", "description": "Relaciones y ligues" },
-      "unhinged": { "name": "Sin límites", "description": "Sin filtros. Juega bajo tu propio riesgo." }
+      "chill": {
+        "name": "Calentamiento",
+        "description": "Secretos, drama y caos social"
+      },
+      "spicy": {
+        "name": "Picante",
+        "description": "Relaciones y ligues"
+      },
+      "unhinged": {
+        "name": "Sin límites",
+        "description": "Sin filtros. Juega bajo tu propio riesgo."
+      }
     },
     "players": {
       "label": "¿Quién juega?",
-      "optionalHint": "Opcional. Añade nombres y el juego lleva los turnos.",
       "requiredHint": "Añade al menos {min} nombres para empezar.",
       "placeholder": "Nombre",
       "add": "Añadir",
@@ -99,20 +167,50 @@
       "close": "Cerrar",
       "gotIt": "Entendido",
       "classic": [
-        { "title": "Léela para ti", "text": "Quien adivina lee la carta en silencio. Nadie más mira." },
-        { "title": "Haz tus apuestas", "text": "Para cada jugador, quien adivina decide en secreto: ¿lo ha hecho?" },
-        { "title": "Léela en voz alta", "text": "Se revela la carta y todo el mundo confiesa." },
-        { "title": "A beber", "text": "¿Has pillado a alguien? Bebe. ¿Has fallado con alguien? Bebes tú." },
-        { "title": "Pasa el móvil", "text": "Toca la carta para sacar otra y pásale el móvil al siguiente." }
+        {
+          "title": "Léela para ti",
+          "text": "Quien adivina lee la carta en silencio. Nadie más mira."
+        },
+        {
+          "title": "Haz tus apuestas",
+          "text": "Para cada jugador, quien adivina decide en secreto: ¿lo ha hecho?"
+        },
+        {
+          "title": "Léela en voz alta",
+          "text": "Se revela la carta y todo el mundo confiesa."
+        },
+        {
+          "title": "A beber",
+          "text": "¿Has pillado a alguien? Bebe. ¿Has fallado con alguien? Bebes tú."
+        },
+        {
+          "title": "Pasa el móvil",
+          "text": "Toca la carta para sacar otra y pásale el móvil al siguiente."
+        }
       ],
       "hotseat": [
-        { "title": "Alguien está en el hot seat", "text": "Cada carta lleva un nombre. Los demás apuestan: ¿lo ha hecho?" },
-        { "title": "Confesión", "text": "Quien está en el hot seat responde. Con sinceridad." },
-        { "title": "A beber", "text": "Quien falle la apuesta bebe. Si todos aciertan, bebe el hot seat." }
+        {
+          "title": "Alguien está en el hot seat",
+          "text": "Cada carta lleva un nombre. Los demás apuestan: ¿lo ha hecho?"
+        },
+        {
+          "title": "Confesión",
+          "text": "Quien está en el hot seat responde. Con sinceridad."
+        },
+        {
+          "title": "A beber",
+          "text": "Quien falle la apuesta bebe. Si todos aciertan, bebe el hot seat."
+        }
       ],
       "date": [
-        { "title": "Solo vosotros dos", "text": "Os turnáis para leeros una carta." },
-        { "title": "Responde o bebe", "text": "Responde con sinceridad, o bebe y pasa. Sin juzgar." }
+        {
+          "title": "Solo vosotros dos",
+          "text": "Os turnáis para leeros una carta."
+        },
+        {
+          "title": "Responde o bebe",
+          "text": "Responde con sinceridad, o bebe y pasa. Sin juzgar."
+        }
       ]
     },
     "game": {
@@ -123,12 +221,12 @@
       "back": "Volver al inicio",
       "rules": "Reglas",
       "kicker": "",
-      "turn": "Le toca a {name}",
       "hotseatTurn": "{name} está en el hot seat",
       "tapForNext": "Toca la carta para sacar otra",
       "deckEmpty": "¡Habéis agotado la baraja!",
       "deckEmptyHint": "{count} cartas y ni un secreto por contar.",
       "shuffleAgain": "Barajar otra vez"
-    }
+    },
+    "options": "Opciones de partida"
   }
 }

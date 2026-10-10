@@ -21,8 +21,8 @@ import { readJson, STORAGE_KEYS, writeJson } from "./lib/storage";
 import GradientBackground from "./components/gradient-background";
 import HowToPlay from "./components/how-to-play";
 import LanguageToggle from "./components/language-toggle";
+import PlayButton from "./components/play-button";
 import PlayerList from "./components/player-list";
-import PrimaryButton from "./components/primary-button";
 import SegmentedChoice from "./components/segmented-choice";
 
 const MODE_STYLE: Record<Mode, { icon: string; activeClass: string }> = {
@@ -47,6 +47,7 @@ export default function HomePage() {
   const router = useRouter();
   const [config, setConfig] = useState<GameConfig>(DEFAULT_CONFIG);
   const [hydrated, setHydrated] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [startAfterRules, setStartAfterRules] = useState(false);
 
@@ -81,7 +82,10 @@ export default function HomePage() {
   }, [config, router]);
 
   const onStart = () => {
-    if (!canStart(config)) return;
+    if (!canStart(config)) {
+      setOptionsOpen(true);
+      return;
+    }
     if (readJson(STORAGE_KEYS.rulesSeen, false)) {
       startGame();
       return;
@@ -99,7 +103,13 @@ export default function HomePage() {
     }
   }, [startAfterRules, startGame]);
 
-  const ready = canStart(config);
+  const summary = [
+    `${MODE_STYLE[config.mode].icon} ${strings.modes[config.mode].name}`,
+    ...(config.mode === "classic" ? config.vibes.map((vibe) => `${VIBE_STYLE[vibe].icon} ${strings.vibes[vibe].name}`) : []),
+    config.lang.toUpperCase(),
+  ].join("  ·  ");
+
+  const playButton = <PlayButton label={strings.start} onClick={onStart} disabled={!canStart(config)} className="w-full max-w-[220px]" />;
 
   return (
     <GradientBackground withSparkles>
@@ -108,67 +118,91 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex-1 flex flex-col items-center w-full max-w-[400px] gap-5"
+          className="flex-1 flex flex-col items-center w-full max-w-[400px] gap-6"
         >
           <motion.div
             animate={{ scale: [1, 1.02, 1] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="mt-10"
+            className={optionsOpen ? "mt-8" : "mt-14"}
           >
-            <Image src="/assets/sip-logo.png" alt={strings.title} width={220} height={138} className="w-[180px] h-auto" priority />
+            <Image
+              src="/assets/sip-logo.png"
+              alt={strings.title}
+              width={220}
+              height={138}
+              className={`h-auto transition-[width] duration-300 ${optionsOpen ? "w-[140px]" : "w-[220px]"}`}
+              priority
+            />
           </motion.div>
 
-          <p className="text-white/90 text-center max-w-[300px] leading-relaxed">{strings.tagline}</p>
+          {!optionsOpen && <p className="text-lg text-white/90 text-center max-w-[300px] leading-relaxed">{strings.tagline}</p>}
 
-          <LanguageToggle value={config.lang} onChange={(lang) => update({ lang })} label={strings.language.label} />
+          {!optionsOpen && playButton}
 
-          <SegmentedChoice
-            label={strings.modes.label}
-            options={MODES.map((mode) => ({
-              value: mode,
-              icon: MODE_STYLE[mode].icon,
-              name: strings.modes[mode].name,
-              description: strings.modes[mode].tagline,
-              activeClass: MODE_STYLE[mode].activeClass,
-            }))}
-            selected={[config.mode]}
-            onToggle={(mode) => update({ mode })}
-          />
+          <button
+            type="button"
+            onClick={() => setOptionsOpen((open) => !open)}
+            aria-expanded={optionsOpen}
+            aria-controls="game-options"
+            className="flex items-center gap-2 py-2 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-sm text-white/85 transition-colors"
+          >
+            <span>{summary}</span>
+            <span aria-hidden="true" className={`text-xs transition-transform ${optionsOpen ? "rotate-180" : ""}`}>
+              ▼
+            </span>
+          </button>
 
           <AnimatePresence initial={false}>
-            {config.mode === "classic" && (
-              <motion.div key="vibes" {...reveal} className="w-full overflow-hidden">
-                <SegmentedChoice
-                  label={strings.vibes.label}
-                  multiple
-                  options={VIBES.map((vibe) => ({
-                    value: vibe,
-                    icon: VIBE_STYLE[vibe].icon,
-                    name: strings.vibes[vibe].name,
-                    description: strings.vibes[vibe].description,
-                    activeClass: VIBE_STYLE[vibe].activeClass,
-                  }))}
-                  selected={config.vibes}
-                  onToggle={toggleVibe}
-                />
-                <p className="text-xs text-white/50 text-center mt-2">{strings.vibes.hint}</p>
-              </motion.div>
-            )}
+            {optionsOpen && (
+              <motion.div key="options" id="game-options" {...reveal} className="w-full overflow-hidden">
+                <div className="flex flex-col items-center gap-6 pb-2">
+                  <LanguageToggle value={config.lang} onChange={(lang) => update({ lang })} label={strings.language.label} />
 
-            {config.mode !== "date" && (
-              <motion.section key="players" {...reveal} className="w-full overflow-hidden">
-                <h2 className="text-sm font-semibold text-white/80 uppercase tracking-wider text-center mb-3">{strings.players.label}</h2>
-                <PlayerList
-                  players={config.players}
-                  onChange={(players) => update({ players })}
-                  strings={strings.players}
-                  hint={
-                    config.mode === "hotseat"
-                      ? format(strings.players.requiredHint, { min: MIN_HOTSEAT_PLAYERS })
-                      : strings.players.optionalHint
-                  }
-                />
-              </motion.section>
+                  <SegmentedChoice
+                    label={strings.modes.label}
+                    options={MODES.map((mode) => ({
+                      value: mode,
+                      icon: MODE_STYLE[mode].icon,
+                      name: strings.modes[mode].name,
+                      description: strings.modes[mode].tagline,
+                      activeClass: MODE_STYLE[mode].activeClass,
+                    }))}
+                    selected={[config.mode]}
+                    onToggle={(mode) => update({ mode })}
+                  />
+
+                  {config.mode === "classic" && (
+                    <div className="w-full">
+                      <SegmentedChoice
+                        label={strings.vibes.label}
+                        multiple
+                        options={VIBES.map((vibe) => ({
+                          value: vibe,
+                          icon: VIBE_STYLE[vibe].icon,
+                          name: strings.vibes[vibe].name,
+                          description: strings.vibes[vibe].description,
+                          activeClass: VIBE_STYLE[vibe].activeClass,
+                        }))}
+                        selected={config.vibes}
+                        onToggle={toggleVibe}
+                      />
+                      <p className="text-xs text-white/50 text-center mt-2">{strings.vibes.hint}</p>
+                    </div>
+                  )}
+
+                  {config.mode === "hotseat" && (
+                    <section className="w-full">
+                      <h2 className="text-sm font-semibold text-white/80 uppercase tracking-wider text-center mb-3">{strings.players.label}</h2>
+                      <PlayerList
+                        players={config.players}
+                        onChange={(players) => update({ players })}
+                        strings={strings.players}
+                        hint={format(strings.players.requiredHint, { min: MIN_HOTSEAT_PLAYERS })}
+                      />
+                    </section>
+                  )}
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
 
@@ -181,11 +215,11 @@ export default function HomePage() {
           </button>
         </motion.div>
 
-        <div className="sticky bottom-0 w-full flex justify-center pt-8 pb-[max(1rem,env(safe-area-inset-bottom))] -mx-6 px-6 bg-gradient-to-t from-[#260046] via-[#260046]/90 to-transparent">
-          <PrimaryButton onClick={onStart} disabled={!ready} className="w-full max-w-[280px]">
-            {strings.start}
-          </PrimaryButton>
-        </div>
+        {optionsOpen && (
+          <div className="sticky bottom-0 w-full flex justify-center pt-8 pb-[max(1rem,env(safe-area-inset-bottom))] -mx-6 px-6 bg-gradient-to-t from-[#260046] via-[#260046]/90 to-transparent">
+            {playButton}
+          </div>
+        )}
 
         <footer className="text-xs text-white/60 text-center pt-2">
           {format(strings.footer, { year: new Date().getFullYear() })}

@@ -67,8 +67,13 @@ describe("search params round trip", () => {
     expect(params.toString()).toBe("lang=es&mode=date");
   });
 
-  it("round-trips a classic config with players", () => {
+  it("drops player names outside hot seat", () => {
     const config = { lang: "en" as const, mode: "classic" as const, vibes: ["spicy" as const, "unhinged" as const], players: ["Ana", "Luis"] };
+    expect(fromSearchParams(toSearchParams(config))).toEqual({ ...config, players: [] });
+  });
+
+  it("round-trips a hot seat config with players", () => {
+    const config = { lang: "es" as const, mode: "hotseat" as const, vibes: [...DEFAULT_CONFIG.vibes], players: ["Ana", "Luis"] };
     expect(fromSearchParams(toSearchParams(config))).toEqual(config);
   });
 });
