@@ -1,0 +1,3 @@
+{
+  "redirects": [{ "source": "/:path*", "destination": "https://sip.sindriax.dev/:path*", "permanent": true }]
+}
