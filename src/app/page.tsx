@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import {
   DEFAULT_CONFIG,
@@ -24,6 +24,8 @@ import LanguageToggle from "./components/language-toggle";
 import PlayButton from "./components/play-button";
 import PlayerList from "./components/player-list";
 import SegmentedChoice from "./components/segmented-choice";
+import SettingRow from "./components/setting-row";
+import Sheet from "./components/sheet";
 
 const MODE_STYLE: Record<Mode, { icon: string; activeClass: string }> = {
   classic: { icon: "🍻", activeClass: "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-amber-400/60" },
@@ -37,18 +39,13 @@ const VIBE_STYLE: Record<Vibe, { icon: string; activeClass: string }> = {
   unhinged: { icon: "🔥", activeClass: "bg-gradient-to-b from-red-600/40 to-purple-600/40 border-red-500/60" },
 };
 
-const reveal = {
-  initial: { opacity: 0, height: 0 },
-  animate: { opacity: 1, height: "auto" },
-  exit: { opacity: 0, height: 0 },
-};
+type OpenSheet = "mode" | "vibe" | "players" | "rules" | null;
 
 export default function HomePage() {
   const router = useRouter();
   const [config, setConfig] = useState<GameConfig>(DEFAULT_CONFIG);
   const [hydrated, setHydrated] = useState(false);
-  const [optionsOpen, setOptionsOpen] = useState(false);
-  const [rulesOpen, setRulesOpen] = useState(false);
+  const [sheet, setSheet] = useState<OpenSheet>(null);
   const [startAfterRules, setStartAfterRules] = useState(false);
 
   useEffect(() => {
@@ -67,6 +64,7 @@ export default function HomePage() {
 
   const strings = getStrings(config.lang);
   const update = (patch: Partial<GameConfig>) => setConfig((current) => ({ ...current, ...patch }));
+  const closeSheet = useCallback(() => setSheet(null), []);
 
   const toggleVibe = (vibe: Vibe) =>
     update({
@@ -83,7 +81,7 @@ export default function HomePage() {
 
   const onStart = () => {
     if (!canStart(config)) {
-      setOptionsOpen(true);
+      setSheet("players");
       return;
     }
     if (readJson(STORAGE_KEYS.rulesSeen, false)) {
@@ -92,24 +90,28 @@ export default function HomePage() {
     }
     writeJson(STORAGE_KEYS.rulesSeen, true);
     setStartAfterRules(true);
-    setRulesOpen(true);
+    setSheet("rules");
   };
 
   const closeRules = useCallback(() => {
-    setRulesOpen(false);
+    setSheet(null);
     if (startAfterRules) {
       setStartAfterRules(false);
       startGame();
     }
   }, [startAfterRules, startGame]);
 
-  const summary = [
-    `${MODE_STYLE[config.mode].icon} ${strings.modes[config.mode].name}`,
-    ...(config.mode === "classic" ? config.vibes.map((vibe) => `${VIBE_STYLE[vibe].icon} ${strings.vibes[vibe].name}`) : []),
-    config.lang.toUpperCase(),
-  ].join("  ·  ");
+  const doneButton = (
+    <button
+      type="button"
+      onClick={closeSheet}
+      className="w-full py-3 rounded-2xl gradient-gold-shine text-stone-900 font-extrabold glow-gold active:scale-[0.98] transition-transform"
+    >
+      {strings.settings.done}
+    </button>
+  );
 
-  const playButton = <PlayButton label={strings.start} onClick={onStart} disabled={!canStart(config)} className="w-full max-w-[220px]" />;
+  const needsPlayers = config.mode === "hotseat" && config.players.length < MIN_HOTSEAT_PLAYERS;
 
   return (
     <GradientBackground withSparkles>
@@ -120,113 +122,98 @@ export default function HomePage() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="flex-1 flex flex-col items-center w-full max-w-[400px] gap-6"
         >
-          <motion.div
-            animate={{ scale: [1, 1.02, 1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className={optionsOpen ? "mt-8" : "mt-14"}
-          >
-            <Image
-              src="/assets/sip-logo.png"
-              alt={strings.title}
-              width={220}
-              height={138}
-              className={`h-auto transition-[width] duration-300 ${optionsOpen ? "w-[140px]" : "w-[220px]"}`}
-              priority
-            />
+          <motion.div animate={{ scale: [1, 1.02, 1] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="mt-12">
+            <Image src="/assets/sip-logo.png" alt={strings.title} width={220} height={138} className="w-[220px] h-auto" priority />
           </motion.div>
 
-          {!optionsOpen && <p className="text-lg text-white/90 text-center max-w-[300px] leading-relaxed">{strings.tagline}</p>}
+          <p className="text-lg text-white/90 text-center max-w-[300px] leading-relaxed">{strings.tagline}</p>
 
-          {!optionsOpen && playButton}
+          <LanguageToggle value={config.lang} onChange={(lang) => update({ lang })} label={strings.language.label} />
 
-          <button
-            type="button"
-            onClick={() => setOptionsOpen((open) => !open)}
-            aria-expanded={optionsOpen}
-            aria-controls="game-options"
-            className="flex items-center gap-2 py-2 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-sm text-white/85 transition-colors"
-          >
-            <span>{summary}</span>
-            <span aria-hidden="true" className={`text-xs transition-transform ${optionsOpen ? "rotate-180" : ""}`}>
-              ▼
-            </span>
-          </button>
+          <PlayButton label={strings.start} onClick={onStart} className="w-full max-w-[220px] mt-2" />
 
-          <AnimatePresence initial={false}>
-            {optionsOpen && (
-              <motion.div key="options" id="game-options" {...reveal} className="w-full overflow-hidden">
-                <div className="flex flex-col items-center gap-6 pb-2">
-                  <LanguageToggle value={config.lang} onChange={(lang) => update({ lang })} label={strings.language.label} />
-
-                  <SegmentedChoice
-                    label={strings.modes.label}
-                    options={MODES.map((mode) => ({
-                      value: mode,
-                      icon: MODE_STYLE[mode].icon,
-                      name: strings.modes[mode].name,
-                      description: strings.modes[mode].tagline,
-                      activeClass: MODE_STYLE[mode].activeClass,
-                    }))}
-                    selected={[config.mode]}
-                    onToggle={(mode) => update({ mode })}
-                  />
-
-                  {config.mode === "classic" && (
-                    <div className="w-full">
-                      <SegmentedChoice
-                        label={strings.vibes.label}
-                        multiple
-                        options={VIBES.map((vibe) => ({
-                          value: vibe,
-                          icon: VIBE_STYLE[vibe].icon,
-                          name: strings.vibes[vibe].name,
-                          description: strings.vibes[vibe].description,
-                          activeClass: VIBE_STYLE[vibe].activeClass,
-                        }))}
-                        selected={config.vibes}
-                        onToggle={toggleVibe}
-                      />
-                      <p className="text-xs text-white/50 text-center mt-2">{strings.vibes.hint}</p>
-                    </div>
-                  )}
-
-                  {config.mode === "hotseat" && (
-                    <section className="w-full">
-                      <h2 className="text-sm font-semibold text-white/80 uppercase tracking-wider text-center mb-3">{strings.players.label}</h2>
-                      <PlayerList
-                        players={config.players}
-                        onChange={(players) => update({ players })}
-                        strings={strings.players}
-                        hint={format(strings.players.requiredHint, { min: MIN_HOTSEAT_PLAYERS })}
-                      />
-                    </section>
-                  )}
-                </div>
-              </motion.div>
+          <div className="w-full flex flex-col gap-2">
+            <SettingRow
+              label={strings.settings.mode}
+              value={`${MODE_STYLE[config.mode].icon} ${strings.modes[config.mode].name}`}
+              onClick={() => setSheet("mode")}
+            />
+            {config.mode === "classic" && (
+              <SettingRow
+                label={strings.settings.vibe}
+                value={config.vibes.map((vibe) => `${VIBE_STYLE[vibe].icon} ${strings.vibes[vibe].name}`).join(" · ")}
+                onClick={() => setSheet("vibe")}
+              />
             )}
-          </AnimatePresence>
+            {config.mode === "hotseat" && (
+              <SettingRow
+                label={strings.settings.players}
+                value={config.players.length > 0 ? config.players.join(", ") : strings.players.empty}
+                onClick={() => setSheet("players")}
+                attention={needsPlayers}
+              />
+            )}
+          </div>
 
           <button
             type="button"
-            onClick={() => setRulesOpen(true)}
+            onClick={() => setSheet("rules")}
             className="py-2 px-5 rounded-2xl text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition-colors"
           >
             📖 {strings.howToPlay}
           </button>
         </motion.div>
 
-        {optionsOpen && (
-          <div className="sticky bottom-0 w-full flex justify-center pt-8 pb-[max(1rem,env(safe-area-inset-bottom))] -mx-6 px-6 bg-gradient-to-t from-[#260046] via-[#260046]/90 to-transparent">
-            {playButton}
-          </div>
-        )}
-
-        <footer className="text-xs text-white/60 text-center pt-2">
+        <footer className="text-xs text-white/60 text-center pt-6">
           {format(strings.footer, { year: new Date().getFullYear() })}
         </footer>
       </main>
 
-      <HowToPlay mode={config.mode} strings={strings} isOpen={rulesOpen} onClose={closeRules} />
+      <Sheet title={strings.modes.label} isOpen={sheet === "mode"} onClose={closeSheet} closeLabel={strings.settings.close}>
+        <SegmentedChoice
+          label={strings.modes.label}
+          options={MODES.map((mode) => ({
+            value: mode,
+            icon: MODE_STYLE[mode].icon,
+            name: strings.modes[mode].name,
+            description: strings.modes[mode].tagline,
+            activeClass: MODE_STYLE[mode].activeClass,
+          }))}
+          selected={[config.mode]}
+          onToggle={(mode) => {
+            update({ mode });
+            closeSheet();
+          }}
+        />
+      </Sheet>
+
+      <Sheet title={strings.vibes.label} isOpen={sheet === "vibe"} onClose={closeSheet} closeLabel={strings.settings.close} footer={doneButton}>
+        <SegmentedChoice
+          label={strings.vibes.label}
+          multiple
+          options={VIBES.map((vibe) => ({
+            value: vibe,
+            icon: VIBE_STYLE[vibe].icon,
+            name: strings.vibes[vibe].name,
+            description: strings.vibes[vibe].description,
+            activeClass: VIBE_STYLE[vibe].activeClass,
+          }))}
+          selected={config.vibes}
+          onToggle={toggleVibe}
+        />
+        <p className="text-xs text-white/50 text-center mt-3">{strings.vibes.hint}</p>
+      </Sheet>
+
+      <Sheet title={strings.players.label} isOpen={sheet === "players"} onClose={closeSheet} closeLabel={strings.settings.close} footer={doneButton}>
+        <PlayerList
+          players={config.players}
+          onChange={(players) => update({ players })}
+          strings={strings.players}
+          hint={format(strings.players.requiredHint, { min: MIN_HOTSEAT_PLAYERS })}
+        />
+      </Sheet>
+
+      <HowToPlay mode={config.mode} strings={strings} isOpen={sheet === "rules"} onClose={closeRules} />
     </GradientBackground>
   );
 }

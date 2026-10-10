@@ -19,7 +19,7 @@ interface SegmentedChoiceProps<T extends string> {
 export default function SegmentedChoice<T extends string>({ label, options, selected, onToggle, multiple = false }: SegmentedChoiceProps<T>) {
   return (
     <fieldset className="w-full flex flex-col items-center gap-3">
-      <legend className="text-sm font-semibold text-white/80 uppercase tracking-wider text-center mb-3">{label}</legend>
+      <legend className="sr-only">{label}</legend>
       <div className="w-full flex gap-2" role={multiple ? "group" : "radiogroup"} aria-label={label}>
         {options.map((option) => {
           const active = selected.includes(option.value);
