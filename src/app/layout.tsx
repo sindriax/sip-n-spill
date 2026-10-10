@@ -8,6 +8,7 @@ import ServiceWorker from "./components/service-worker";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sip.sindriax.dev"),
   title: "Sip 'n Spill",
   description: "Think you know your friends? Spill their secrets and make them sip their drinks.",
   manifest: "/manifest.webmanifest",
