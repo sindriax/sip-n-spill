@@ -12,7 +12,7 @@ const CORNERS = ["top-3 left-3", "top-3 right-3", "bottom-3 left-3 rotate-180", 
 
 export default function QuestionDisplay({ question, questionKey }: QuestionDisplayProps) {
   return (
-    <div className="w-full h-[62vh] max-h-[640px] flex items-center justify-center" style={{ perspective: "1000px" }}>
+    <div className="w-full h-full max-h-[640px] flex items-center justify-center" style={{ perspective: "1000px" }}>
       <AnimatePresence mode="wait">
         <motion.article
           key={questionKey}
@@ -20,14 +20,14 @@ export default function QuestionDisplay({ question, questionKey }: QuestionDispl
           animate={{ opacity: 1, rotateY: 0, scale: 1 }}
           exit={{ opacity: 0, rotateY: -70, scale: 0.96 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
-          className="w-full max-w-[420px] h-full gradient-pink-orange rounded-[32px] p-4"
+          className="w-full max-w-[420px] h-full gradient-pink-orange rounded-[32px] p-3 sm:p-4"
           style={{ boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(76, 0, 115, 0.8)" }}
         >
-          <div className="relative w-full h-full border-[3px] border-white/60 rounded-3xl px-6 py-10 flex flex-col items-center justify-center gap-3 bg-white/5">
+          <div className="relative w-full h-full border-[3px] border-white/60 rounded-3xl px-5 py-8 flex flex-col items-center justify-center gap-3 bg-white/5">
             {CORNERS.map((corner) => (
               <Martini key={corner} size={22} weight="fill" aria-hidden="true" className={`absolute ${corner} text-white/70`} />
             ))}
-            <p className="text-[clamp(1.5rem,6vw,2rem)] font-extrabold text-white text-center leading-[1.25]" style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.15)" }}>
+            <p className="text-[clamp(1.25rem,5.5vw,2rem)] font-extrabold text-white text-center leading-[1.25]" style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.15)" }}>
               {question}
             </p>
           </div>

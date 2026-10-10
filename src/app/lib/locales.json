@@ -131,7 +131,7 @@
       "label": "Elige un modo",
       "classic": {
         "name": "Clásico",
-        "tagline": "Apuesta sobre lo que han hecho tus amigos"
+        "tagline": "Apuesta por lo que han hecho tus amigos"
       },
       "hotseat": {
         "name": "Hot Seat",
@@ -139,7 +139,7 @@
       },
       "date": {
         "name": "Confesión 1:1",
-        "tagline": "Vosotros dos, sin filtro"
+        "tagline": "Solo vosotros dos, sin filtro"
       }
     },
     "vibes": {
@@ -147,7 +147,7 @@
       "hint": "Mezcla los que quieras",
       "chill": {
         "name": "Calentamiento",
-        "description": "Secretos, drama y caos social"
+        "description": "Secretos, dramas y caos social"
       },
       "spicy": {
         "name": "Picante",
@@ -155,17 +155,17 @@
       },
       "unhinged": {
         "name": "Sin límites",
-        "description": "Sin filtros. Juega bajo tu propio riesgo."
+        "description": "Sin filtros. Tú verás."
       },
       "all": "Todos los niveles"
     },
     "players": {
       "label": "¿Quién juega?",
-      "requiredHint": "Añade al menos {min} nombres para empezar.",
+      "requiredHint": "Añade al menos {min} nombres para empezar",
       "placeholder": "Nombre",
       "add": "Añadir",
       "remove": "Quitar a {name}",
-      "count": "{count} jugando",
+      "count": "{count} jugadores",
       "empty": "Añade jugadores"
     },
     "start": "¡A jugar!",
@@ -178,7 +178,7 @@
       "classic": [
         {
           "title": "Léela para ti",
-          "text": "Quien adivina lee la carta en silencio. Nadie más mira."
+          "text": "Quien adivina lee la carta en silencio. Nadie más la ve."
         },
         {
           "title": "Haz tus apuestas",
@@ -190,11 +190,11 @@
         },
         {
           "title": "A beber",
-          "text": "¿Has pillado a alguien? Bebe. ¿Has fallado con alguien? Bebes tú."
+          "text": "¿Has pillado a alguien? Bebe esa persona. ¿Has fallado con alguien? Bebes tú."
         },
         {
           "title": "Pasa el móvil",
-          "text": "Toca la carta para sacar otra y pásale el móvil al siguiente."
+          "text": "Toca la carta para sacar otra y pásale el móvil a quien tengas a la derecha."
         }
       ],
       "hotseat": [
@@ -224,7 +224,7 @@
     },
     "game": {
       "loading": "Barajando las cartas…",
-      "loadFailed": "No se han podido cargar las preguntas. Revisa tu conexión e inténtalo de nuevo.",
+      "loadFailed": "No se han podido cargar las cartas. Revisa la conexión y vuelve a intentarlo.",
       "retry": "Reintentar",
       "home": "Inicio",
       "back": "Volver al inicio",
@@ -232,7 +232,7 @@
       "hotseatTurn": "{name} está en el hot seat",
       "tapForNext": "Toca la carta para sacar otra",
       "deckEmpty": "¡Habéis agotado la baraja!",
-      "deckEmptyHint": "{count} cartas y ni un secreto por contar.",
+      "deckEmptyHint": "{count} cartas y ni un secreto más que contar.",
       "shuffleAgain": "Barajar otra vez"
     },
     "settings": {

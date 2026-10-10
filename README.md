@@ -20,7 +20,8 @@ Live at [sip.sindriax.dev](https://sip.sindriax.dev).
 - **Spill 1:1**: confession cards for two
 - Nearly 1,000 cards in English and Spanish
 - Optional player names to track whose turn it is, remembered between sessions
-- Screen stays awake while playing, and the last deck is cached so a flaky bar connection doesn't stop the game
+- Works offline once you've opened it: install it from the browser's "Add to Home Screen" and the whole game, decks included, is cached on the phone
+- Screen stays awake while playing, tap or swipe the card to move on
 
 ## Screenshots
 
@@ -36,6 +37,7 @@ Live at [sip.sindriax.dev](https://sip.sindriax.dev).
 - Next.js 15 (static export), TypeScript, Tailwind CSS, Framer Motion
 - Cloudflare Workers serving the static site plus `/api/questions`
 - Cloudflare D1 for the question decks
+- A small service worker (`public/sw.js`, precache list generated at build time) for offline play
 
 ## Development
 

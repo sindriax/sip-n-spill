@@ -116,8 +116,8 @@ function Game() {
 
   return (
     <GradientBackground withSparkles>
-      <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
-        <header className="flex items-center justify-between gap-3 px-5 pt-10 pb-4">
+      <div className="flex flex-col h-dvh overflow-hidden text-white font-[family-name:var(--font-geist-sans)]">
+        <header className="flex items-center justify-between gap-3 px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-3">
           <button
             type="button"
             onClick={goHome}
@@ -165,12 +165,12 @@ function Game() {
             if (info.offset.x < -SWIPE_THRESHOLD) next();
             else if (info.offset.x > SWIPE_THRESHOLD) previous();
           }}
-          className="flex-1 flex items-center justify-center px-5 py-4 cursor-pointer select-none touch-pan-y focus:outline-none"
+          className="flex-1 min-h-0 flex items-center justify-center px-5 py-4 cursor-pointer select-none touch-pan-y focus:outline-none"
         >
           <QuestionDisplay question={question} questionKey={index} />
         </motion.div>
 
-        <p className="text-center text-xs text-white/50 pb-6">{strings.game.tapForNext}</p>
+        <p className="text-center text-xs text-white/50 pb-[max(1.25rem,env(safe-area-inset-bottom))]">{strings.game.tapForNext}</p>
 
         <HowToPlay mode={config.mode} strings={strings} isOpen={rulesOpen} onClose={() => setRulesOpen(false)} />
       </div>

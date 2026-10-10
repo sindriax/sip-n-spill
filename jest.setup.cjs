@@ -26,10 +26,14 @@ jest.mock("framer-motion", () => ({
   motion: new Proxy(
     {},
     {
-      get: (_, tag) =>
-        function MockMotion({ children, initial, animate, exit, transition, whileHover, whileTap, ...props }) {
-          return React.createElement(tag, props, children);
-        },
+      get: (cache, tag) => {
+        if (!cache[tag]) {
+          cache[tag] = function MockMotion({ children, initial, animate, exit, transition, whileHover, whileTap, drag, dragConstraints, dragElastic, dragSnapToOrigin, onTap, onDragEnd, ...props }) {
+            return React.createElement(tag, { ...props, onClick: props.onClick || onTap }, children);
+          };
+        }
+        return cache[tag];
+      },
     }
   ),
   MotionConfig: function MockMotionConfig({ children }) {
