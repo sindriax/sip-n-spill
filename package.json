@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "dev:api": "mkdir -p out && wrangler dev",
-    "build": "next build",
-    "preview": "next build && wrangler dev",
-    "deploy": "next build && wrangler deploy",
+    "build": "next build && tsx scripts/build-sw.ts",
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit && tsc -p worker --noEmit",
     "test": "jest",
