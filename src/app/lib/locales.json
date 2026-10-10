@@ -42,7 +42,8 @@
       "placeholder": "Name",
       "add": "Add",
       "remove": "Remove {name}",
-      "count": "{count} playing"
+      "count": "{count} playing",
+      "empty": "Add players"
     },
     "start": "Let's play!",
     "howToPlay": "How to play",
@@ -105,14 +106,19 @@
       "home": "Home",
       "back": "Back to setup",
       "rules": "Rules",
-      "kicker": "Who here has…",
       "hotseatTurn": "{name} is in the hot seat",
       "tapForNext": "Tap the card for the next one",
       "deckEmpty": "You drained the deck!",
       "deckEmptyHint": "{count} cards, zero secrets left.",
       "shuffleAgain": "Shuffle again"
     },
-    "options": "Game options"
+    "settings": {
+      "mode": "Mode",
+      "vibe": "Vibe",
+      "players": "Players",
+      "done": "Done",
+      "close": "Close"
+    }
   },
   "es": {
     "title": "Sip 'n Spill",
@@ -157,7 +163,8 @@
       "placeholder": "Nombre",
       "add": "Añadir",
       "remove": "Quitar a {name}",
-      "count": "{count} jugando"
+      "count": "{count} jugando",
+      "empty": "Añade jugadores"
     },
     "start": "¡A jugar!",
     "howToPlay": "Cómo se juega",
@@ -220,13 +227,18 @@
       "home": "Inicio",
       "back": "Volver al inicio",
       "rules": "Reglas",
-      "kicker": "",
       "hotseatTurn": "{name} está en el hot seat",
       "tapForNext": "Toca la carta para sacar otra",
       "deckEmpty": "¡Habéis agotado la baraja!",
       "deckEmptyHint": "{count} cartas y ni un secreto por contar.",
       "shuffleAgain": "Barajar otra vez"
     },
-    "options": "Opciones de partida"
+    "settings": {
+      "mode": "Modo",
+      "vibe": "Nivel",
+      "players": "Jugadores",
+      "done": "Listo",
+      "close": "Cerrar"
+    }
   }
 }

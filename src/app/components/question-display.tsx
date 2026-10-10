@@ -5,12 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface QuestionDisplayProps {
   question: string;
   questionKey: number;
-  kicker?: string;
 }
 
 const CORNERS = ["top-2 left-2", "top-2 right-2 -scale-x-100", "bottom-2 left-2 rotate-180", "bottom-2 right-2 rotate-180 -scale-x-100"];
 
-export default function QuestionDisplay({ question, questionKey, kicker }: QuestionDisplayProps) {
+export default function QuestionDisplay({ question, questionKey }: QuestionDisplayProps) {
   return (
     <div className="w-full h-[62vh] max-h-[640px] flex items-center justify-center" style={{ perspective: "1000px" }}>
       <AnimatePresence mode="wait">
@@ -29,7 +28,6 @@ export default function QuestionDisplay({ question, questionKey, kicker }: Quest
                 🍸
               </span>
             ))}
-            {kicker && <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">{kicker}</p>}
             <p className="text-[clamp(1.5rem,6vw,2rem)] font-extrabold text-white text-center leading-[1.25]" style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.15)" }}>
               {question}
             </p>

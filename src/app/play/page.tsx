@@ -105,7 +105,6 @@ function Game() {
 
   const question = config.mode === "hotseat" && currentPlayer ? deck[index].replaceAll("{player}", currentPlayer) : deck[index];
   const turnLabel = currentPlayer ? format(strings.game.hotseatTurn, { name: currentPlayer }) : strings.modes[config.mode].name;
-  const kicker = config.mode === "classic" ? strings.game.kicker : "";
 
   return (
     <GradientBackground withSparkles>
@@ -146,7 +145,7 @@ function Game() {
         </div>
 
         <button type="button" onClick={next} className="flex-1 flex items-center justify-center px-5 py-4 focus:outline-none" aria-label={strings.game.tapForNext}>
-          <QuestionDisplay question={question} kicker={kicker} questionKey={index} />
+          <QuestionDisplay question={question} questionKey={index} />
         </button>
 
         <p className="text-center text-xs text-white/50 pb-6">{strings.game.tapForNext}</p>
