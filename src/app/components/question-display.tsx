@@ -1,13 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { Martini } from "@phosphor-icons/react";
 
 interface QuestionDisplayProps {
   question: string;
   questionKey: number;
 }
 
-const CORNERS = ["top-2 left-2", "top-2 right-2 -scale-x-100", "bottom-2 left-2 rotate-180", "bottom-2 right-2 rotate-180 -scale-x-100"];
+const CORNERS = ["top-3 left-3", "top-3 right-3", "bottom-3 left-3 rotate-180", "bottom-3 right-3 rotate-180"];
 
 export default function QuestionDisplay({ question, questionKey }: QuestionDisplayProps) {
   return (
@@ -24,9 +25,7 @@ export default function QuestionDisplay({ question, questionKey }: QuestionDispl
         >
           <div className="relative w-full h-full border-[3px] border-white/60 rounded-3xl px-6 py-10 flex flex-col items-center justify-center gap-3 bg-white/5">
             {CORNERS.map((corner) => (
-              <span key={corner} aria-hidden="true" className={`absolute ${corner} text-[26px] opacity-85`}>
-                🍸
-              </span>
+              <Martini key={corner} size={22} weight="fill" aria-hidden="true" className={`absolute ${corner} text-white/70`} />
             ))}
             <p className="text-[clamp(1.5rem,6vw,2rem)] font-extrabold text-white text-center leading-[1.25]" style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.15)" }}>
               {question}

@@ -1,8 +1,11 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { CaretDown } from "@phosphor-icons/react";
+
 interface SettingRowProps {
   label: string;
-  value: string;
+  value: ReactNode;
   onClick: () => void;
   attention?: boolean;
 }
@@ -16,12 +19,10 @@ export default function SettingRow({ label, value, onClick, attention = false }:
         attention ? "border-[#FFD36E]/70" : "border-white/10"
       }`}
     >
-      <span className="text-xs font-semibold uppercase tracking-wider text-white/70">{label}</span>
+      <span className="shrink-0 text-xs font-semibold uppercase tracking-wider text-white/70">{label}</span>
       <span className="flex items-center gap-2 min-w-0 text-sm font-bold text-white">
-        <span className="truncate">{value}</span>
-        <span aria-hidden="true" className="text-white/50 text-xs">
-          ▼
-        </span>
+        <span className="flex items-center gap-2 min-w-0 truncate">{value}</span>
+        <CaretDown size={14} weight="bold" className="shrink-0 text-white/50" aria-hidden="true" />
       </span>
     </button>
   );

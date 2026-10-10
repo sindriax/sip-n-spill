@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { fromSearchParams, parseLanguage } from "@/lib/game";
 import { format, getStrings } from "../lib/i18n";
 import { loadDeck, shuffle } from "../lib/deck";
@@ -14,6 +15,8 @@ import HowToPlay from "../components/how-to-play";
 import QuestionDisplay from "../components/question-display";
 
 type Status = "loading" | "error" | "ready";
+
+const SWIPE_THRESHOLD = 80;
 
 function Game() {
   const router = useRouter();
@@ -57,8 +60,13 @@ function Game() {
   const currentPlayer = turnOrder.length > 0 ? turnOrder[index % turnOrder.length] : null;
 
   const next = useCallback(() => {
+    navigator.vibrate?.(8);
     setIndex((current) => Math.min(current + 1, deck.length));
   }, [deck.length]);
+
+  const previous = useCallback(() => {
+    setIndex((current) => Math.max(current - 1, 0));
+  }, []);
 
   const reshuffle = () => {
     setDeck(shuffle(deck));
@@ -144,9 +152,23 @@ function Game() {
           </div>
         </div>
 
-        <button type="button" onClick={next} className="flex-1 flex items-center justify-center px-5 py-4 focus:outline-none" aria-label={strings.game.tapForNext}>
+        <motion.div
+          role="button"
+          tabIndex={0}
+          aria-label={strings.game.tapForNext}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.5}
+          dragSnapToOrigin
+          onTap={next}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -SWIPE_THRESHOLD) next();
+            else if (info.offset.x > SWIPE_THRESHOLD) previous();
+          }}
+          className="flex-1 flex items-center justify-center px-5 py-4 cursor-pointer select-none touch-pan-y focus:outline-none"
+        >
           <QuestionDisplay question={question} questionKey={index} />
-        </button>
+        </motion.div>
 
         <p className="text-center text-xs text-white/50 pb-6">{strings.game.tapForNext}</p>
 

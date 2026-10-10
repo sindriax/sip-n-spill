@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { MotionConfig } from "framer-motion";
 import ErrorBoundary from "./error-boundary";
 
 interface ProvidersProps {
@@ -8,5 +9,9 @@ interface ProvidersProps {
 }
 
 export default function Providers({ children }: ProvidersProps) {
-  return <ErrorBoundary>{children}</ErrorBoundary>;
+  return (
+    <MotionConfig reducedMotion="user">
+      <ErrorBoundary>{children}</ErrorBoundary>
+    </MotionConfig>
+  );
 }

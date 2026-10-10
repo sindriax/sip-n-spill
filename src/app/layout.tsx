@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Sip 'n Spill",
   description: "Think you know your friends? Spill their secrets and make them sip their drinks.",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.png", apple: "/icon.png" },
+  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
   openGraph: {
     title: "Sip 'n Spill",
     description: "The drinking game where you bet on what your friends have done.",

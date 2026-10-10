@@ -2,10 +2,7 @@
 
 import { LANGUAGES, type Language } from "@/lib/game";
 
-const LABELS: Record<Language, { flag: string; code: string; name: string }> = {
-  en: { flag: "🇺🇸", code: "EN", name: "English" },
-  es: { flag: "🇪🇸", code: "ES", name: "Español" },
-};
+const NAMES: Record<Language, string> = { en: "English", es: "Español" };
 
 interface LanguageToggleProps {
   value: Language;
@@ -22,14 +19,13 @@ export default function LanguageToggle({ value, onChange, label }: LanguageToggl
           type="button"
           role="radio"
           aria-checked={value === lang}
-          aria-label={LABELS[lang].name}
+          aria-label={NAMES[lang]}
           onClick={() => onChange(lang)}
-          className={`flex items-center gap-2 py-1.5 px-4 rounded-xl min-w-[72px] transition-all ${
+          className={`py-1.5 px-5 rounded-xl text-sm font-bold tracking-wide transition-all ${
             value === lang ? "bg-white/25 text-white" : "text-white/60 hover:text-white/80"
           }`}
         >
-          <span aria-hidden="true">{LABELS[lang].flag}</span>
-          <span className="text-sm font-bold">{LABELS[lang].code}</span>
+          {lang.toUpperCase()}
         </button>
       ))}
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
+import { SmileyXEyes } from "@phosphor-icons/react";
 import GradientBackground from "./gradient-background";
 
 interface Props {
@@ -47,7 +48,7 @@ class ErrorBoundary extends Component<Props, State> {
         <GradientBackground>
           <div className="flex flex-col items-center justify-center min-h-screen p-6 text-white font-[family-name:var(--font-geist-sans)]">
             <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 max-w-md w-full text-center border border-white/20">
-              <div className="text-6xl mb-4">😵</div>
+              <SmileyXEyes size={64} weight="duotone" className="mx-auto mb-4 text-[#FFD36E]" aria-hidden="true" />
               <h1 className="text-2xl font-bold mb-2">Oops! Something went wrong</h1>
               <p className="text-white/70 mb-6">
                 The party hit a snag. Don&apos;t worry, it happens to the best of us!

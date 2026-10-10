@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "@phosphor-icons/react";
 
 interface SheetProps {
   title: string;
@@ -55,9 +56,9 @@ export default function Sheet({ title, subtitle, isOpen, onClose, closeLabel, ch
                 type="button"
                 onClick={onClose}
                 aria-label={closeLabel}
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/80 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/80 flex items-center justify-center transition-colors"
               >
-                ✕
+                <X size={18} weight="bold" aria-hidden="true" />
               </button>
             </header>
 

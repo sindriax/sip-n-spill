@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { BookOpen } from "@phosphor-icons/react";
 import {
   DEFAULT_CONFIG,
   MIN_HOTSEAT_PLAYERS,
@@ -13,10 +14,11 @@ import {
   sanitizeConfig,
   toSearchParams,
   type GameConfig,
-  type Mode,
   type Vibe,
 } from "@/lib/game";
 import { detectLanguage, format, getStrings } from "./lib/i18n";
+import { MODE_STYLE, VIBE_STYLE } from "./lib/icons";
+import type { Icon } from "@phosphor-icons/react";
 import { readJson, STORAGE_KEYS, writeJson } from "./lib/storage";
 import GradientBackground from "./components/gradient-background";
 import HowToPlay from "./components/how-to-play";
@@ -26,18 +28,6 @@ import PlayerList from "./components/player-list";
 import SegmentedChoice from "./components/segmented-choice";
 import SettingRow from "./components/setting-row";
 import Sheet from "./components/sheet";
-
-const MODE_STYLE: Record<Mode, { icon: string; activeClass: string }> = {
-  classic: { icon: "🍻", activeClass: "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-amber-400/60" },
-  hotseat: { icon: "🎯", activeClass: "bg-gradient-to-b from-yellow-500/40 to-red-500/40 border-yellow-400/60" },
-  date: { icon: "💕", activeClass: "bg-gradient-to-b from-pink-500/40 to-rose-600/40 border-pink-400/60" },
-};
-
-const VIBE_STYLE: Record<Vibe, { icon: string; activeClass: string }> = {
-  chill: { icon: "😎", activeClass: "bg-gradient-to-b from-cyan-500/40 to-blue-500/40 border-cyan-400/60" },
-  spicy: { icon: "🌶️", activeClass: "bg-gradient-to-b from-orange-500/40 to-pink-500/40 border-orange-400/60" },
-  unhinged: { icon: "🔥", activeClass: "bg-gradient-to-b from-red-600/40 to-purple-600/40 border-red-500/60" },
-};
 
 type OpenSheet = "mode" | "vibe" | "players" | "rules" | null;
 
@@ -133,15 +123,11 @@ export default function HomePage() {
           <PlayButton label={strings.start} onClick={onStart} className="w-full max-w-[220px] mt-2" />
 
           <div className="w-full flex flex-col gap-2">
-            <SettingRow
-              label={strings.settings.mode}
-              value={`${MODE_STYLE[config.mode].icon} ${strings.modes[config.mode].name}`}
-              onClick={() => setSheet("mode")}
-            />
+            <SettingRow label={strings.settings.mode} value={<ModeValue mode={config.mode} name={strings.modes[config.mode].name} />} onClick={() => setSheet("mode")} />
             {config.mode === "classic" && (
               <SettingRow
                 label={strings.settings.vibe}
-                value={config.vibes.map((vibe) => `${VIBE_STYLE[vibe].icon} ${strings.vibes[vibe].name}`).join(" · ")}
+                value={config.vibes.length === VIBES.length ? strings.vibes.all : config.vibes.map((vibe) => strings.vibes[vibe].name).join(" · ")}
                 onClick={() => setSheet("vibe")}
               />
             )}
@@ -160,7 +146,8 @@ export default function HomePage() {
             onClick={() => setSheet("rules")}
             className="py-2 px-5 rounded-2xl text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition-colors"
           >
-            📖 {strings.howToPlay}
+            <BookOpen size={18} weight="bold" aria-hidden="true" className="inline-block mr-2 align-[-3px]" />
+            {strings.howToPlay}
           </button>
         </motion.div>
 
@@ -174,7 +161,7 @@ export default function HomePage() {
           label={strings.modes.label}
           options={MODES.map((mode) => ({
             value: mode,
-            icon: MODE_STYLE[mode].icon,
+            icon: <ChoiceIcon icon={MODE_STYLE[mode].Icon} />,
             name: strings.modes[mode].name,
             description: strings.modes[mode].tagline,
             activeClass: MODE_STYLE[mode].activeClass,
@@ -193,7 +180,7 @@ export default function HomePage() {
           multiple
           options={VIBES.map((vibe) => ({
             value: vibe,
-            icon: VIBE_STYLE[vibe].icon,
+            icon: <ChoiceIcon icon={VIBE_STYLE[vibe].Icon} />,
             name: strings.vibes[vibe].name,
             description: strings.vibes[vibe].description,
             activeClass: VIBE_STYLE[vibe].activeClass,
@@ -216,4 +203,18 @@ export default function HomePage() {
       <HowToPlay mode={config.mode} strings={strings} isOpen={sheet === "rules"} onClose={closeRules} />
     </GradientBackground>
   );
+}
+
+function ModeValue({ mode, name }: { mode: GameConfig["mode"]; name: string }) {
+  const IconComponent = MODE_STYLE[mode].Icon;
+  return (
+    <>
+      <IconComponent size={18} weight="duotone" aria-hidden="true" className="shrink-0" />
+      <span className="truncate">{name}</span>
+    </>
+  );
+}
+
+function ChoiceIcon({ icon: IconComponent }: { icon: Icon }) {
+  return <IconComponent size={28} weight="duotone" aria-hidden="true" />;
 }

@@ -32,6 +32,9 @@ jest.mock("framer-motion", () => ({
         },
     }
   ),
+  MotionConfig: function MockMotionConfig({ children }) {
+    return React.createElement(React.Fragment, null, children);
+  },
   AnimatePresence: function MockAnimatePresence({ children }) {
     return React.createElement(React.Fragment, null, children);
   },

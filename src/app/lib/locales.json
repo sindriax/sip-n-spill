@@ -13,7 +13,7 @@
       },
       "hotseat": {
         "name": "Hot Seat",
-        "tagline": "One name on the card, everyone bets"
+        "tagline": "One name on the card, everyone else drinks"
       },
       "date": {
         "name": "Spill 1:1",
@@ -34,7 +34,8 @@
       "unhinged": {
         "name": "Unhinged",
         "description": "No limits. Play at your own risk."
-      }
+      },
+      "all": "All vibes"
     },
     "players": {
       "label": "Who's playing?",
@@ -47,7 +48,7 @@
     },
     "start": "Let's play!",
     "howToPlay": "How to play",
-    "footer": "© {year} Sip 'n Spill. Created by Sindriax 🍉.",
+    "footer": "© {year} Sip 'n Spill. Created by Sindriax.",
     "rules": {
       "title": "How to play",
       "close": "Close",
@@ -76,26 +77,26 @@
       ],
       "hotseat": [
         {
-          "title": "Someone's in the hot seat",
-          "text": "Every card names a player. Everyone else bets: did they do it?"
+          "title": "One name on the card",
+          "text": "Every card is about the player named on it."
         },
         {
-          "title": "Confession",
-          "text": "The hot seat answers. Honestly."
+          "title": "Everyone else answers",
+          "text": "Done it with them, or to them? You sip."
         },
         {
-          "title": "Sip time",
-          "text": "Wrong bets sip. If everyone nailed it, the hot seat sips."
+          "title": "Next victim",
+          "text": "Tap for a new card. The hot seat changes every round."
         }
       ],
       "date": [
         {
           "title": "Just the two of you",
-          "text": "Take turns reading a card to each other."
+          "text": "Take turns reading a card out loud."
         },
         {
-          "title": "Answer or sip",
-          "text": "Answer honestly, or take a sip and skip. No judging."
+          "title": "Done it? Sip",
+          "text": "If you've done it, you sip. Then spill the details."
         }
       ]
     },
@@ -134,7 +135,7 @@
       },
       "hotseat": {
         "name": "Hot Seat",
-        "tagline": "Un nombre en la carta, todos apuestan"
+        "tagline": "Un nombre en la carta, beben los demás"
       },
       "date": {
         "name": "Confesión 1:1",
@@ -155,7 +156,8 @@
       "unhinged": {
         "name": "Sin límites",
         "description": "Sin filtros. Juega bajo tu propio riesgo."
-      }
+      },
+      "all": "Todos los niveles"
     },
     "players": {
       "label": "¿Quién juega?",
@@ -168,7 +170,7 @@
     },
     "start": "¡A jugar!",
     "howToPlay": "Cómo se juega",
-    "footer": "© {year} Sip 'n Spill. Creado por Sindriax 🍉.",
+    "footer": "© {year} Sip 'n Spill. Creado por Sindriax.",
     "rules": {
       "title": "Cómo se juega",
       "close": "Cerrar",
@@ -197,26 +199,26 @@
       ],
       "hotseat": [
         {
-          "title": "Alguien está en el hot seat",
-          "text": "Cada carta lleva un nombre. Los demás apuestan: ¿lo ha hecho?"
+          "title": "Un nombre en la carta",
+          "text": "Cada carta va sobre el jugador que aparece en ella."
         },
         {
-          "title": "Confesión",
-          "text": "Quien está en el hot seat responde. Con sinceridad."
+          "title": "Responden los demás",
+          "text": "¿Lo has hecho con esa persona? Bebes."
         },
         {
-          "title": "A beber",
-          "text": "Quien falle la apuesta bebe. Si todos aciertan, bebe el hot seat."
+          "title": "Siguiente víctima",
+          "text": "Toca para sacar otra carta. El hot seat cambia cada ronda."
         }
       ],
       "date": [
         {
           "title": "Solo vosotros dos",
-          "text": "Os turnáis para leeros una carta."
+          "text": "Os turnáis para leer una carta en voz alta."
         },
         {
-          "title": "Responde o bebe",
-          "text": "Responde con sinceridad, o bebe y pasa. Sin juzgar."
+          "title": "¿Lo has hecho? Bebe",
+          "text": "Si lo has hecho, bebes. Y luego cuentas los detalles."
         }
       ]
     },
