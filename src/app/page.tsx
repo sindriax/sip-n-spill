@@ -1,547 +1,198 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import locales from "./lib/locales.json";
-import GameTutorial from "./components/game-tutorial";
+import {
+  DEFAULT_CONFIG,
+  MIN_HOTSEAT_PLAYERS,
+  MODES,
+  VIBES,
+  canStart,
+  sanitizeConfig,
+  toSearchParams,
+  type GameConfig,
+  type Mode,
+  type Vibe,
+} from "@/lib/game";
+import { detectLanguage, format, getStrings } from "./lib/i18n";
+import { readJson, STORAGE_KEYS, writeJson } from "./lib/storage";
 import GradientBackground from "./components/gradient-background";
+import HowToPlay from "./components/how-to-play";
+import LanguageToggle from "./components/language-toggle";
+import PlayerList from "./components/player-list";
+import PrimaryButton from "./components/primary-button";
+import SegmentedChoice from "./components/segmented-choice";
 
-type CategoryInfo = {
-  name: string;
-  description: string;
+const MODE_STYLE: Record<Mode, { icon: string; activeClass: string }> = {
+  classic: { icon: "🍻", activeClass: "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-amber-400/60" },
+  hotseat: { icon: "🎯", activeClass: "bg-gradient-to-b from-yellow-500/40 to-red-500/40 border-yellow-400/60" },
+  date: { icon: "💕", activeClass: "bg-gradient-to-b from-pink-500/40 to-rose-600/40 border-pink-400/60" },
 };
 
-type GameModeInfo = {
-  name: string;
-  description: string;
+const VIBE_STYLE: Record<Vibe, { icon: string; activeClass: string }> = {
+  chill: { icon: "😎", activeClass: "bg-gradient-to-b from-cyan-500/40 to-blue-500/40 border-cyan-400/60" },
+  spicy: { icon: "🌶️", activeClass: "bg-gradient-to-b from-orange-500/40 to-pink-500/40 border-orange-400/60" },
+  unhinged: { icon: "🔥", activeClass: "bg-gradient-to-b from-red-600/40 to-purple-600/40 border-red-500/60" },
 };
 
-type LocaleStrings = {
-  pageTitle: string;
-  pageDescription: string;
-  selectLanguage: string;
-  selectGameMode: string;
-  gameModes: {
-    classic: GameModeInfo;
-    party: GameModeInfo;
-    date: GameModeInfo;
-  };
-  selectCategory: string;
-  selectCategoryHint: string;
-  selectPartyMode: string;
-  startGame: string;
-  footerText: string;
-  tutorialTitle: string;
-  skipTutorial: string;
-  nextStep: string;
-  prevStep: string;
-  finishTutorial: string;
-  showTutorial: string;
-  categories: {
-    chill: CategoryInfo;
-    spicy: CategoryInfo;
-    unhinged: CategoryInfo;
-  };
-  partyModes: {
-    hotseat: CategoryInfo;
-  };
-  hotseat: {
-    addPlayers: string;
-    placeholder: string;
-    addButton: string;
-    minPlayers: string;
-    playerCount: string;
-  };
-  tutorialSteps: Array<{
-    title: string;
-    description: string;
-    visual?: string;
-  }>;
-};
-
-type Locales = {
-  en: LocaleStrings;
-  es: LocaleStrings;
-};
-
-const typedLocales: Locales = locales as Locales;
-
-type GameMode = "classic" | "party" | "date";
-type Category = "chill" | "spicy" | "unhinged";
-
-const CATEGORY_ICONS: Record<Category, string> = {
-  chill: "😎",
-  spicy: "🌶️",
-  unhinged: "🔥",
-};
-
-const GAME_MODE_ICONS: Record<GameMode, string> = {
-  classic: "🍻",
-  party: "🎉",
-  date: "💕",
+const reveal = {
+  initial: { opacity: 0, height: 0 },
+  animate: { opacity: 1, height: "auto" },
+  exit: { opacity: 0, height: 0 },
 };
 
 export default function HomePage() {
-  const [language, setLanguage] = useState("en");
-  const [gameMode, setGameMode] = useState<GameMode>("classic");
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
-  const [isHotSeat, setIsHotSeat] = useState(false);
-  const [players, setPlayers] = useState<string[]>([]);
-  const [newPlayerName, setNewPlayerName] = useState("");
-  const [content, setContent] = useState<LocaleStrings>(typedLocales.en);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const [config, setConfig] = useState<GameConfig>(DEFAULT_CONFIG);
+  const [hydrated, setHydrated] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const [startAfterRules, setStartAfterRules] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const saved = readJson<Partial<GameConfig> | null>(STORAGE_KEYS.setup, null);
+    setConfig(saved ? sanitizeConfig(saved) : { ...DEFAULT_CONFIG, lang: detectLanguage() });
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (mounted) {
-      setContent(typedLocales[language as keyof Locales] || typedLocales.en);
-    }
-  }, [language, mounted]);
+    if (hydrated) writeJson(STORAGE_KEYS.setup, config);
+  }, [config, hydrated]);
 
-  const handleLanguageSelect = (selectedLang: string) => {
-    setLanguage(selectedLang);
-  };
+  useEffect(() => {
+    document.documentElement.lang = config.lang;
+  }, [config.lang]);
 
-  const handleGameModeSelect = (mode: GameMode) => {
-    setGameMode(mode);
-    if (mode === "classic" || mode === "date") {
-      setIsHotSeat(false);
-      setSelectedCategories([]);
-      setPlayers([]);
-      setNewPlayerName("");
-    }
-  };
+  const strings = getStrings(config.lang);
+  const update = (patch: Partial<GameConfig>) => setConfig((current) => ({ ...current, ...patch }));
 
-  const handleCategoryToggle = (cat: Category) => {
-    if (isHotSeat) return;
-
-    setSelectedCategories((prev) => {
-      if (prev.includes(cat)) {
-        if (prev.length === 1) return prev;
-        return prev.filter((c) => c !== cat);
-      }
-      return [...prev, cat];
+  const toggleVibe = (vibe: Vibe) =>
+    update({
+      vibes: config.vibes.includes(vibe)
+        ? config.vibes.length === 1
+          ? config.vibes
+          : config.vibes.filter((v) => v !== vibe)
+        : VIBES.filter((v) => v === vibe || config.vibes.includes(v)),
     });
-  };
 
-  const handleHotSeatToggle = () => {
-    setIsHotSeat(!isHotSeat);
-    if (!isHotSeat) {
-      setSelectedCategories([]);
-    } else {
-      setSelectedCategories([]);
+  const startGame = useCallback(() => {
+    router.push(`/play?${toSearchParams(config)}`);
+  }, [config, router]);
+
+  const onStart = () => {
+    if (!canStart(config)) return;
+    if (readJson(STORAGE_KEYS.rulesSeen, false)) {
+      startGame();
+      return;
     }
+    writeJson(STORAGE_KEYS.rulesSeen, true);
+    setStartAfterRules(true);
+    setRulesOpen(true);
   };
 
-  const handleAddPlayer = () => {
-    const trimmedName = newPlayerName.trim();
-    if (trimmedName && !players.includes(trimmedName)) {
-      setPlayers([...players, trimmedName]);
-      setNewPlayerName("");
+  const closeRules = useCallback(() => {
+    setRulesOpen(false);
+    if (startAfterRules) {
+      setStartAfterRules(false);
+      startGame();
     }
-  };
+  }, [startAfterRules, startGame]);
 
-  const handleRemovePlayer = (playerToRemove: string) => {
-    setPlayers(players.filter((p) => p !== playerToRemove));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleAddPlayer();
-    }
-  };
-
-  const canStartGame =
-    gameMode === "classic" || gameMode === "date"
-      ? true
-      : isHotSeat
-      ? players.length >= 2
-      : selectedCategories.length > 0;
-
-  const handleStartGame = () => {
-    if (!canStartGame) return;
-
-    if (gameMode === "classic") {
-      router.push(`/play?lang=${language}&mode=classic`);
-    } else if (gameMode === "date") {
-      router.push(`/play?lang=${language}&mode=date`);
-    } else if (isHotSeat) {
-      const playersParam = encodeURIComponent(JSON.stringify(players));
-      router.push(`/play?lang=${language}&mode=hotseat&players=${playersParam}`);
-    } else {
-      const categoriesParam = selectedCategories.join(",");
-      router.push(`/play?lang=${language}&categories=${categoriesParam}`);
-    }
-  };
-
-  const handleShowTutorial = () => {
-    setShowTutorial(true);
-  };
-
-  const handleSkipTutorial = () => {
-    setShowTutorial(false);
-  };
-
-  const handleCompleteTutorial = () => {
-    setShowTutorial(false);
-    handleStartGame();
-  };
-
-  const renderSubtitle = () => {
-    const parts = content.pageDescription.split(/(SIP|SPILL|BEBER|REVELAR)/g);
-    return (
-      <p className="text-lg text-white text-center opacity-95 max-w-[300px] leading-relaxed mb-6">
-        {parts.map((part, index) => {
-          if (
-            part === "SIP" ||
-            part === "SPILL" ||
-            part === "BEBER" ||
-            part === "REVELAR"
-          ) {
-            return (
-              <span key={index} className="font-extrabold text-xl text-[#F0478C]">
-                {part}
-              </span>
-            );
-          }
-          return <span key={index}>{part}</span>;
-        })}
-      </p>
-    );
-  };
+  const ready = canStart(config);
 
   return (
     <GradientBackground withSparkles>
-      <div className="flex flex-col items-center min-h-screen p-6 font-[family-name:var(--font-geist-sans)]">
-        {showTutorial ? (
-          <div className="flex-1 flex items-center justify-center w-full max-w-md">
-            <GameTutorial
-              onSkipTutorial={handleSkipTutorial}
-              onCompleteTutorial={handleCompleteTutorial}
-              skipText={content.skipTutorial}
-              nextText={content.nextStep}
-              prevText={content.prevStep}
-              finishText={content.finishTutorial}
-              tutorialTitle={content.tutorialTitle}
-              tutorialSteps={content.tutorialSteps}
-            />
-          </div>
-        ) : (
+      <main className="flex flex-col items-center min-h-screen px-6 pb-6 font-[family-name:var(--font-geist-sans)]">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="flex-1 flex flex-col items-center w-full max-w-[400px] gap-5"
+        >
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="flex-1 flex flex-col items-center w-full max-w-[400px]"
+            animate={{ scale: [1, 1.02, 1] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="mt-10"
           >
-            <motion.div
-              animate={{
-                scale: [1, 1.02, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="flex items-center justify-center mt-12 mb-4"
-            >
-              <Image
-                src="/assets/sip-logo.png"
-                alt={content.pageTitle}
-                width={220}
-                height={138}
-                className="w-[220px] h-auto"
-                priority
-              />
-            </motion.div>
-
-            {renderSubtitle()}
-
-            {/* Language Picker */}
-            <div className="w-full flex flex-col items-center gap-4 mb-4">
-              <div className="flex gap-2 bg-white/10 rounded-2xl p-1">
-                <button
-                  onClick={() => handleLanguageSelect("en")}
-                  aria-label="Switch to English"
-                  aria-pressed={language === "en"}
-                  className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
-                    language === "en"
-                      ? "bg-white/25"
-                      : "bg-transparent opacity-70"
-                  }`}
-                >
-                  <span className="text-lg">🇺🇸</span>
-                  <span
-                    className={`text-sm font-semibold text-white ${
-                      language === "en" ? "opacity-100 font-bold" : "opacity-70"
-                    }`}
-                  >
-                    EN
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleLanguageSelect("es")}
-                  aria-label="Cambiar a Español"
-                  aria-pressed={language === "es"}
-                  className={`flex items-center justify-center gap-2 py-1 px-4 rounded-xl min-w-[70px] transition-all ${
-                    language === "es"
-                      ? "bg-white/25"
-                      : "bg-transparent opacity-70"
-                  }`}
-                >
-                  <span className="text-lg">🇪🇸</span>
-                  <span
-                    className={`text-sm font-semibold text-white ${
-                      language === "es" ? "opacity-100 font-bold" : "opacity-70"
-                    }`}
-                  >
-                    ES
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Game Mode Selector */}
-            <div className="w-full flex flex-col items-center gap-3 mb-4">
-              <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
-                {content.selectGameMode}
-              </p>
-              <div className="w-full flex gap-2" role="group" aria-label={content.selectGameMode}>
-                {(["classic", "party", "date"] as GameMode[]).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => handleGameModeSelect(mode)}
-                    aria-pressed={gameMode === mode}
-                    aria-label={`${content.gameModes[mode].name}: ${content.gameModes[mode].description}`}
-                    className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-2xl transition-all ${
-                      gameMode === mode
-                        ? mode === "classic"
-                          ? "bg-gradient-to-b from-amber-500/40 to-orange-600/40 border-2 border-amber-400/60"
-                          : mode === "date"
-                          ? "bg-gradient-to-b from-pink-500/40 to-rose-600/40 border-2 border-pink-400/60"
-                          : "bg-gradient-to-b from-fuchsia-500/40 to-purple-600/40 border-2 border-fuchsia-400/60"
-                        : "bg-white/10 border-2 border-transparent hover:bg-white/15"
-                    }`}
-                  >
-                    <span className="text-2xl">{GAME_MODE_ICONS[mode]}</span>
-                    <span className="text-sm font-bold text-white">
-                      {content.gameModes[mode].name}
-                    </span>
-                    <span className="text-[11px] text-white/70 text-center leading-tight">
-                      {content.gameModes[mode].description}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Party Mode Config */}
-            <AnimatePresence>
-              {gameMode === "party" && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="w-full flex flex-col gap-4 mb-4 overflow-hidden"
-                >
-                  {/* Category Picker */}
-                  <div className="w-full flex flex-col items-center gap-3">
-                    <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
-                      {content.selectCategory}
-                    </p>
-                    <div className="w-full flex flex-col gap-2">
-                      {(["chill", "spicy", "unhinged"] as Category[]).map((cat) => {
-                        const isSelected = selectedCategories.includes(cat);
-                        const isDisabled = isHotSeat;
-                        return (
-                          <button
-                            key={cat}
-                            onClick={() => handleCategoryToggle(cat)}
-                            disabled={isDisabled}
-                            className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
-                              isDisabled
-                                ? "bg-white/5 border-2 border-transparent opacity-40 cursor-not-allowed"
-                                : isSelected
-                                ? cat === "chill"
-                                  ? "bg-gradient-to-r from-cyan-500/40 to-blue-500/40 border-2 border-cyan-400/60"
-                                  : cat === "spicy"
-                                  ? "bg-gradient-to-r from-orange-500/40 to-pink-500/40 border-2 border-orange-400/60"
-                                  : "bg-gradient-to-r from-red-600/40 to-purple-600/40 border-2 border-red-500/60"
-                                : "bg-white/10 border-2 border-transparent hover:bg-white/15"
-                            }`}
-                          >
-                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
-                              isSelected ? "bg-white/30 border-white/60" : "border-white/40"
-                            }`}>
-                              {isSelected && <span className="text-white text-xs">✓</span>}
-                            </div>
-                            <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
-                            <div className="flex flex-col items-start">
-                              <span className="text-base font-bold text-white">
-                                {content.categories[cat].name}
-                              </span>
-                              <span className="text-xs text-white/70">
-                                {content.categories[cat].description}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {!isHotSeat && selectedCategories.length === 0 && (
-                      <p className="text-xs text-white/50 text-center mt-1">
-                        {content.selectCategoryHint}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Hot Seat Toggle */}
-                  <div className="w-full flex flex-col items-center gap-3">
-                    <p className="text-sm font-semibold text-white/80 uppercase tracking-wider">
-                      {content.selectPartyMode}
-                    </p>
-                    <button
-                      onClick={handleHotSeatToggle}
-                      className={`w-full flex items-center gap-3 py-3 px-4 rounded-2xl transition-all ${
-                        isHotSeat
-                          ? "bg-gradient-to-r from-yellow-500/40 to-red-500/40 border-2 border-yellow-400/60"
-                          : "bg-white/10 border-2 border-transparent hover:bg-white/15"
-                      }`}
-                    >
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
-                        isHotSeat ? "bg-white/30 border-white/60" : "border-white/40"
-                      }`}>
-                        {isHotSeat && <span className="text-white text-xs">✓</span>}
-                      </div>
-                      <span className="text-2xl">🎯</span>
-                      <div className="flex flex-col items-start">
-                        <span className="text-base font-bold text-white">
-                          {content.partyModes.hotseat.name}
-                        </span>
-                        <span className="text-xs text-white/70">
-                          {content.partyModes.hotseat.description}
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* Hot Seat Player Input */}
-                  <AnimatePresence>
-                    {isHotSeat && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="w-full flex flex-col gap-3 overflow-hidden"
-                      >
-                        <p className="text-sm font-semibold text-white/80 text-center">
-                          {content.hotseat.addPlayers}
-                        </p>
-
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={newPlayerName}
-                            onChange={(e) => setNewPlayerName(e.target.value)}
-                            onKeyDown={handleKeyPress}
-                            placeholder={content.hotseat.placeholder}
-                            className="flex-1 bg-white/10 border-2 border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/40"
-                            maxLength={20}
-                          />
-                          <button
-                            onClick={handleAddPlayer}
-                            className="bg-white/20 hover:bg-white/30 border-2 border-white/20 rounded-xl px-4 py-2 text-white font-semibold transition-all"
-                          >
-                            {content.hotseat.addButton}
-                          </button>
-                        </div>
-
-                        {players.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {players.map((player) => (
-                              <div
-                                key={player}
-                                className="flex items-center gap-2 bg-white/20 rounded-full px-3 py-1"
-                              >
-                                <span className="text-white text-sm">{player}</span>
-                                <button
-                                  onClick={() => handleRemovePlayer(player)}
-                                  aria-label={`Remove ${player}`}
-                                  className="text-white/70 hover:text-white text-lg leading-none"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        <p className={`text-xs text-center ${players.length >= 2 ? "text-green-400" : "text-white/50"}`}>
-                          {players.length >= 2
-                            ? content.hotseat.playerCount.replace("{count}", players.length.toString())
-                            : content.hotseat.minPlayers
-                          }
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Tutorial Button */}
-            <div className="w-full flex justify-center mb-2">
-              <button
-                onClick={handleShowTutorial}
-                className="flex items-center justify-center gap-2 py-2 px-6 rounded-2xl bg-white/10 hover:bg-white/20 transition-all"
-              >
-                <span className="text-lg">📖</span>
-                <span className="text-sm font-semibold text-white opacity-85">
-                  {content.showTutorial}
-                </span>
-              </button>
-            </div>
-
-            {/* Start Button */}
-            <motion.button
-              onClick={handleStartGame}
-              whileHover={canStartGame ? { scale: 1.02 } : {}}
-              whileTap={canStartGame ? { scale: 0.98 } : {}}
-              disabled={!canStartGame}
-              aria-label={content.startGame}
-              className={`w-full max-w-[220px] relative mt-4 ${!canStartGame ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              <div className="gradient-gold-shine rounded-[20px] py-2 px-3 glow-gold border-2 border-white/40">
-                <div className="relative">
-                  <Image
-                    src="/assets/lets-play.png"
-                    alt={content.startGame}
-                    width={140}
-                    height={58}
-                    className="w-full h-auto"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-transparent rounded-[20px] pointer-events-none" />
-                </div>
-              </div>
-            </motion.button>
+            <Image src="/assets/sip-logo.png" alt={strings.title} width={220} height={138} className="w-[180px] h-auto" priority />
           </motion.div>
-        )}
 
-        <footer className="text-xs text-white/70 text-center py-4">
-          <p>
-            {content.footerText.replace(
-              "{year}",
-              new Date().getFullYear().toString()
+          <p className="text-white/90 text-center max-w-[300px] leading-relaxed">{strings.tagline}</p>
+
+          <LanguageToggle value={config.lang} onChange={(lang) => update({ lang })} label={strings.language.label} />
+
+          <SegmentedChoice
+            label={strings.modes.label}
+            options={MODES.map((mode) => ({
+              value: mode,
+              icon: MODE_STYLE[mode].icon,
+              name: strings.modes[mode].name,
+              description: strings.modes[mode].tagline,
+              activeClass: MODE_STYLE[mode].activeClass,
+            }))}
+            selected={[config.mode]}
+            onToggle={(mode) => update({ mode })}
+          />
+
+          <AnimatePresence initial={false}>
+            {config.mode === "classic" && (
+              <motion.div key="vibes" {...reveal} className="w-full overflow-hidden">
+                <SegmentedChoice
+                  label={strings.vibes.label}
+                  multiple
+                  options={VIBES.map((vibe) => ({
+                    value: vibe,
+                    icon: VIBE_STYLE[vibe].icon,
+                    name: strings.vibes[vibe].name,
+                    description: strings.vibes[vibe].description,
+                    activeClass: VIBE_STYLE[vibe].activeClass,
+                  }))}
+                  selected={config.vibes}
+                  onToggle={toggleVibe}
+                />
+                <p className="text-xs text-white/50 text-center mt-2">{strings.vibes.hint}</p>
+              </motion.div>
             )}
-          </p>
+
+            {config.mode !== "date" && (
+              <motion.section key="players" {...reveal} className="w-full overflow-hidden">
+                <h2 className="text-sm font-semibold text-white/80 uppercase tracking-wider text-center mb-3">{strings.players.label}</h2>
+                <PlayerList
+                  players={config.players}
+                  onChange={(players) => update({ players })}
+                  strings={strings.players}
+                  hint={
+                    config.mode === "hotseat"
+                      ? format(strings.players.requiredHint, { min: MIN_HOTSEAT_PLAYERS })
+                      : strings.players.optionalHint
+                  }
+                />
+              </motion.section>
+            )}
+          </AnimatePresence>
+
+          <button
+            type="button"
+            onClick={() => setRulesOpen(true)}
+            className="py-2 px-5 rounded-2xl text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            📖 {strings.howToPlay}
+          </button>
+        </motion.div>
+
+        <div className="sticky bottom-0 w-full flex justify-center pt-8 pb-[max(1rem,env(safe-area-inset-bottom))] -mx-6 px-6 bg-gradient-to-t from-[#260046] via-[#260046]/90 to-transparent">
+          <PrimaryButton onClick={onStart} disabled={!ready} className="w-full max-w-[280px]">
+            {strings.start}
+          </PrimaryButton>
+        </div>
+
+        <footer className="text-xs text-white/60 text-center pt-2">
+          {format(strings.footer, { year: new Date().getFullYear() })}
         </footer>
-      </div>
+      </main>
+
+      <HowToPlay mode={config.mode} strings={strings} isOpen={rulesOpen} onClose={closeRules} />
     </GradientBackground>
   );
 }

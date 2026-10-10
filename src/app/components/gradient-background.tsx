@@ -12,7 +12,7 @@ export default function GradientBackground({
   withSparkles = false,
 }: GradientBackgroundProps) {
   return (
-    <div className="relative min-h-screen gradient-nightlife overflow-hidden">
+    <div className="relative min-h-screen gradient-nightlife">
       {withSparkles && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {Array.from({ length: 30 }).map((_, i) => (

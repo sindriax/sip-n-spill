@@ -23,20 +23,15 @@ jest.mock("next/image", () => ({
 
 // Mock framer-motion
 jest.mock("framer-motion", () => ({
-  motion: {
-    div: function MockDiv({ children, ...props }) {
-      return React.createElement("div", props, children);
-    },
-    button: function MockButton({ children, ...props }) {
-      return React.createElement("button", props, children);
-    },
-    span: function MockSpan({ children, ...props }) {
-      return React.createElement("span", props, children);
-    },
-    p: function MockP({ children, ...props }) {
-      return React.createElement("p", props, children);
-    },
-  },
+  motion: new Proxy(
+    {},
+    {
+      get: (_, tag) =>
+        function MockMotion({ children, initial, animate, exit, transition, whileHover, whileTap, ...props }) {
+          return React.createElement(tag, props, children);
+        },
+    }
+  ),
   AnimatePresence: function MockAnimatePresence({ children }) {
     return React.createElement(React.Fragment, null, children);
   },

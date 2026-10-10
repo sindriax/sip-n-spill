@@ -1,266 +1,134 @@
 {
   "en": {
-    "pageTitle": "Sip 'n Spill",
-    "pageDescription": "Think you know your friends? Spill their secrets and make them sip their drinks!",
-    "selectLanguage": "Select Language:",
-    "selectGameMode": "Choose Your Mode",
-    "gameModes": {
-      "classic": {
-        "name": "Classic",
-        "description": "The one you know and love"
-      },
-      "party": {
-        "name": "Party Mode",
-        "description": "Choose your chaos level"
-      },
-      "date": {
-        "name": "Spill Mode (1:1)",
-        "description": "Confess, get closer, no filter"
-      }
+    "title": "Sip 'n Spill",
+    "tagline": "Think you know your friends? Spill their secrets and make them sip their drinks!",
+    "language": { "label": "Language" },
+    "modes": {
+      "label": "Pick a mode",
+      "classic": { "name": "Classic", "tagline": "Bet on what your friends have done" },
+      "hotseat": { "name": "Hot Seat", "tagline": "One name on the card, everyone bets" },
+      "date": { "name": "Spill 1:1", "tagline": "Two of you, no filter" }
     },
-    "selectCategory": "Pick Your Vibe",
-    "selectCategoryHint": "Select at least one vibe to start",
-    "selectPartyMode": "Party Mode",
-    "startGame": "Start Drinking!",
-    "gameRulesTitle": "How To Play",
-    "categories": {
-      "chill": {
-        "name": "Warmup",
-        "description": "Secrets, drama & social chaos"
-      },
-      "spicy": {
-        "name": "Spicy",
-        "description": "Classic party mode - relationships & hookups"
-      },
-      "unhinged": {
-        "name": "Unhinged",
-        "description": "No limits. Play at your own risk."
-      }
+    "vibes": {
+      "label": "Pick your vibe",
+      "hint": "Mix as many as you like",
+      "chill": { "name": "Warmup", "description": "Secrets, drama & social chaos" },
+      "spicy": { "name": "Spicy", "description": "Relationships & hookups" },
+      "unhinged": { "name": "Unhinged", "description": "No limits. Play at your own risk." }
     },
-    "partyModes": {
-      "hotseat": {
-        "name": "Hot Seat",
-        "description": "Questions target specific players by name"
-      }
+    "players": {
+      "label": "Who's playing?",
+      "optionalHint": "Optional. Add names and the game tracks whose turn it is.",
+      "requiredHint": "Add at least {min} names to start.",
+      "placeholder": "Name",
+      "add": "Add",
+      "remove": "Remove {name}",
+      "count": "{count} playing"
     },
-    "hotseat": {
-      "addPlayers": "Add Player Names",
-      "placeholder": "Enter name...",
-      "addButton": "Add",
-      "minPlayers": "Add at least 2 players to start",
-      "playerCount": "{count} players ready to play!"
+    "start": "Let's play!",
+    "howToPlay": "How to play",
+    "footer": "© {year} Sip 'n Spill. Created by Sindriax 🍉.",
+    "rules": {
+      "title": "How to play",
+      "close": "Close",
+      "gotIt": "Got it",
+      "classic": [
+        { "title": "Read it to yourself", "text": "The Guesser reads the card silently. Nobody else peeks." },
+        { "title": "Place your bets", "text": "For every other player, the Guesser secretly decides: did they do it?" },
+        { "title": "Read it out loud", "text": "The Guesser reveals the card and everyone confesses." },
+        { "title": "Sip time", "text": "Caught someone? They sip. Got anyone wrong? The Guesser sips." },
+        { "title": "Pass the phone", "text": "Tap the card for a new one and hand the phone to the next Guesser." }
+      ],
+      "hotseat": [
+        { "title": "Someone's in the hot seat", "text": "Every card names a player. Everyone else bets: did they do it?" },
+        { "title": "Confession", "text": "The hot seat answers. Honestly." },
+        { "title": "Sip time", "text": "Wrong bets sip. If everyone nailed it, the hot seat sips." }
+      ],
+      "date": [
+        { "title": "Just the two of you", "text": "Take turns reading a card to each other." },
+        { "title": "Answer or sip", "text": "Answer honestly, or take a sip and skip. No judging." }
+      ]
     },
-    "rules": [
-      {
-        "header": "Who's Up?",
-        "text": "The current player (the 'Guesser') reads the question silently."
-      },
-      {
-        "header": "Make Your Bets!",
-        "text": "For everyone else, the Guesser secretly predicts: *Did they do it?*"
-      },
-      {
-        "header": "The Reveal!",
-        "text": "The Guesser reads the question aloud."
-      },
-      {
-        "header": "Sip Time!",
-        "text": "If the Guesser correctly predicted a player *did it*, that player sips. If the Guesser made *any* incorrect prediction (for any player), the Guesser sips once!"
-      },
-      {
-        "header": "Pass It On!",
-        "text": "Give the device to the next player (to the right)."
-      },
-      {
-        "header": "New Round!",
-        "text": "The new Guesser taps for a new question, reads it silently, and their turn begins!"
-      },
-      {
-        "header": "",
-        "text": "Keep going until you're out of questions or decide to stop. Have fun and drink responsibly!"
-      }
-    ],
-    "footerText": "© {year} Sip 'n Spill. Created by Sindriax 🍉.",
-    "nextQuestion": "Next question",
-    "backToHome": "Home",
-    "loadingQuestions": "Loading questions...",
-    "noQuestionsLoaded": "No questions loaded. Please check the questions file for the selected language ({lang}).",
-    "loadingSettings": "Loading settings...",
-    "questionProgress": "Question {current} of {total}",
-    "tutorialTitle": "How to Play Tutorial",
-    "skipTutorial": "Skip",
-    "nextStep": "Next",
-    "prevStep": "Back",
-    "finishTutorial": "Start Playing!",
-    "showTutorial": "Show Tutorial",
-    "tutorialSteps": [
-      {
-        "title": "Welcome to Sip 'n Spill!",
-        "description": "This isn't your typical 'Never Have I Ever' game. You'll be guessing what your friends have done, not sharing your own experiences!",
-        "visual": "🤔"
-      },
-      {
-        "title": "Step 1: The Guesser",
-        "description": "One player becomes the 'Guesser' and reads a question silently to themselves first.",
-        "visual": "👀"
-      },
-      {
-        "title": "Step 2: Make Predictions",
-        "description": "The Guesser then secretly predicts for each other player: 'Did they do this or not?' without revealing the question yet.",
-        "visual": "🎯"
-      },
-      {
-        "title": "Step 3: The Reveal",
-        "description": "After making all predictions, the Guesser reads the question out loud to everyone.",
-        "visual": "📢"
-      },
-      {
-        "title": "Step 4: Truth Time",
-        "description": "Each player honestly answers whether they've done the thing in the question.",
-        "visual": "✋"
-      },
-      {
-        "title": "Step 5: Drinking Rules",
-        "description": "If the Guesser was RIGHT about a player doing it - that player drinks! If the Guesser was WRONG about anyone - the Guesser drinks for each mistake!",
-        "visual": "🍺"
-      },
-      {
-        "title": "Step 6: Pass & Repeat",
-        "description": "Pass the phone to the next player who becomes the new Guesser, and repeat! The game gets funnier as you learn surprising things about your friends.",
-        "visual": "🔄"
-      }
-    ]
+    "game": {
+      "loading": "Shuffling the deck…",
+      "loadFailed": "Couldn't load the questions. Check your connection and try again.",
+      "retry": "Try again",
+      "home": "Home",
+      "back": "Back to setup",
+      "rules": "Rules",
+      "kicker": "Who here has…",
+      "turn": "{name} reads first",
+      "hotseatTurn": "{name} is in the hot seat",
+      "tapForNext": "Tap the card for the next one",
+      "deckEmpty": "You drained the deck!",
+      "deckEmptyHint": "{count} cards, zero secrets left.",
+      "shuffleAgain": "Shuffle again"
+    }
   },
   "es": {
-    "pageTitle": "Sip 'n Spill",
-    "pageDescription": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
-    "selectLanguage": "Seleccionar Idioma:",
-    "selectGameMode": "Elige Tu Modo",
-    "gameModes": {
-      "classic": {
-        "name": "Clásico",
-        "description": "El de siempre"
-      },
-      "party": {
-        "name": "Modo Fiesta",
-        "description": "Elige el nivel de caos"
-      },
-      "date": {
-        "name": "Modo Confesión (1:1)",
-        "description": "Confiesa, acércate, sin filtro"
-      }
+    "title": "Sip 'n Spill",
+    "tagline": "¿Crees que conoces a tus amigos? ¡Revela sus secretos y haz que beban!",
+    "language": { "label": "Idioma" },
+    "modes": {
+      "label": "Elige un modo",
+      "classic": { "name": "Clásico", "tagline": "Apuesta sobre lo que han hecho tus amigos" },
+      "hotseat": { "name": "Hot Seat", "tagline": "Un nombre en la carta, todos apuestan" },
+      "date": { "name": "Confesión 1:1", "tagline": "Vosotros dos, sin filtro" }
     },
-    "selectCategory": "Elige Tu Nivel",
-    "selectCategoryHint": "Selecciona al menos un nivel para empezar",
-    "selectPartyMode": "Modo de Fiesta",
-    "startGame": "¡Empieza a Beber!",
-    "gameRulesTitle": "Cómo Jugar",
-    "categories": {
-      "chill": {
-        "name": "Calentamiento",
-        "description": "Secretos, drama y caos social"
-      },
-      "spicy": {
-        "name": "Picante",
-        "description": "Modo fiesta clásico - relaciones y ligues"
-      },
-      "unhinged": {
-        "name": "Sin Límites",
-        "description": "Sin filtros. Juega bajo tu propio riesgo."
-      }
+    "vibes": {
+      "label": "Elige tu nivel",
+      "hint": "Mezcla los que quieras",
+      "chill": { "name": "Calentamiento", "description": "Secretos, drama y caos social" },
+      "spicy": { "name": "Picante", "description": "Relaciones y ligues" },
+      "unhinged": { "name": "Sin límites", "description": "Sin filtros. Juega bajo tu propio riesgo." }
     },
-    "partyModes": {
-      "hotseat": {
-        "name": "Hot Seat",
-        "description": "Las preguntas van dirigidas a jugadores específicos"
-      }
+    "players": {
+      "label": "¿Quién juega?",
+      "optionalHint": "Opcional. Añade nombres y el juego lleva los turnos.",
+      "requiredHint": "Añade al menos {min} nombres para empezar.",
+      "placeholder": "Nombre",
+      "add": "Añadir",
+      "remove": "Quitar a {name}",
+      "count": "{count} jugando"
     },
-    "hotseat": {
-      "addPlayers": "Añade los Nombres",
-      "placeholder": "Escribe nombre...",
-      "addButton": "Añadir",
-      "minPlayers": "Añade al menos 2 jugadores para empezar",
-      "playerCount": "¡{count} jugadores listos!"
+    "start": "¡A jugar!",
+    "howToPlay": "Cómo se juega",
+    "footer": "© {year} Sip 'n Spill. Creado por Sindriax 🍉.",
+    "rules": {
+      "title": "Cómo se juega",
+      "close": "Cerrar",
+      "gotIt": "Entendido",
+      "classic": [
+        { "title": "Léela para ti", "text": "Quien adivina lee la carta en silencio. Nadie más mira." },
+        { "title": "Haz tus apuestas", "text": "Para cada jugador, quien adivina decide en secreto: ¿lo ha hecho?" },
+        { "title": "Léela en voz alta", "text": "Se revela la carta y todo el mundo confiesa." },
+        { "title": "A beber", "text": "¿Has pillado a alguien? Bebe. ¿Has fallado con alguien? Bebes tú." },
+        { "title": "Pasa el móvil", "text": "Toca la carta para sacar otra y pásale el móvil al siguiente." }
+      ],
+      "hotseat": [
+        { "title": "Alguien está en el hot seat", "text": "Cada carta lleva un nombre. Los demás apuestan: ¿lo ha hecho?" },
+        { "title": "Confesión", "text": "Quien está en el hot seat responde. Con sinceridad." },
+        { "title": "A beber", "text": "Quien falle la apuesta bebe. Si todos aciertan, bebe el hot seat." }
+      ],
+      "date": [
+        { "title": "Solo vosotros dos", "text": "Os turnáis para leeros una carta." },
+        { "title": "Responde o bebe", "text": "Responde con sinceridad, o bebe y pasa. Sin juzgar." }
+      ]
     },
-    "rules": [
-      {
-        "header": "¿Quién juega?",
-        "text": "El jugador actual (el 'Adivino/a') lee la pregunta en silencio para sí."
-      },
-      {
-        "header": "¡A apostar!",
-        "text": "Para los demás, el Adivino/a predice en secreto: *¿Lo han hecho?*"
-      },
-      {
-        "header": "¡La revelación!",
-        "text": "El Adivino/a lee la pregunta en voz alta."
-      },
-      {
-        "header": "¡A beber!",
-        "text": "Si el Adivino/a acertó que un jugador *lo hizo*, ese jugador bebe un sorbo. Si el Adivino/a se equivocó en *alguna* predicción (para cualquier jugador), ¡el Adivino/a bebe un sorbo!"
-      },
-      {
-        "header": "¡Pásalo!",
-        "text": "Entrega el dispositivo al siguiente jugador (a la derecha)."
-      },
-      {
-        "header": "¡Nueva ronda!",
-        "text": "El nuevo Adivino/a toca para una nueva pregunta, la lee en silencio, ¡y empieza su turno!"
-      },
-      {
-        "header": "",
-        "text": "Seguid hasta que se acaben las preguntas o decidáis parar. ¡Divertíos y bebed con responsabilidad!"
-      }
-    ],
-    "footerText": "© {year} Sip 'n Spill. Creado por Sindriax 🍉.",
-    "nextQuestion": "Siguiente pregunta",
-    "backToHome": "Inicio",
-    "loadingQuestions": "Cargando preguntas...",
-    "noQuestionsLoaded": "No se cargaron preguntas. Por favor, revisa el archivo de preguntas para el idioma seleccionado ({lang}).",
-    "loadingSettings": "Cargando configuración...",
-    "questionProgress": "Pregunta {current} de {total}",
-    "tutorialTitle": "Tutorial de Cómo Jugar",
-    "skipTutorial": "Omitir",
-    "nextStep": "Siguiente",
-    "prevStep": "Atrás",
-    "finishTutorial": "¡Empezar a Jugar!",
-    "showTutorial": "Mostrar Tutorial",
-    "tutorialSteps": [
-      {
-        "title": "¡Bienvenido a Sip 'n Spill!",
-        "description": "Este no es tu típico juego de 'Yo Nunca'. ¡Vas a adivinar lo que han hecho tus amigos, no a compartir tus propias experiencias!",
-        "visual": "🤔"
-      },
-      {
-        "title": "Paso 1: El Adivino",
-        "description": "Un jugador se convierte en el 'Adivino' y lee una pregunta en silencio para sí mismo primero.",
-        "visual": "👀"
-      },
-      {
-        "title": "Paso 2: Hacer Predicciones",
-        "description": "El Adivino entonces predice en secreto para cada otro jugador: '¿Lo han hecho o no?' sin revelar la pregunta aún.",
-        "visual": "🎯"
-      },
-      {
-        "title": "Paso 3: La Revelación",
-        "description": "Después de hacer todas las predicciones, el Adivino lee la pregunta en voz alta a todos.",
-        "visual": "📢"
-      },
-      {
-        "title": "Paso 4: Momento de la Verdad",
-        "description": "Cada jugador responde honestamente si han hecho lo que dice la pregunta.",
-        "visual": "✋"
-      },
-      {
-        "title": "Paso 5: Reglas de Beber",
-        "description": "Si el Adivino ACERTÓ sobre un jugador haciéndolo - ¡ese jugador bebe! Si el Adivino se EQUIVOCÓ sobre alguien - ¡el Adivino bebe por cada error!",
-        "visual": "🍺"
-      },
-      {
-        "title": "Paso 6: Pasar y Repetir",
-        "description": "¡Pasa el teléfono al siguiente jugador que se convierte en el nuevo Adivino, y repite! El juego se vuelve más divertido mientras aprendes cosas sorprendentes sobre tus amigos.",
-        "visual": "🔄"
-      }
-    ]
+    "game": {
+      "loading": "Barajando las cartas…",
+      "loadFailed": "No se han podido cargar las preguntas. Revisa tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar",
+      "home": "Inicio",
+      "back": "Volver al inicio",
+      "rules": "Reglas",
+      "kicker": "",
+      "turn": "Le toca a {name}",
+      "hotseatTurn": "{name} está en el hot seat",
+      "tapForNext": "Toca la carta para sacar otra",
+      "deckEmpty": "¡Habéis agotado la baraja!",
+      "deckEmptyHint": "{count} cartas y ni un secreto por contar.",
+      "shuffleAgain": "Barajar otra vez"
+    }
   }
 }

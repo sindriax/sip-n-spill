@@ -1,307 +1,170 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useAnimation } from "framer-motion";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import locales from "../lib/locales.json";
+import { fromSearchParams, parseLanguage } from "@/lib/game";
+import { format, getStrings } from "../lib/i18n";
+import { loadDeck, shuffle } from "../lib/deck";
+import { useWakeLock } from "../lib/use-wake-lock";
 import GameLoadingIndicator from "../components/game-loading-indicator";
 import GameErrorDisplay from "../components/game-error-display";
-import QuestionDisplay from "../components/question-display";
-import RulesSection from "../components/rules-section";
 import GradientBackground from "../components/gradient-background";
+import HowToPlay from "../components/how-to-play";
+import QuestionDisplay from "../components/question-display";
 
-interface Rule {
-  header: string;
-  text: string;
-}
+type Status = "loading" | "error" | "ready";
 
-type LocaleStrings = {
-  pageTitle: string;
-  selectLanguage: string;
-  startGame: string;
-  gameRulesTitle: string;
-  rules: Rule[];
-  footerText: string;
-  nextQuestion: string;
-  backToHome: string;
-  loadingQuestions: string;
-  noQuestionsLoaded: string;
-  loadingSettings: string;
-  questionProgress: string;
-};
-
-type Locales = {
-  en: LocaleStrings;
-  es: LocaleStrings;
-};
-
-const typedLocales: Locales = locales as Locales;
-
-function GameContent() {
-  const searchParams = useSearchParams();
+function Game() {
   const router = useRouter();
-  const lang = searchParams.get("lang") || "es";
-  const categories = searchParams.get("categories") || searchParams.get("category") || "spicy";
-  const mode = searchParams.get("mode");
-  const playersParam = searchParams.get("players");
-  const players = useMemo(() => {
-    if (!playersParam) return [];
-    try {
-      const parsed = JSON.parse(decodeURIComponent(playersParam));
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }, [playersParam]);
-  const [gameContent, setGameContent] = useState<LocaleStrings>(
-    typedLocales[lang as keyof Locales] || typedLocales.es
-  );
-  const cupControls = useAnimation();
-  const [isTipping, setIsTipping] = useState(false);
+  const searchParams = useSearchParams();
+  const config = useMemo(() => fromSearchParams(searchParams), [searchParams]);
+  const strings = getStrings(config.lang);
 
-  const [questions, setQuestions] = useState<string[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [questionKey, setQuestionKey] = useState(0);
-  const [currentTargetPlayer, setCurrentTargetPlayer] = useState<string>("");
-  const [showRules, setShowRules] = useState(false);
+  const [status, setStatus] = useState<Status>("loading");
+  const [attempt, setAttempt] = useState(0);
+  const [deck, setDeck] = useState<string[]>([]);
+  const [turnOrder, setTurnOrder] = useState<string[]>([]);
+  const [index, setIndex] = useState(0);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
-  const shuffleArray = <T,>(array: T[]): T[] => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  };
+  useWakeLock(status === "ready");
 
   useEffect(() => {
-    const loadQuestions = async () => {
-      setIsLoading(true);
-      setGameContent(typedLocales[lang as keyof Locales] || typedLocales.es);
-      try {
-        let apiUrl = `/api/questions?lang=${lang}`;
-        if (mode === "hotseat" || mode === "date" || mode === "classic") {
-          apiUrl += `&mode=${mode}`;
-        } else {
-          apiUrl += `&categories=${categories}`;
-        }
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error(`API responded with status ${response.status}`);
-        }
-        const data = await response.json();
-        const loadedQuestions = Array.isArray(data.questions)
-          ? data.questions
-          : [];
-        setQuestions(shuffleArray(loadedQuestions));
-        setQuestionKey((prevKey) => prevKey + 1);
-        if (mode === "hotseat" && players.length > 0) {
-          setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
-        }
-      } catch (error) {
-        console.error(`Failed to load questions for language: ${lang}, categories: ${categories}`, error);
-        try {
-          let fallbackUrl = `/api/questions?lang=es`;
-          if (mode === "hotseat" || mode === "date" || mode === "classic") {
-            fallbackUrl += `&mode=${mode}`;
-          } else {
-            fallbackUrl += `&categories=${categories}`;
-          }
-          const fallbackResponse = await fetch(fallbackUrl);
-          if (!fallbackResponse.ok) {
-            throw new Error(
-              `Fallback API responded with status ${fallbackResponse.status}`
-            );
-          }
-          const fallbackData = await fallbackResponse.json();
-          const fallbackLoadedQuestions = Array.isArray(fallbackData.questions)
-            ? fallbackData.questions
-            : [];
-          setQuestions(shuffleArray(fallbackLoadedQuestions));
-          setQuestionKey((prevKey) => prevKey + 1);
-          if (mode === "hotseat" && players.length > 0) {
-            setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
-          }
-          console.warn(
-            "Loaded and shuffled fallback Spanish questions from API."
-          );
-        } catch (fallbackError) {
-          console.error(
-            "Failed to load fallback Spanish questions from API:",
-            fallbackError
-          );
-          setQuestions([]);
-        }
-      }
-      setIsLoading(false);
-    };
+    document.documentElement.lang = config.lang;
+  }, [config.lang]);
 
-    loadQuestions();
-  }, [lang, categories, mode, players]);
-
-  const getCurrentQuestion = useCallback(() => {
-    if (questions.length === 0) return "";
-    const question = questions[currentQuestionIndex];
-    if (mode === "hotseat" && currentTargetPlayer) {
-      return question.replaceAll("{player}", currentTargetPlayer);
-    }
-    return question;
-  }, [questions, currentQuestionIndex, mode, currentTargetPlayer]);
-
-  const handleInteraction = useCallback(async () => {
-    if (questions.length === 0 || isTipping) return;
-
-    setIsTipping(true);
-    await cupControls.start("tip");
-    setCurrentQuestionIndex((prevIndex) => {
-      const nextIndex = (prevIndex + 1) % questions.length;
-      setQuestionKey((prevKey) => {
-        return prevKey + 1;
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("loading");
+    loadDeck(config)
+      .then((questions) => {
+        if (cancelled) return;
+        setDeck(shuffle(questions));
+        setTurnOrder(shuffle(config.players));
+        setIndex(0);
+        setStatus("ready");
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("error");
       });
-      return nextIndex;
-    });
-    if (mode === "hotseat" && players.length > 0) {
-      setCurrentTargetPlayer(players[Math.floor(Math.random() * players.length)]);
-    }
-    await cupControls.start("initial");
-    setIsTipping(false);
-  }, [questions.length, cupControls, isTipping, mode, players]);
+    return () => {
+      cancelled = true;
+    };
+  }, [config, attempt]);
 
-  const handleGoHome = () => {
-    router.push("/");
+  const finished = status === "ready" && index >= deck.length;
+  const currentPlayer = turnOrder.length > 0 ? turnOrder[index % turnOrder.length] : null;
+
+  const next = useCallback(() => {
+    setIndex((current) => Math.min(current + 1, deck.length));
+  }, [deck.length]);
+
+  const reshuffle = () => {
+    setDeck(shuffle(deck));
+    setTurnOrder(shuffle(turnOrder));
+    setIndex(0);
   };
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    if (status !== "ready" || finished || rulesOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space" || event.key === "Enter") {
-        handleInteraction();
+        event.preventDefault();
+        next();
       }
     };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [status, finished, rulesOpen, next]);
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [handleInteraction]);
+  const goHome = () => router.push("/");
 
-  if (isLoading) {
-    return <GameLoadingIndicator loadingText={gameContent.loadingQuestions} />;
-  }
+  if (status === "loading") return <GameLoadingIndicator loadingText={strings.game.loading} />;
 
-  if (questions.length === 0) {
+  if (status === "error") {
     return (
       <GameErrorDisplay
-        errorMessage={gameContent.noQuestionsLoaded.replace("{lang}", lang)}
-        onGoHome={handleGoHome}
-        goHomeText={gameContent.backToHome}
+        message={strings.game.loadFailed}
+        primary={{ label: strings.game.retry, onClick: () => setAttempt((n) => n + 1) }}
+        secondary={{ label: strings.game.home, onClick: goHome }}
       />
     );
   }
 
-  const progress = questions.length > 0
-    ? ((currentQuestionIndex + 1) / questions.length) * 100
-    : 0;
+  if (finished) {
+    return (
+      <GameErrorDisplay
+        message={strings.game.deckEmpty}
+        detail={format(strings.game.deckEmptyHint, { count: deck.length })}
+        primary={{ label: strings.game.shuffleAgain, onClick: reshuffle }}
+        secondary={{ label: strings.game.home, onClick: goHome }}
+      />
+    );
+  }
+
+  const question = config.mode === "hotseat" && currentPlayer ? deck[index].replaceAll("{player}", currentPlayer) : deck[index];
+  const turnLabel = currentPlayer
+    ? format(config.mode === "hotseat" ? strings.game.hotseatTurn : strings.game.turn, { name: currentPlayer })
+    : strings.modes[config.mode].name;
+  const kicker = config.mode === "classic" ? strings.game.kicker : "";
 
   return (
     <GradientBackground withSparkles>
       <div className="flex flex-col min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
-        <div className="flex items-center justify-between px-6 pt-12 pb-6">
+        <header className="flex items-center justify-between gap-3 px-5 pt-10 pb-4">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleGoHome();
-            }}
-            className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-            aria-label="Go back"
+            type="button"
+            onClick={goHome}
+            aria-label={strings.game.back}
+            className="shrink-0 w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors"
           >
-            <Image
-              src="/assets/sippin.png"
-              alt="Back"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
+            <Image src="/assets/sippin.png" alt="" width={36} height={36} className="object-contain" />
           </button>
 
-          <div className="flex-1 flex flex-col items-center gap-1">
-            <p className="text-lg font-bold text-white text-center">
-              {mode === "hotseat" && currentTargetPlayer
-                ? `🎯 ${currentTargetPlayer}`
-                : gameContent.pageTitle
-              }
+          <div className="flex-1 min-w-0 flex flex-col items-center">
+            <p className="text-base font-bold text-center truncate max-w-full" aria-live="polite">
+              {turnLabel}
             </p>
-            <p className="text-sm font-medium text-white/80">
-              {currentQuestionIndex + 1} / {questions.length}
+            <p className="text-xs font-medium text-white/60 tabular-nums">
+              {index + 1} / {deck.length}
             </p>
           </div>
 
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowRules(true);
-            }}
-            className="w-[50px] h-[50px] rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-            aria-label="Show rules"
+            type="button"
+            onClick={() => setRulesOpen(true)}
+            aria-label={strings.game.rules}
+            className="shrink-0 w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors"
           >
-            <Image
-              src="/assets/qs.png"
-              alt="Help"
-              width={40}
-              height={40}
-              className="object-contain max-w-[28px] max-h-[28px]"
-            />
+            <Image src="/assets/qs.png" alt="" width={26} height={26} className="object-contain" />
           </button>
-        </div>
+        </header>
 
-        <div className="px-6 pb-4">
-          <div className="h-[6px] bg-white/20 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-white rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+        <div className="px-5">
+          <div className="h-1 bg-white/15 rounded-full overflow-hidden">
+            <div className="h-full bg-white/80 rounded-full transition-[width] duration-300" style={{ width: `${((index + 1) / deck.length) * 100}%` }} />
           </div>
         </div>
 
-        <div
-          className="flex-1 flex items-center justify-center px-6 cursor-pointer"
-          onClick={handleInteraction}
-        >
-          <QuestionDisplay
-            question={getCurrentQuestion()}
-            questionKey={questionKey}
-          />
-        </div>
-        <RulesSection
-          gameRulesTitle={gameContent.gameRulesTitle}
-          rules={gameContent.rules}
-          isOpen={showRules}
-          onClose={() => setShowRules(false)}
-        />
+        <button type="button" onClick={next} className="flex-1 flex items-center justify-center px-5 py-4 focus:outline-none" aria-label={strings.game.tapForNext}>
+          <QuestionDisplay question={question} kicker={kicker} questionKey={index} />
+        </button>
+
+        <p className="text-center text-xs text-white/50 pb-6">{strings.game.tapForNext}</p>
+
+        <HowToPlay mode={config.mode} strings={strings} isOpen={rulesOpen} onClose={() => setRulesOpen(false)} />
       </div>
     </GradientBackground>
   );
 }
 
-export default function GamePage() {
-  const initialLang =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search).get("lang") || "es"
-      : "es";
-  const initialContent =
-    typedLocales[initialLang as keyof Locales] || typedLocales.es;
-
+export default function PlayPage() {
+  const lang = parseLanguage(typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("lang"));
   return (
-    <Suspense
-      fallback={
-        <GameLoadingIndicator
-          loadingText={initialContent.loadingSettings}
-          altText="Sip 'n Spill Logo Loading Settings"
-        />
-      }
-    >
-      <GameContent />
+    <Suspense fallback={<GameLoadingIndicator loadingText={getStrings(lang).game.loading} />}>
+      <Game />
     </Suspense>
   );
 }
+
