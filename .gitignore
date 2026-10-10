@@ -40,5 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# data files from the src/data directory
-/src/data/*.json
+
+
+
+# cloudflare
+.wrangler
+/out

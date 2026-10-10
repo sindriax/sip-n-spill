@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sip-n-spill",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sip-n-spill",
+      "database_id": "94cb1203-cea1-43b2-b7ed-423988131acd",
+      "migrations_dir": "worker/migrations"
+    }
+  ],
+  "routes": [{ "pattern": "sip.sindriax.dev", "custom_domain": true }],
+  "observability": { "enabled": true }
+}

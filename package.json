@@ -5,24 +5,28 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:api": "mkdir -p out && wrangler dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "jest --forceExit",
+    "preview": "next build && wrangler dev",
+    "deploy": "next build && wrangler deploy",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc -p worker --noEmit",
+    "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "db:seed:questions": "tsx src/scripts/seed-questions.ts"
+    "db:migrate:local": "wrangler d1 migrations apply sip-n-spill --local",
+    "db:migrate:remote": "wrangler d1 migrations apply sip-n-spill --remote",
+    "db:seed:local": "tsx scripts/seed-questions.ts --local",
+    "db:seed:remote": "tsx scripts/seed-questions.ts --remote"
   },
   "dependencies": {
-    "dotenv": "^16.5.0",
     "framer-motion": "^12.12.1",
-    "mongodb": "^6.16.0",
     "next": "15.5.9",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tsx": "^4.19.4"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261006.1",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -38,6 +42,8 @@
     "jest-environment-jsdom": "^30.2.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.6",
-    "typescript": "^5"
+    "tsx": "^4.19.4",
+    "typescript": "^5",
+    "wrangler": "^4.149.0"
   }
 }
